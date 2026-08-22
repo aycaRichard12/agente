@@ -1,0 +1,2 @@
+# No third-party API dependencies required.
+# Built-in Python standard libraries (tkinter, pathlib, os, json, re) are used.
