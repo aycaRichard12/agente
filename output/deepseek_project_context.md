@@ -1,0 +1,6037 @@
+==============================================================
+REPORTED PROBLEM / PROBLEMA REPORTADO
+==============================================================
+The `CotizacionPage.vue` file is being optimized and refactored to create a modular, scalable, and easily maintainable structure.
+
+Analyze the current code of `CotizacionPage.vue` in detail and compare it to the modular implementation located in:
+
+`modules/cotizacion`
+
+The goal is to identify **why the optimized/modular version is not working correctly**, while maintaining the exact same functionality and behavior as `CotizacionPage.vue`.
+
+Perform the analysis following these rules:
+
+1. First, analyze `CotizacionPage.vue` to understand:
+
+* All its functionalities.
+
+* Data flow.
+
+* Reactive states.
+
+* Props and emits.
+
+* Methods and functions.
+
+* API calls.
+
+* Events.
+
+* Dependencies between components.
+
+* Stores, composables, and utilities used.
+
+* Validation logic and calculations.
+
+* Interface behaviors.
+
+2. Next, analyze the entire `modules/cotizacion` structure and determine:
+
+* Which functionalities were correctly ported.
+
+* Which functionalities are missing.
+
+* Which logic was incorrectly modified.
+
+* Which imports, exports, or references are incorrect.
+
+* Composition API issues, reactivity, props, emits, or events.
+
+* Routing or module resolution issues.
+
+* Pinia, composable, or service issues.
+
+* Variable or function naming issues.
+
+* Circular dependencies or incorrect coupling.
+
+* Errors that could cause the module to malfunction.
+
+* Behavioral differences between the original and modular versions.
+
+3. Do not assume that the modular architecture is correctly implemented. Verify each part against the original functionality of `CotizacionPage.vue`.
+
+4. Identify exactly where each problem is located, indicating:
+
+* File.
+
+* Approximate or exact line number.
+
+* Problematic code.
+
+* Cause of the problem.
+
+* Proposed fix.
+
+5. If there are related errors across multiple files, clearly explain the dependency chain that causes the failure.
+
+6. The refactoring must preserve **100% of the existing functionality** of `CotizacionPage.vue`. Do not remove functionality or change functional behavior without justification.
+
+7. The solution must maintain an architecture that is:
+
+* Modular.
+
+* Scalable.
+
+* Maintainable.
+
+* With clearly separated responsibilities.
+
+* Avoiding excessively large files.
+
+* Avoiding code duplication.
+
+* With reusable components and composables where appropriate.
+
+8. If you find an incorrect modular implementation, correct it by referencing the functional logic of `CotizacionPage.vue`, but without recreating a monolithic file.
+
+9. Before proposing changes, provide a clear diagnosis of why `modules/cotizacion` is currently not working.
+
+10. After the diagnosis, provide the necessary modifications file by file, indicating exactly what needs to be changed.
+
+11. Finally, conceptually verify that the corrected version of `modules/cotizacion` retains all the functionalities of `CotizacionPage.vue`.
+
+### Required Response Format
+
+Organize your response as follows:
+
+**1. General Diagnosis**
+
+* Main cause of the problem.
+
+* Other problems encountered.
+
+**2. Functional Comparison**
+
+* Functionalities of `CotizacionPage.vue`.
+
+* Status of each functionality in `modules/cotizacion`: correct, incomplete, or incorrect.
+
+**3. Errors Found**
+For each error:
+
+* File.
+
+* Line.
+
+* Problem.
+
+* Cause.
+
+* Solution.
+
+**4. Corrections**
+Specify the specific changes that need to be made to each file.
+
+**5. Final Architecture**
+Show how the `modules/cotizacion` structure should look to ensure scalability.
+
+**6. Final Verification**
+Confirm that all the original functionalities of `CotizacionPage.vue` are covered by the new architecture.
+
+Do not make changes based on assumptions. If a functionality or dependency cannot be determined with certainty from the provided files, state this explicitly.
+
+
+==============================================================
+PROJECT CONTEXT / CONTEXTO DEL PROYECTO
+==============================================================
+• Nombre del Proyecto: cm-oficial
+• Ruta Base: G:\quasar\dess\comercial\cm-oficial
+• Fecha de Generación: 2026-08-22 15:25:10
+
+--------------------------------------------------------------
+PROJECT SUMMARY
+--------------------------------------------------------------
+Selected files: 24
+File extensions:
+  .js: 14
+  .vue: 10
+
+Total lines:
+5,559
+
+--------------------------------------------------------------
+DEPENDENCIES AND REFERENCES
+--------------------------------------------------------------
+• src\modules\Cotizacion\components\AgregarProducto.vue:
+  - import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+  - import { cantidadRules, precioRules } from 'src/validators/cotizacionValidators'
+• src\modules\Cotizacion\components\ConfiguracionInicial.vue:
+  - import { almacenRules, categoriaRules, puntoVentaRules } from 'src/validators/cotizacionValidators'
+• src\modules\Cotizacion\components\DatosCliente.vue:
+  - import ModalfirmaPage from './ModalfirmaPage.vue'
+• src\modules\Cotizacion\components\ResumenCarrito.vue:
+  - import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+  - import { decimas, redondear } from 'src/composables/FuncionesG'
+• src\modules\Cotizacion\composables\useCalculosCotizacion.js:
+  - import { redondear } from 'src/composables/FuncionesG'
+• src\modules\Cotizacion\composables\useCarrito.js:
+  - import { reactive, computed, watch } from 'vue'
+  - import { redondear } from 'src/composables/FuncionesG'
+  - import { useQuasar } from 'quasar'
+• src\modules\Cotizacion\composables\useCliente.js:
+  - import { ref } from 'vue'
+  - import { api } from 'src/boot/axios'
+  - import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
+  - import { useQuasar } from 'quasar'
+• src\modules\Cotizacion\composables\useCotizacion.js:
+  - import { ref } from 'vue'
+  - import { useQuasar } from 'quasar'
+  - import { api } from 'src/boot/axios'
+  - import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
+  - import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
+  - import { validarUsuario } from 'src/composables/FuncionesG'
+• src\modules\Cotizacion\composables\usePago.js:
+  - import { ref, computed } from 'vue'
+• src\modules\Cotizacion\composables\useProducto.js:
+  - import { ref, watch } from 'vue'
+  - import { api } from 'src/boot/axios'
+  - import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
+  - import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+• src\modules\Cotizacion\page\CotizacionPage.vue:
+  - import { ref, onMounted, onBeforeUnmount } from 'vue'
+  - import { useQuasar } from 'quasar'
+  - import { useCarrito } from '../composables/useCarrito'
+  - import { useCliente } from '../composables/useCliente'
+  - import { useProducto } from '../composables/useProducto'
+  - import { useCotizacion } from '../composables/useCotizacion'
+  - import { usePago } from '../composables/usePago'
+  - import { useConfiguracion } from '../composables/useConfiguracion'
+  - import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+  - import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+  - import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+  - import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+• src\modules\Cotizacion\services\almacenService.js:
+  - import { api, apiCt } from 'src/boot/axios'
+• src\modules\Cotizacion\services\clienteService.js:
+  - import { api } from 'src/boot/axios'
+• src\modules\Cotizacion\services\cotizacionService.js:
+  - import { api } from 'src/boot/axios'
+• src\modules\Cotizacion\services\pagoService.js:
+  - import { api } from 'src/boot/axios'
+• src\modules\Cotizacion\services\productoService.js:
+  - import { api } from 'src/boot/axios'
+• src\modules\Cotizacion\stores\cotizacionStore.js:
+  - import { defineStore } from 'pinia'
+  - import { reactive, ref, computed } from 'vue'
+  - import { useQuasar } from 'quasar'
+  - import { usePago } from 'src/composables/usePago'
+• src\modules\Cotizacion\validators\cotizacionValidators.js:
+  - import { required, positive, requiredPositive } from './commonValidators'
+• src\pages\cotizacion\CotizacionPage.vue:
+  - import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+  - import { useQuasar } from 'quasar'
+  - import { api, apiCt } from 'src/boot/axios'
+  - import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
+  - import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
+  - import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+  - import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+  - import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+  - import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
+  - import { objectToFormData } from 'src/composables/FuncionesGenerales'
+  - import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
+  - import ModalfirmaPage from './ModalfirmaPage.vue'
+  - import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+  - import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+  - import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+
+--------------------------------------------------------------
+INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK / RESPONSE FORMAT RULES
+--------------------------------------------------------------
+Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown:
+
+# DIAGNOSIS
+## Problem
+[Descripción técnica del problema]
+## Root Cause
+[Causa raíz técnica]
+
+# FILES TO MODIFY
+## 1. ruta/relativa/archivo.ext
+Approximate line: [número]
+### Problem
+[Problema en este archivo]
+### Solution
+[Solución propuesta]
+### Current Code
+```
+[código actual]
+```
+### Corrected Code
+```
+[código corregido]
+```
+
+# NEW FILES
+[Nuevos archivos requeridos o: No se requieren nuevos archivos.]
+
+# ARCHITECTURAL CHANGES
+[Cambios en estructura o: No se requieren cambios arquitectónicos.]
+
+# RISKS OR SIDE EFFECTS
+[Riesgos identificados o: Sin riesgos identificados.]
+
+# IMPLEMENTATION PLAN
+1. [Primer paso]
+2. [Segundo paso]
+3. [Tercer paso]
+
+REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba. Especifica siempre archivo, línea aproximada, código actual y código corregido.
+
+Estructura de Directorios:
+```
+cm-oficial/
+└── src/
+    ├── modules/
+    │   └── Cotizacion/
+    │       ├── components/
+    │       │   ├── AgregarProducto.vue
+    │       │   ├── CabeceraCotizacion.vue
+    │       │   ├── ConfiguracionInicial.vue
+    │       │   ├── DatosCliente.vue
+    │       │   ├── DialogoConfirmacion.vue
+    │       │   ├── DialogoPDF.vue
+    │       │   ├── DialogoPago.vue
+    │       │   └── ResumenCarrito.vue
+    │       ├── composables/
+    │       │   ├── useCalculosCotizacion.js
+    │       │   ├── useCarrito.js
+    │       │   ├── useCliente.js
+    │       │   ├── useCotizacion.js
+    │       │   ├── usePago.js
+    │       │   └── useProducto.js
+    │       ├── page/
+    │       │   └── CotizacionPage.vue
+    │       ├── services/
+    │       │   ├── almacenService.js
+    │       │   ├── clienteService.js
+    │       │   ├── cotizacionService.js
+    │       │   ├── pagoService.js
+    │       │   └── productoService.js
+    │       ├── stores/
+    │       │   └── cotizacionStore.js
+    │       └── validators/
+    │           ├── commonValidators.js
+    │           └── cotizacionValidators.js
+    └── pages/
+        └── cotizacion/
+            └── CotizacionPage.vue
+```
+
+
+==============================================================
+ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE
+==============================================================
+
+==============================================================
+FILE: src\modules\Cotizacion\components\AgregarProducto.vue
+==============================================================
+```vue
+LINE   1 | <template>
+LINE   2 |   <div class="row q-col-gutter-lg items-end">
+LINE   3 |     <div class="col-12 col-md-4">
+LINE   4 |       <div class="flex justify-between items-center q-mb-sm">
+LINE   5 |         <label class="text-weight-bold text-grey-9 block label-cotizacion">
+LINE   6 |           Producto o Servicio <span class="text-negative">*</span>
+LINE   7 |         </label>
+LINE   8 |         <q-checkbox
+LINE   9 |           v-if="esProductoUnico"
+LINE  10 |           :model-value="registrarComoProductoUnico"
+LINE  11 |           @update:model-value="$emit('update:registrarComoProductoUnico', $event)"
+LINE  12 |           size="xs"
+LINE  13 |           label="Producto Único"
+LINE  14 |           color="secondary"
+LINE  15 |         />
+LINE  16 |       </div>
+LINE  17 |       <q-select
+LINE  18 |         :model-value="selectedProduct"
+LINE  19 |         :options="filteredProducts"
+LINE  20 |         option-value="id"
+LINE  21 |         option-label="display"
+LINE  22 |         use-input
+LINE  23 |         hide-selected
+LINE  24 |         fill-input
+LINE  25 |         input-debounce="0"
+LINE  26 |         outlined
+LINE  27 |         dense
+LINE  28 |         bg-color="white"
+LINE  29 |         class="premium-input"
+LINE  30 |         @filter="$emit('filter-product', $event)"
+LINE  31 |         @input-value="$emit('set-product-input', $event)"
+LINE  32 |         @update:model-value="$emit('elegir-producto', $event)"
+LINE  33 |       >
+LINE  34 |         <template v-slot:no-option>
+LINE  35 |           <q-item>
+LINE  36 |             <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE  37 |           </q-item>
+LINE  38 |         </template>
+LINE  39 |       </q-select>
+LINE  40 |     </div>
+LINE  41 | 
+LINE  42 |     <div class="col-12 col-md-2">
+LINE  43 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion"
+LINE  44 |         >Stock Actual</label
+LINE  45 |       >
+LINE  46 |       <q-input
+LINE  47 |         :model-value="cantidaddisponibleCO"
+LINE  48 |         readonly
+LINE  49 |         outlined
+LINE  50 |         dense
+LINE  51 |         bg-color="grey-2"
+LINE  52 |         hide-bottom-space
+LINE  53 |         class="premium-input text-center"
+LINE  54 |         placeholder="0"
+LINE  55 |       >
+LINE  56 |         <template v-slot:prepend>
+LINE  57 |           <q-icon name="inventory_2" size="xs" color="grey-7" />
+LINE  58 |         </template>
+LINE  59 |       </q-input>
+LINE  60 |     </div>
+LINE  61 | 
+LINE  62 |     <div class="col-12 col-md-2">
+LINE  63 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  64 |         Cantidad <span class="text-negative">*</span>
+LINE  65 |       </label>
+LINE  66 |       <q-input
+LINE  67 |         :model-value="cantidadCO"
+LINE  68 |         @update:model-value="$emit('update:cantidadCO', $event)"
+LINE  69 |         type="number"
+LINE  70 |         :rules="cantidadRules"
+LINE  71 |         :readonly="esProductoUnico && registrarComoProductoUnico"
+LINE  72 |         required
+LINE  73 |         outlined
+LINE  74 |         dense
+LINE  75 |         bg-color="white"
+LINE  76 |         hide-bottom-space
+LINE  77 |         class="premium-input text-center"
+LINE  78 |       />
+LINE  79 |     </div>
+LINE  80 | 
+LINE  81 |     <div class="col-12 col-md-3">
+LINE  82 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  83 |         Precio unitario <span class="text-negative">*</span>
+LINE  84 |       </label>
+LINE  85 |       <q-input
+LINE  86 |         :model-value="precioCO"
+LINE  87 |         type="number"
+LINE  88 |         :rules="precioRules"
+LINE  89 |         :readonly="!permisosStore.tienePermiso('editarprecioventa')"
+LINE  90 |         required
+LINE  91 |         outlined
+LINE  92 |         dense
+LINE  93 |         bg-color="white"
+LINE  94 |         hide-bottom-space
+LINE  95 |         class="premium-input"
+LINE  96 |       >
+LINE  97 |         <template v-slot:append>
+LINE  98 |           <div
+LINE  99 |             class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders currency-append"
+LINE 100 |           >
+LINE 101 |             {{ divisaActiva.tipo }}
+LINE 102 |           </div>
+LINE 103 |         </template>
+LINE 104 |       </q-input>
+LINE 105 |     </div>
+LINE 106 | 
+LINE 107 |     <div class="col-12 col-md-1 flex justify-center">
+LINE 108 |       <q-btn
+LINE 109 |         icon="add_shopping_cart"
+LINE 110 |         color="secondary"
+LINE 111 |         unelevated
+LINE 112 |         class="full-width shadow-3 btn-add-product"
+LINE 113 |         :disable="!canAddProduct"
+LINE 114 |         @click="$emit('anadir-producto')"
+LINE 115 |       >
+LINE 116 |         <q-tooltip
+LINE 117 |           class="bg-secondary text-subtitle2 shadow-4"
+LINE 118 |           anchor="top middle"
+LINE 119 |           self="bottom middle"
+LINE 120 |         >
+LINE 121 |           Añadir al carrito
+LINE 122 |         </q-tooltip>
+LINE 123 |       </q-btn>
+LINE 124 |     </div>
+LINE 125 |   </div>
+LINE 126 | 
+LINE 127 |   <UniqueProductSelector
+LINE 128 |     v-if="esProductoUnico"
+LINE 129 |     :product-id="idproductoalmacenCO"
+LINE 130 |     :is-unique="esProductoUnico && registrarComoProductoUnico"
+LINE 131 |     :cantidad-requerida="cantidadCO"
+LINE 132 |     @update:selection="$emit('guardar-codigos', $event)"
+LINE 133 |     class="q-mt-md"
+LINE 134 |   />
+LINE 135 | </template>
+LINE 136 | 
+LINE 137 | <script setup>
+LINE 138 | import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+LINE 139 | import { cantidadRules, precioRules } from 'src/validators/cotizacionValidators'
+LINE 140 | 
+LINE 141 | defineProps({
+LINE 142 |   esProductoUnico: Boolean,
+LINE 143 |   registrarComoProductoUnico: Boolean,
+LINE 144 |   selectedProduct: [Object, null],
+LINE 145 |   filteredProducts: Array,
+LINE 146 |   cantidaddisponibleCO: String,
+LINE 147 |   cantidadCO: Number,
+LINE 148 |   precioCO: Number,
+LINE 149 |   idproductoalmacenCO: String,
+LINE 150 |   canAddProduct: Boolean,
+LINE 151 |   divisaActiva: Object,
+LINE 152 |   permisosStore: Object,
+LINE 153 | })
+LINE 154 | 
+LINE 155 | defineEmits([
+LINE 156 |   'filter-product',
+LINE 157 |   'set-product-input',
+LINE 158 |   'elegir-producto',
+LINE 159 |   'anadir-producto',
+LINE 160 |   'guardar-codigos',
+LINE 161 |   'update:registrarComoProductoUnico',
+LINE 162 |   'update:cantidadCO',
+LINE 163 |   'update:precioCO',
+LINE 164 | ])
+LINE 165 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\CabeceraCotizacion.vue
+==============================================================
+```vue
+LINE  1 | <template>
+LINE  2 |   <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
+LINE  3 |     <div class="col-12 flex items-center">
+LINE  4 |       <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2 radius-12">
+LINE  5 |         <q-icon name="request_quote" size="36px" color="primary" />
+LINE  6 |       </div>
+LINE  7 |       <div>
+LINE  8 |         <h1 class="text-h4 text-weight-bolder q-my-none text-primary letter-spacing-neg-05">
+LINE  9 |           {{ titulo }}
+LINE 10 |         </h1>
+LINE 11 |         <div class="text-subtitle1 text-grey-7 q-mt-xs">
+LINE 12 |           {{ subtitulo }}
+LINE 13 |         </div>
+LINE 14 |       </div>
+LINE 15 |     </div>
+LINE 16 |   </div>
+LINE 17 | </template>
+LINE 18 | 
+LINE 19 | <script setup>
+LINE 20 | defineProps({
+LINE 21 |   titulo: { type: String, default: 'Emisión de Cotización' },
+LINE 22 |   subtitulo: {
+LINE 23 |     type: String,
+LINE 24 |     default: 'Registre los detalles de la nueva cotización y añada productos',
+LINE 25 |   },
+LINE 26 | })
+LINE 27 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\ConfiguracionInicial.vue
+==============================================================
+```vue
+LINE  1 | <template>
+LINE  2 |   <q-card-section class="q-pa-lg">
+LINE  3 |     <q-form ref="cotizacionFormRef">
+LINE  4 |       <div class="row q-col-gutter-lg">
+LINE  5 |         <div class="col-12 col-md-4">
+LINE  6 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  7 |             Almacén origen <span class="text-negative">*</span>
+LINE  8 |           </label>
+LINE  9 |           <q-select
+LINE 10 |             :model-value="filtroAlmacenCO"
+LINE 11 |             :options="almacenesOptions"
+LINE 12 |             emit-value
+LINE 13 |             map-options
+LINE 14 |             option-value="idalmacen"
+LINE 15 |             option-label="almacen"
+LINE 16 |             :rules="almacenRules"
+LINE 17 |             @update:model-value="$emit('update:filtroAlmacenCO', $event)"
+LINE 18 |             outlined
+LINE 19 |             dense
+LINE 20 |             bg-color="white"
+LINE 21 |             hide-bottom-space
+LINE 22 |             class="premium-input"
+LINE 23 |           />
+LINE 24 |         </div>
+LINE 25 | 
+LINE 26 |         <div class="col-12 col-md-4">
+LINE 27 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE 28 |             Categoría de precio <span class="text-negative">*</span>
+LINE 29 |           </label>
+LINE 30 |           <q-select
+LINE 31 |             :model-value="filtroCategoriaCO"
+LINE 32 |             :options="categoriasOptions"
+LINE 33 |             emit-value
+LINE 34 |             map-options
+LINE 35 |             option-value="id"
+LINE 36 |             option-label="nombre"
+LINE 37 |             :rules="categoriaRules"
+LINE 38 |             @update:model-value="$emit('update:filtroCategoriaCO', $event)"
+LINE 39 |             outlined
+LINE 40 |             dense
+LINE 41 |             bg-color="white"
+LINE 42 |             hide-bottom-space
+LINE 43 |             class="premium-input"
+LINE 44 |           />
+LINE 45 |         </div>
+LINE 46 | 
+LINE 47 |         <div class="col-12 col-md-4">
+LINE 48 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE 49 |             Punto Venta <span class="text-negative">*</span>
+LINE 50 |           </label>
+LINE 51 |           <q-select
+LINE 52 |             :model-value="puntoVenta"
+LINE 53 |             @update:model-value="$emit('update:puntoVenta', $event)"
+LINE 54 |             :options="puntosVenta"
+LINE 55 |             emit-value
+LINE 56 |             map-options
+LINE 57 |             option-value="value"
+LINE 58 |             option-label="label"
+LINE 59 |             :rules="puntoVentaRules"
+LINE 60 |             outlined
+LINE 61 |             dense
+LINE 62 |             bg-color="white"
+LINE 63 |             hide-bottom-space
+LINE 64 |             class="premium-input"
+LINE 65 |           />
+LINE 66 |         </div>
+LINE 67 |       </div>
+LINE 68 |     </q-form>
+LINE 69 |   </q-card-section>
+LINE 70 | </template>
+LINE 71 | 
+LINE 72 | <script setup>
+LINE 73 | import { almacenRules, categoriaRules, puntoVentaRules } from 'src/validators/cotizacionValidators'
+LINE 74 | 
+LINE 75 | defineProps({
+LINE 76 |   filtroAlmacenCO: [Number, null],
+LINE 77 |   almacenesOptions: Array,
+LINE 78 |   filtroCategoriaCO: [Number, null],
+LINE 79 |   categoriasOptions: Array,
+LINE 80 |   puntoVenta: [Object, null],
+LINE 81 |   puntosVenta: Array,
+LINE 82 | })
+LINE 83 | defineEmits([
+LINE 84 |   'almacen-change',
+LINE 85 |   'categoria-change',
+LINE 86 |   'update:filtroAlmacenCO',
+LINE 87 |   'update:filtroCategoriaCO',
+LINE 88 |   'update:puntoVenta',
+LINE 89 | ])
+LINE 90 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\DatosCliente.vue
+==============================================================
+```vue
+LINE   1 | <template>
+LINE   2 |   <q-card-section class="q-pa-lg">
+LINE   3 |     <q-form ref="formClientes" class="q-mb-md">
+LINE   4 |       <div class="row q-col-gutter-lg q-mb-md">
+LINE   5 |         <div class="col-12 col-md-3">
+LINE   6 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE   7 |             Tipo de Operación <span class="text-negative">*</span>
+LINE   8 |           </label>
+LINE   9 |           <q-select
+LINE  10 |             :model-value="tipoOperacion"
+LINE  11 |             :options="optionOperacion"
+LINE  12 |             map-options
+LINE  13 |             :rules="tipoOperacionRules"
+LINE  14 |             @update:model-value="$emit('update:tipoOperacion', $event)"
+LINE  15 |             outlined
+LINE  16 |             dense
+LINE  17 |             bg-color="white"
+LINE  18 |             hide-bottom-space
+LINE  19 |             class="premium-input"
+LINE  20 |           />
+LINE  21 |         </div>
+LINE  22 | 
+LINE  23 |         <div class="col-12 col-md-3">
+LINE  24 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  25 |             Fecha <span class="text-negative">*</span>
+LINE  26 |           </label>
+LINE  27 |           <q-input
+LINE  28 |             :model-value="fecha"
+LINE  29 |             type="date"
+LINE  30 |             :rules="fechaRules"
+LINE  31 |             @update:model-value="$emit('update:fecha', $event)"
+LINE  32 |             outlined
+LINE  33 |             dense
+LINE  34 |             bg-color="white"
+LINE  35 |             hide-bottom-space
+LINE  36 |             class="premium-input"
+LINE  37 |           />
+LINE  38 |         </div>
+LINE  39 | 
+LINE  40 |         <div class="col-12 col-md-6">
+LINE  41 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  42 |             Cliente <span class="text-negative">*</span>
+LINE  43 |           </label>
+LINE  44 |           <div class="row no-wrap">
+LINE  45 |             <q-select
+LINE  46 |               class="col premium-input"
+LINE  47 |               :model-value="selectedClient"
+LINE  48 |               use-input
+LINE  49 |               hide-selected
+LINE  50 |               fill-input
+LINE  51 |               input-debounce="0"
+LINE  52 |               :options="filteredClients"
+LINE  53 |               @filter="filterClient"
+LINE  54 |               @input-value="setClientInputValue"
+LINE  55 |               @update:model-value="$emit('update:selectedClient', $event)"
+LINE  56 |               option-value="id"
+LINE  57 |               option-label="display"
+LINE  58 |               :rules="clienteRules"
+LINE  59 |               outlined
+LINE  60 |               dense
+LINE  61 |               bg-color="white"
+LINE  62 |               hide-bottom-space
+LINE  63 |             >
+LINE  64 |               <template v-slot:no-option>
+LINE  65 |                 <q-item>
+LINE  66 |                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE  67 |                 </q-item>
+LINE  68 |               </template>
+LINE  69 |             </q-select>
+LINE  70 |             <div class="q-ml-md">
+LINE  71 |               <q-btn
+LINE  72 |                 color="primary"
+LINE  73 |                 unelevated
+LINE  74 |                 class="full-height shadow-2 btn-square-44"
+LINE  75 |                 icon="person_add"
+LINE  76 |                 @click="$emit('registrar-cliente')"
+LINE  77 |               >
+LINE  78 |                 <q-tooltip class="bg-primary text-caption shadow-4">
+LINE  79 |                   Registrar Nuevo Cliente
+LINE  80 |                 </q-tooltip>
+LINE  81 |               </q-btn>
+LINE  82 |             </div>
+LINE  83 |           </div>
+LINE  84 |         </div>
+LINE  85 |       </div>
+LINE  86 | 
+LINE  87 |       <div class="row q-col-gutter-lg">
+LINE  88 |         <div class="col-12 col-md-6">
+LINE  89 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+LINE  90 |             Sucursal <span class="text-negative">*</span>
+LINE  91 |           </label>
+LINE  92 |           <q-select
+LINE  93 |             :model-value="selectedSucursal"
+LINE  94 |             use-input
+LINE  95 |             hide-selected
+LINE  96 |             fill-input
+LINE  97 |             input-debounce="0"
+LINE  98 |             :options="filteredSucursales"
+LINE  99 |             @filter="filterSucursal"
+LINE 100 |             @input-value="setSucursalInputValue"
+LINE 101 |             @update:model-value="$emit('update:selectedSucursal', $event)"
+LINE 102 |             option-value="id"
+LINE 103 |             option-label="nombre"
+LINE 104 |             :rules="sucursalRules"
+LINE 105 |             outlined
+LINE 106 |             dense
+LINE 107 |             bg-color="white"
+LINE 108 |             hide-bottom-space
+LINE 109 |             class="premium-input"
+LINE 110 |           >
+LINE 111 |             <template v-slot:no-option>
+LINE 112 |               <q-item>
+LINE 113 |                 <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE 114 |               </q-item>
+LINE 115 |             </template>
+LINE 116 |           </q-select>
+LINE 117 |         </div>
+LINE 118 | 
+LINE 119 |         <div class="col-8 col-md-6">
+LINE 120 |           <label for="canalVenta" class="label-cotizacion">Canal de venta*</label>
+LINE 121 |           <q-select
+LINE 122 |             :model-value="canalventa"
+LINE 123 |             @update:model-value="$emit('update:canalventa', $event)"
+LINE 124 |             dense
+LINE 125 |             outlined
+LINE 126 |             :options="salesChannels"
+LINE 127 |             option-label="label"
+LINE 128 |             option-value="value"
+LINE 129 |             :rules="canalVentaRules"
+LINE 130 |           >
+LINE 131 |             <template v-slot:prepend>
+LINE 132 |               <q-icon name="point_of_sale" color="blue" />
+LINE 133 |             </template>
+LINE 134 |           </q-select>
+LINE 135 |         </div>
+LINE 136 |       </div>
+LINE 137 | 
+LINE 138 |       <ModalfirmaPage
+LINE 139 |         :model-value="modalfirmaActivo"
+LINE 140 |         :id-entidad="selectedClient"
+LINE 141 |         tipo-operacion="CLIENTE"
+LINE 142 |         @onSuccess="alTerminarFirma"
+LINE 143 |         @onError="alFallarFirma"
+LINE 144 |         @update:model-value="$emit('update:modalfirmaActivo', $event)"
+LINE 145 |       />
+LINE 146 |     </q-form>
+LINE 147 |   </q-card-section>
+LINE 148 | </template>
+LINE 149 | 
+LINE 150 | <script setup>
+LINE 151 | import ModalfirmaPage from './ModalfirmaPage.vue'
+LINE 152 | import {
+LINE 153 |   tipoOperacionRules,
+LINE 154 |   fechaRules,
+LINE 155 |   sucursalRules,
+LINE 156 |   canalVentaRules,
+LINE 157 | } from 'src/validators/cotizacionValidators'
+LINE 158 | // Props
+LINE 159 | defineProps({
+LINE 160 |   tipoOperacion: Object,
+LINE 161 |   optionOperacion: Array,
+LINE 162 |   fecha: String,
+LINE 163 |   selectedClient: Object,
+LINE 164 |   filteredClients: Array,
+LINE 165 |   selectedSucursal: Object,
+LINE 166 |   filteredSucursales: Array,
+LINE 167 |   canalventa: [Object, null],
+LINE 168 |   salesChannels: Array,
+LINE 169 |   modalfirmaActivo: Boolean,
+LINE 170 |   clienteRules: Array,
+LINE 171 | })
+LINE 172 | 
+LINE 173 | // Emits
+LINE 174 | const emit = defineEmits([
+LINE 175 |   'tipo-operacion-change',
+LINE 176 |   'fecha-change',
+LINE 177 |   'registrar-cliente',
+LINE 178 |   'filter-client',
+LINE 179 |   'set-client-input',
+LINE 180 |   'elegir-cliente',
+LINE 181 |   'filter-sucursal',
+LINE 182 |   'set-sucursal-input',
+LINE 183 |   'elegir-sucursal',
+LINE 184 |   'on-success-firma',
+LINE 185 |   'on-error-firma',
+LINE 186 |   'update:tipoOperacion',
+LINE 187 |   'update:fecha',
+LINE 188 |   'update:selectedClient',
+LINE 189 |   'update:selectedSucursal',
+LINE 190 |   'update:canalventa',
+LINE 191 |   'update:modalfirmaActivo',
+LINE 192 | ])
+LINE 193 | 
+LINE 194 | // Local functions (delegate to parent)
+LINE 195 | function filterClient(val, update) {
+LINE 196 |   emit('filter-client', val, update)
+LINE 197 | }
+LINE 198 | function setClientInputValue(val) {
+LINE 199 |   emit('set-client-input', val)
+LINE 200 | }
+LINE 201 | 
+LINE 202 | function filterSucursal(val, update) {
+LINE 203 |   emit('filter-sucursal', val, update)
+LINE 204 | }
+LINE 205 | function setSucursalInputValue(val) {
+LINE 206 |   emit('set-sucursal-input', val)
+LINE 207 | }
+LINE 208 | 
+LINE 209 | function alTerminarFirma(respuesta) {
+LINE 210 |   emit('on-success-firma', respuesta)
+LINE 211 | }
+LINE 212 | function alFallarFirma(err) {
+LINE 213 |   emit('on-error-firma', err)
+LINE 214 | }
+LINE 215 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\DialogoConfirmacion.vue
+==============================================================
+```vue
+LINE  1 | <template>
+LINE  2 |   <q-dialog
+LINE  3 |     :model-value="mostrar"
+LINE  4 |     @update:model-value="$emit('update:mostrar', $event)"
+LINE  5 |     backdrop-filter="blur(4px)"
+LINE  6 |   >
+LINE  7 |     <q-card class="dialog-card-custom shadow-10">
+LINE  8 |       <q-card-section
+LINE  9 |         class="q-pa-lg text-white flex items-center justify-center column dialog-header-gradient"
+LINE 10 |       >
+LINE 11 |         <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
+LINE 12 |           <q-icon name="check" size="40px" color="positive" />
+LINE 13 |         </div>
+LINE 14 |         <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
+LINE 15 |           ¡Cotización Exitosa!
+LINE 16 |         </div>
+LINE 17 |       </q-card-section>
+LINE 18 | 
+LINE 19 |       <q-card-section class="q-pa-xl text-center bg-white">
+LINE 20 |         <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
+LINE 21 |           El comprobante ha sido generado y guardado correctamente en el sistema.
+LINE 22 |         </div>
+LINE 23 |         <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
+LINE 24 |           ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
+LINE 25 |         </div>
+LINE 26 |       </q-card-section>
+LINE 27 | 
+LINE 28 |       <q-separator />
+LINE 29 |       <q-card-actions align="center" class="q-pa-md bg-grey-1">
+LINE 30 |         <q-btn
+LINE 31 |           flat
+LINE 32 |           label="No, gracias"
+LINE 33 |           color="grey-7"
+LINE 34 |           @click="$emit('cancelar')"
+LINE 35 |           class="q-px-md text-weight-bold radius-8"
+LINE 36 |         />
+LINE 37 |         <q-btn
+LINE 38 |           unelevated
+LINE 39 |           label="Enviar PDF por Correo"
+LINE 40 |           color="positive"
+LINE 41 |           icon="send"
+LINE 42 |           class="q-px-md text-weight-bold shadow-3 q-ml-sm radius-8"
+LINE 43 |           @click="$emit('confirmar')"
+LINE 44 |         />
+LINE 45 |       </q-card-actions>
+LINE 46 |     </q-card>
+LINE 47 |   </q-dialog>
+LINE 48 | </template>
+LINE 49 | 
+LINE 50 | <script setup>
+LINE 51 | defineProps({ mostrar: Boolean })
+LINE 52 | defineEmits(['cancelar', 'confirmar', 'update:mostrar'])
+LINE 53 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\DialogoPDF.vue
+==============================================================
+```vue
+LINE  1 | <template>
+LINE  2 |   <q-dialog
+LINE  3 |     :model-value="mostrar"
+LINE  4 |     @update:model-value="$emit('update:mostrar', $event)"
+LINE  5 |     full-width
+LINE  6 |     full-height
+LINE  7 |     transition-show="scale"
+LINE  8 |     transition-hide="scale"
+LINE  9 |     @hide="$emit('reiniciar')"
+LINE 10 |   >
+LINE 11 |     <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
+LINE 12 |       <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
+LINE 13 |         <div class="text-h6 flex items-center q-px-sm">
+LINE 14 |           <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de PDF
+LINE 15 |         </div>
+LINE 16 |         <q-space />
+LINE 17 |         <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
+LINE 18 |       </q-card-section>
+LINE 19 | 
+LINE 20 |       <q-separator color="grey-9" />
+LINE 21 |       <q-card-section class="q-pa-none bg-grey-3" style="height: calc(100% - 54px)">
+LINE 22 |         <iframe
+LINE 23 |           v-if="pdfData"
+LINE 24 |           :src="pdfData"
+LINE 25 |           style="width: 100%; height: 100%; border: none"
+LINE 26 |         ></iframe>
+LINE 27 |         <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+LINE 28 |           <q-icon name="check_circle" color="positive" size="2em" />
+LINE 29 |           <p>
+LINE 30 |             Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+LINE 31 |           </p>
+LINE 32 |           <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link"
+LINE 33 |             >Descargar comprobante</a
+LINE 34 |           >
+LINE 35 |         </div>
+LINE 36 |       </q-card-section>
+LINE 37 |     </q-card>
+LINE 38 |   </q-dialog>
+LINE 39 | </template>
+LINE 40 | 
+LINE 41 | <script setup>
+LINE 42 | defineProps({
+LINE 43 |   mostrar: Boolean,
+LINE 44 |   pdfData: String,
+LINE 45 |   isMobile: Boolean,
+LINE 46 |   mobileFallbackUrl: String,
+LINE 47 | })
+LINE 48 | defineEmits(['reiniciar', 'update:mostrar'])
+LINE 49 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\DialogoPago.vue
+==============================================================
+```vue
+LINE   1 | <template>
+LINE   2 |   <q-dialog :model-value="mostrar" @update:model-value="$emit('update:mostrar', $event)">
+LINE   3 |     <q-card class="responsive-dialog shadow-24 column no-wrap">
+LINE   4 |       <!-- Header -->
+LINE   5 |       <q-card-section
+LINE   6 |         class="bg-primary text-white q-py-md q-px-md flex justify-between items-center bg-primary-gradient"
+LINE   7 |       >
+LINE   8 |         <div class="flex items-center">
+LINE   9 |           <div class="bg-white-20 q-pa-sm rounded-borders q-mr-sm shadow-inner radius-12">
+LINE  10 |             <q-icon name="account_balance_wallet" class="text-white" size="24px" />
+LINE  11 |           </div>
+LINE  12 |           <div>
+LINE  13 |             <div class="text-h6 text-weight-bolder">Método de Pago</div>
+LINE  14 |             <div class="text-caption text-white/80 text-weight-medium gt-xs">
+LINE  15 |               Configure la modalidad y detalles del pago
+LINE  16 |             </div>
+LINE  17 |           </div>
+LINE  18 |         </div>
+LINE  19 |         <q-btn icon="close" v-close-popup flat round dense class="text-white/80" size="md" />
+LINE  20 |       </q-card-section>
+LINE  21 | 
+LINE  22 |       <q-card-section class="col scroll q-pa-lg bg-grey-1 content-section">
+LINE  23 |         <!-- Selector de modalidad -->
+LINE  24 |         <div class="row justify-center q-mb-xl">
+LINE  25 |           <q-btn-toggle
+LINE  26 |             :model-value="carrito.credito"
+LINE  27 |             toggle-color="primary"
+LINE  28 |             toggle-text-color="white"
+LINE  29 |             color="grey-1"
+LINE  30 |             text-color="grey-7"
+LINE  31 |             unelevated
+LINE  32 |             rounded
+LINE  33 |             no-caps
+LINE  34 |             class="custom-premium-toggle border-grey-3 shadow-2"
+LINE  35 |             @update:model-value="$emit('tipo-pago-change', $event)"
+LINE  36 |             :options="[
+LINE  37 |               { value: false, slot: 'efectivo' },
+LINE  38 |               { value: true, slot: 'credito' },
+LINE  39 |             ]"
+LINE  40 |           >
+LINE  41 |             <template v-slot:efectivo>
+LINE  42 |               <div
+LINE  43 |                 class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+LINE  44 |                 style="padding: 4px 12px"
+LINE  45 |               >
+LINE  46 |                 <q-icon name="payments" size="18px" />
+LINE  47 |                 <span>Efectivo</span>
+LINE  48 |               </div>
+LINE  49 |             </template>
+LINE  50 |             <template v-slot:credito>
+LINE  51 |               <div
+LINE  52 |                 class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+LINE  53 |                 style="padding: 4px 12px"
+LINE  54 |               >
+LINE  55 |                 <q-icon name="credit_score" size="18px" />
+LINE  56 |                 <span>Crédito</span>
+LINE  57 |               </div>
+LINE  58 |             </template>
+LINE  59 |           </q-btn-toggle>
+LINE  60 |         </div>
+LINE  61 | 
+LINE  62 |         <!-- Contenido dinámico según modalidad -->
+LINE  63 |         <div v-if="!carrito.credito">
+LINE  64 |           <!-- Efectivo: selector único/dividido, etc. -->
+LINE  65 |           <!-- (simplificado) -->
+LINE  66 |         </div>
+LINE  67 |         <div v-else>
+LINE  68 |           <!-- Crédito: cuotas, frecuencia, fecha límite -->
+LINE  69 |           <!-- (simplificado) -->
+LINE  70 |         </div>
+LINE  71 |       </q-card-section>
+LINE  72 | 
+LINE  73 |       <q-separator />
+LINE  74 |       <q-card-actions align="right" class="q-pa-md bg-white shrink-0">
+LINE  75 |         <q-btn
+LINE  76 |           flat
+LINE  77 |           label="Regresar"
+LINE  78 |           color="grey-8"
+LINE  79 |           v-close-popup
+LINE  80 |           class="q-px-md text-weight-bold rounded-pill"
+LINE  81 |         />
+LINE  82 |         <q-btn
+LINE  83 |           unelevated
+LINE  84 |           label="Confirmar Cotización"
+LINE  85 |           color="primary"
+LINE  86 |           icon="task_alt"
+LINE  87 |           class="q-px-lg text-weight-bolder shadow-3 full-width-xs btn-continuar"
+LINE  88 |           @click="$emit('confirmar-pago')"
+LINE  89 |           :disable="carrito.variablePago === 'dividido' && remainingAmount !== 0"
+LINE  90 |         />
+LINE  91 |       </q-card-actions>
+LINE  92 |     </q-card>
+LINE  93 |   </q-dialog>
+LINE  94 | </template>
+LINE  95 | 
+LINE  96 | <script setup>
+LINE  97 | defineProps({
+LINE  98 |   mostrar: Boolean,
+LINE  99 |   carrito: Object,
+LINE 100 |   remainingAmount: Number,
+LINE 101 | })
+LINE 102 | defineEmits(['tipo-pago-change', 'confirmar-pago', 'update:mostrar'])
+LINE 103 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\components\ResumenCarrito.vue
+==============================================================
+```vue
+LINE   1 | <template>
+LINE   2 |   <q-card-section
+LINE   3 |     class="bg-white q-py-sm q-px-lg flex items-center justify-between"
+LINE   4 |     style="border-bottom: 1px solid #e0e0e0"
+LINE   5 |   >
+LINE   6 |     <div class="flex items-center text-primary">
+LINE   7 |       <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
+LINE   8 |       <div class="text-subtitle1 text-weight-bold">Resumen de Cotización</div>
+LINE   9 |     </div>
+LINE  10 |   </q-card-section>
+LINE  11 | 
+LINE  12 |   <q-table
+LINE  13 |     :rows="carrito.listaProductos"
+LINE  14 |     :columns="carritoColumns"
+LINE  15 |     row-key="idproductoalmacen"
+LINE  16 |     flat
+LINE  17 |     hide-bottom
+LINE  18 |     class="custom-table q-pt-md"
+LINE  19 |     table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
+LINE  20 |     :pagination="{ rowsPerPage: 0 }"
+LINE  21 |   >
+LINE  22 |     <template v-slot:body="props">
+LINE  23 |       <q-tr :props="props" :class="props.expand ? 'bg-blue-50' : 'hover-row'">
+LINE  24 |         <!-- Código de expansión para códigos únicos -->
+LINE  25 |         <q-td auto-width>
+LINE  26 |           <q-btn
+LINE  27 |             v-if="props.row.codigosUnicos?.length > 0"
+LINE  28 |             size="sm"
+LINE  29 |             color="primary"
+LINE  30 |             flat
+LINE  31 |             round
+LINE  32 |             @click="props.expand = !props.expand"
+LINE  33 |             :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+LINE  34 |           />
+LINE  35 |         </q-td>
+LINE  36 | 
+LINE  37 |         <q-td key="num" :props="props" class="text-left">
+LINE  38 |           <q-chip color="grey-2" text-color="grey-9" dense square class="radius-6">
+LINE  39 |             <span class="text-weight-bolder">{{ props.row.num }}</span>
+LINE  40 |           </q-chip>
+LINE  41 |         </q-td>
+LINE  42 |         <q-td key="codigo" :props="props" class="text-left">
+LINE  43 |           <q-chip outline color="primary" dense square class="radius-6 font-weight-600">
+LINE  44 |             {{ props.row.codigo }}
+LINE  45 |           </q-chip>
+LINE  46 |         </q-td>
+LINE  47 |         <q-td key="descripcion" :props="props">
+LINE  48 |           <div class="text-weight-bolder text-grey-10 text-subtitle2">
+LINE  49 |             {{ props.row.descripcion }}
+LINE  50 |           </div>
+LINE  51 |           <div
+LINE  52 |             class="flex items-center text-primary cursor-pointer q-mt-xs note-adicional"
+LINE  53 |             v-ripple
+LINE  54 |           >
+LINE  55 |             <q-icon name="edit_note" size="16px" class="q-mr-xs" />
+LINE  56 |             <span class="text-weight-medium">{{
+LINE  57 |               props.row.descripcionAdicional || 'Añadir nota adicional...'
+LINE  58 |             }}</span>
+LINE  59 |             <q-popup-edit
+LINE  60 |               :model-value="props.row.descripcionAdicional"
+LINE  61 |               @update:model-value="
+LINE  62 |                 $emit('update:descripcionAdicional', {
+LINE  63 |                   id: props.row.idproductoalmacen,
+LINE  64 |                   value: $event,
+LINE  65 |                 })
+LINE  66 |               "
+LINE  67 |               v-slot="scope"
+LINE  68 |               buttons
+LINE  69 |               label-set="Guardar"
+LINE  70 |               label-cancel="Cancelar"
+LINE  71 |             >
+LINE  72 |               <q-input
+LINE  73 |                 v-model="scope.value"
+LINE  74 |                 outlined
+LINE  75 |                 dense
+LINE  76 |                 autofocus
+LINE  77 |                 counter
+LINE  78 |                 @keyup.enter="validarDescripcion(scope, props.row)"
+LINE  79 |               />
+LINE  80 |             </q-popup-edit>
+LINE  81 |           </div>
+LINE  82 |         </q-td>
+LINE  83 |         <q-td key="cantidad" :props="props" class="text-right">
+LINE  84 |           <q-badge
+LINE  85 |             color="secondary"
+LINE  86 |             text-color="white"
+LINE  87 |             class="q-px-md q-py-xs text-weight-bolder text-subtitle2 shadow-1 radius-8"
+LINE  88 |           >
+LINE  89 |             {{ props.row.cantidad }}
+LINE  90 |           </q-badge>
+LINE  91 |         </q-td>
+LINE  92 |         <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
+LINE  93 |           {{ decimas(props.row.precio) }}
+LINE  94 |           <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+LINE  95 |             divisa.tipo
+LINE  96 |           }}</span>
+LINE  97 |         </q-td>
+LINE  98 |         <q-td
+LINE  99 |           key="total"
+LINE 100 |           :props="props"
+LINE 101 |           class="text-right text-weight-bolder text-primary text-subtitle1"
+LINE 102 |         >
+LINE 103 |           {{ decimas(props.row.cantidad * props.row.precio) }}
+LINE 104 |           <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+LINE 105 |             divisa.tipo
+LINE 106 |           }}</span>
+LINE 107 |         </q-td>
+LINE 108 |         <q-td key="options" :props="props" class="text-center">
+LINE 109 |           <q-btn
+LINE 110 |             icon="delete_outline"
+LINE 111 |             color="negative"
+LINE 112 |             flat
+LINE 113 |             round
+LINE 114 |             dense
+LINE 115 |             size="sm"
+LINE 116 |             @click="$emit('eliminar-producto', props.row.idproductoalmacen)"
+LINE 117 |             class="hover-shake"
+LINE 118 |           >
+LINE 119 |             <q-tooltip class="bg-negative text-weight-medium shadow-3">Quitar producto</q-tooltip>
+LINE 120 |           </q-btn>
+LINE 121 |         </q-td>
+LINE 122 |       </q-tr>
+LINE 123 | 
+LINE 124 |       <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
+LINE 125 |         <q-td colspan="100%" class="q-pa-lg">
+LINE 126 |           <TableCodigosUnicos
+LINE 127 |             v-if="esProductoUnico"
+LINE 128 |             v-model="props.row.codigosUnicos"
+LINE 129 |             :parent-row="props.row"
+LINE 130 |             :can-delete="true"
+LINE 131 |             :can-edit="true"
+LINE 132 |             :api-mode="false"
+LINE 133 |             @update-parent-quantity="
+LINE 134 |               (nuevaCant) => {
+LINE 135 |                 props.row.cantidad = nuevaCant
+LINE 136 |                 $emit('recalcular-totales')
+LINE 137 |               }
+LINE 138 |             "
+LINE 139 |           />
+LINE 140 |         </q-td>
+LINE 141 |       </q-tr>
+LINE 142 |     </template>
+LINE 143 | 
+LINE 144 |     <template v-slot:bottom-row>
+LINE 145 |       <q-tr class="bg-grey-1">
+LINE 146 |         <q-td colspan="6" class="text-right text-subtitle2 text-grey-8 letter-spacing-05"
+LINE 147 |           >SUBTOTAL:</q-td
+LINE 148 |         >
+LINE 149 |         <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
+LINE 150 |           {{ decimas(carrito.subtotal) }}
+LINE 151 |           <span class="text-caption text-grey-6 text-weight-medium">{{ divisa.tipo }}</span>
+LINE 152 |         </q-td>
+LINE 153 |         <q-td />
+LINE 154 |       </q-tr>
+LINE 155 | 
+LINE 156 |       <q-tr class="bg-grey-1">
+LINE 157 |         <q-td colspan="6" class="text-right text-subtitle2 text-grey-8">DESCUENTO:</q-td>
+LINE 158 |         <q-td class="text-right">
+LINE 159 |           <q-input
+LINE 160 |             :model-value="carrito.descuento"
+LINE 161 |             @update:model-value="$emit('update:descuento', $event)"
+LINE 162 |             type="number"
+LINE 163 |             min="0"
+LINE 164 |             :max="carrito.subtotal"
+LINE 165 |             @change="$emit('aplicar-descuento')"
+LINE 166 |             dense
+LINE 167 |             outlined
+LINE 168 |             bg-color="white"
+LINE 169 |             input-class="text-right text-weight-bolder text-negative"
+LINE 170 |             class="premium-input input-descuento"
+LINE 171 |           >
+LINE 172 |             <template v-slot:append>
+LINE 173 |               <div
+LINE 174 |                 class="bg-negative text-white text-weight-bold text-caption q-px-sm rounded-borders currency-append"
+LINE 175 |               >
+LINE 176 |                 {{ divisa.tipo }}
+LINE 177 |               </div>
+LINE 178 |             </template>
+LINE 179 |           </q-input>
+LINE 180 |         </q-td>
+LINE 181 |         <q-td />
+LINE 182 |       </q-tr>
+LINE 183 | 
+LINE 184 |       <q-tr class="bg-primary text-white bg-primary-gradient-row">
+LINE 185 |         <q-td colspan="6" class="text-right text-h6 text-weight-bolder text-uppercase"
+LINE 186 |           >TOTAL GENERAL:</q-td
+LINE 187 |         >
+LINE 188 |         <q-td class="text-right text-h5 text-weight-bolder text-shadow-light">
+LINE 189 |           {{ decimas(carrito.ventatotal) }}
+LINE 190 |           <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
+LINE 191 |             divisa.tipo
+LINE 192 |           }}</span>
+LINE 193 |         </q-td>
+LINE 194 |         <q-td />
+LINE 195 |       </q-tr>
+LINE 196 |     </template>
+LINE 197 |   </q-table>
+LINE 198 | </template>
+LINE 199 | 
+LINE 200 | <script setup>
+LINE 201 | import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+LINE 202 | import { decimas, redondear } from 'src/composables/FuncionesG'
+LINE 203 | 
+LINE 204 | defineProps({
+LINE 205 |   carrito: { type: Object, required: true },
+LINE 206 |   divisa: { type: Object, required: true },
+LINE 207 |   esProductoUnico: Boolean,
+LINE 208 | })
+LINE 209 | 
+LINE 210 | defineEmits([
+LINE 211 |   'eliminar-producto',
+LINE 212 |   'recalcular-totales',
+LINE 213 |   'aplicar-descuento',
+LINE 214 |   'update:descuento',
+LINE 215 |   'update:descripcionAdicional',
+LINE 216 | ])
+LINE 217 | const carritoColumns = [
+LINE 218 |   { name: 'exp', label: '', align: 'left' },
+LINE 219 |   { name: 'num', label: 'N°', align: 'left', field: 'num' },
+LINE 220 |   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
+LINE 221 |   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
+LINE 222 |   { name: 'cantidad', label: 'Cantidad', align: 'center', field: (row) => decimas(row.cantidad) },
+LINE 223 |   {
+LINE 224 |     name: 'precio',
+LINE 225 |     label: 'Precio unitario',
+LINE 226 |     align: 'center',
+LINE 227 |     field: (row) => decimas(row.precio),
+LINE 228 |   },
+LINE 229 |   {
+LINE 230 |     name: 'total',
+LINE 231 |     label: 'Total',
+LINE 232 |     align: 'center',
+LINE 233 |     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
+LINE 234 |   },
+LINE 235 |   { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
+LINE 236 | ]
+LINE 237 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\useCalculosCotizacion.js
+==============================================================
+```js
+LINE  1 | // src/composables/useCalculosCotizacion.js
+LINE  2 | import { redondear } from 'src/composables/FuncionesG'
+LINE  3 | 
+LINE  4 | /**
+LINE  5 |  * Calcula el subtotal a partir de la lista de productos.
+LINE  6 |  * @param {Array} listaProductos
+LINE  7 |  * @returns {number} Subtotal redondeado.
+LINE  8 |  */
+LINE  9 | export function calcularSubtotal(listaProductos) {
+LINE 10 |   const subtotal = listaProductos.reduce((sub, producto) => {
+LINE 11 |     const precio = parseFloat(producto.precio)
+LINE 12 |     const cantidad = parseFloat(producto.cantidad)
+LINE 13 |     return sub + precio * cantidad
+LINE 14 |   }, 0)
+LINE 15 |   return redondear(subtotal)
+LINE 16 | }
+LINE 17 | 
+LINE 18 | /**
+LINE 19 |  * Calcula el total aplicando el descuento.
+LINE 20 |  * @param {number} subtotal
+LINE 21 |  * @param {number} descuento
+LINE 22 |  * @returns {{ subtotal: number, descuento: number, ventatotal: number }}
+LINE 23 |  */
+LINE 24 | export function calcularTotales(subtotal, descuento) {
+LINE 25 |   const descuentoAjustado = descuento > subtotal ? subtotal : descuento
+LINE 26 |   return {
+LINE 27 |     subtotal: redondear(subtotal),
+LINE 28 |     descuento: redondear(descuentoAjustado),
+LINE 29 |     ventatotal: redondear(subtotal - descuentoAjustado),
+LINE 30 |   }
+LINE 31 | }
+LINE 32 | 
+LINE 33 | /**
+LINE 34 |  * Valida y aplica un descuento sobre el subtotal.
+LINE 35 |  * @param {number} subtotal
+LINE 36 |  * @param {number} descuentoPropuesto
+LINE 37 |  * @returns {number} Descuento válido (entre 0 y subtotal).
+LINE 38 |  */
+LINE 39 | export function validarDescuento(subtotal, descuentoPropuesto) {
+LINE 40 |   if (descuentoPropuesto < 0) return 0
+LINE 41 |   if (descuentoPropuesto > subtotal) return subtotal
+LINE 42 |   return descuentoPropuesto
+LINE 43 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\useCarrito.js
+==============================================================
+```js
+LINE   1 | // src/modules/Cotizacion/composables/useCarrito.js
+LINE   2 | import { reactive, computed, watch } from 'vue'
+LINE   3 | import { redondear } from 'src/composables/FuncionesG'
+LINE   4 | import { useQuasar } from 'quasar'
+LINE   5 | 
+LINE   6 | export function useCarrito(options) {
+LINE   7 |   const $q = useQuasar()
+LINE   8 |   const {
+LINE   9 |     divisa,
+LINE  10 |     idempresa,
+LINE  11 |     tipoOperacion,
+LINE  12 |     permitirStock,
+LINE  13 |     selectedProduct,
+LINE  14 |     cantidadCO,
+LINE  15 |     precioCO,
+LINE  16 |     idproductoalmacenCO,
+LINE  17 |     idstockCO,
+LINE  18 |     idporcentajeCO,
+LINE  19 |     cantidaddisponibleCO,
+LINE  20 |     CodigosUnicosSeleccionados,
+LINE  21 |     listaProductosDisponibles,
+LINE  22 |     resetProductoInputs,
+LINE  23 |   } = options
+LINE  24 | 
+LINE  25 |   // Estado del carrito
+LINE  26 |   const carritoCO = reactive({
+LINE  27 |     ventatotal: 0,
+LINE  28 |     subtotal: 0,
+LINE  29 |     descuento: 0,
+LINE  30 |     idalmacen: 0,
+LINE  31 |     divisa: divisa?.id || 0,
+LINE  32 |     ipv: null,
+LINE  33 |     idusuario: 0,
+LINE  34 |     listaProductos: [],
+LINE  35 |     pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
+LINE  36 |     metodoPago: 0,
+LINE  37 |     variablePago: 'directo',
+LINE  38 |     fecha: '',
+LINE  39 |     credito: false,
+LINE  40 |     idfirma: null,
+LINE  41 |     codigosUnicos: [],
+LINE  42 |     cajabanco: null,
+LINE  43 |     cantidadPagos: 1,
+LINE  44 |     montoPagos: 0,
+LINE  45 |     periodo: 30,
+LINE  46 |     plazoPersonalizado: 0,
+LINE  47 |     fechaLimite: '',
+LINE  48 |   })
+LINE  49 | 
+LINE  50 |   // Computed: monto total de la venta
+LINE  51 |   const totalSaleAmount = computed(() => parseFloat(carritoCO.ventatotal) || 0)
+LINE  52 | 
+LINE  53 |   // Computed: si se puede agregar producto
+LINE  54 |   const canAddProduct = computed(() => {
+LINE  55 |     if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
+LINE  56 |       return true
+LINE  57 |     }
+LINE  58 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
+LINE  59 |       return false
+LINE  60 |     }
+LINE  61 |     if (tipoOperacion.value?.value === 1) {
+LINE  62 |       return cantidadCO.value <= cantidaddisponibleCO.value
+LINE  63 |     }
+LINE  64 |     return true
+LINE  65 |   })
+LINE  66 | 
+LINE  67 |   // ─── Métodos ──────────────────────────────────────────────────────────────
+LINE  68 |   async function anadirProductoACarrito(userId) {
+LINE  69 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
+LINE  70 |       $q.notify({
+LINE  71 |         type: 'info',
+LINE  72 |         message: 'Llene todos los campos para poder cargar productos.',
+LINE  73 |       })
+LINE  74 |       return false
+LINE  75 |     }
+LINE  76 | 
+LINE  77 |     if (Number(tipoOperacion.value?.value) === 1) {
+LINE  78 |       if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
+LINE  79 |         $q.notify({ type: 'warning', message: 'La cantidad excede el stock disponible.' })
+LINE  80 |         return false
+LINE  81 |       }
+LINE  82 |     }
+LINE  83 | 
+LINE  84 |     const nuevoProducto = {
+LINE  85 |       num: carritoCO.listaProductos.length + 1,
+LINE  86 |       idproductoalmacen: idproductoalmacenCO.value,
+LINE  87 |       cantidad: cantidadCO.value,
+LINE  88 |       precio: precioCO.value,
+LINE  89 |       idstock: idstockCO.value,
+LINE  90 |       idporcentaje: idporcentajeCO.value,
+LINE  91 |       candiponible: cantidaddisponibleCO.value,
+LINE  92 |       descripcion: selectedProduct.value.descripcion,
+LINE  93 |       descripcionAdicional: '',
+LINE  94 |       codigo: selectedProduct.value.codigo,
+LINE  95 |       despachado:
+LINE  96 |         Number(selectedProduct.value.stock) == 0 ||
+LINE  97 |         Number(selectedProduct.value.stock) < Number(cantidadCO.value)
+LINE  98 |           ? 2
+LINE  99 |           : 1,
+LINE 100 |       codigosUnicos: [...CodigosUnicosSeleccionados.value],
+LINE 101 |     }
+LINE 102 | 
+LINE 103 |     carritoCO.idusuario = userId
+LINE 104 |     carritoCO.idempresa = idempresa
+LINE 105 |     carritoCO.divisa = divisa?.id || 0
+LINE 106 |     carritoCO.listaProductos.push(nuevoProducto)
+LINE 107 |     carritoCO.codigosUnicos = [...carritoCO.codigosUnicos, ...CodigosUnicosSeleccionados.value]
+LINE 108 | 
+LINE 109 |     calcularTotalesCarrito()
+LINE 110 |     if (listaProductosDisponibles) await listaProductosDisponibles()
+LINE 111 |     resetProductoInputs()
+LINE 112 |     return true
+LINE 113 |   }
+LINE 114 | 
+LINE 115 |   function eliminarProductoCarrito(idProductoAlmacen) {
+LINE 116 |     carritoCO.listaProductos = carritoCO.listaProductos.filter(
+LINE 117 |       (p) => p.idproductoalmacen !== idProductoAlmacen,
+LINE 118 |     )
+LINE 119 |     calcularTotalesCarrito()
+LINE 120 |     if (listaProductosDisponibles) listaProductosDisponibles()
+LINE 121 |   }
+LINE 122 | 
+LINE 123 |   function calcularTotalesCarrito() {
+LINE 124 |     carritoCO.subtotal = carritoCO.listaProductos.reduce((sub, producto) => {
+LINE 125 |       const precio = parseFloat(producto.precio)
+LINE 126 |       const cantidad = parseFloat(producto.cantidad)
+LINE 127 |       return sub + precio * cantidad
+LINE 128 |     }, 0)
+LINE 129 | 
+LINE 130 |     if (carritoCO.subtotal === 0) carritoCO.descuento = 0
+LINE 131 |     carritoCO.ventatotal = carritoCO.subtotal - carritoCO.descuento
+LINE 132 | 
+LINE 133 |     carritoCO.subtotal = redondear(carritoCO.subtotal)
+LINE 134 |     carritoCO.ventatotal = redondear(carritoCO.ventatotal)
+LINE 135 |     carritoCO.descuento = redondear(carritoCO.descuento)
+LINE 136 |   }
+LINE 137 | 
+LINE 138 |   function aplicarDescuento() {
+LINE 139 |     if (carritoCO.descuento > carritoCO.subtotal) {
+LINE 140 |       $q.notify({
+LINE 141 |         type: 'warning',
+LINE 142 |         message: 'El descuento sobrepasa el subtotal.',
+LINE 143 |       })
+LINE 144 |       carritoCO.descuento = carritoCO.subtotal
+LINE 145 |     }
+LINE 146 |     calcularTotalesCarrito()
+LINE 147 |   }
+LINE 148 | 
+LINE 149 |   function resetCarrito() {
+LINE 150 |     carritoCO.ventatotal = 0
+LINE 151 |     carritoCO.subtotal = 0
+LINE 152 |     carritoCO.descuento = 0
+LINE 153 |     carritoCO.listaProductos = []
+LINE 154 |     carritoCO.metodoPago = 0
+LINE 155 |     carritoCO.variablePago = 'directo'
+LINE 156 |     carritoCO.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
+LINE 157 |     carritoCO.credito = false
+LINE 158 |     carritoCO.cantidadPagos = 1
+LINE 159 |     carritoCO.montoPagos = 0
+LINE 160 |     carritoCO.periodo = 30
+LINE 161 |     carritoCO.plazoPersonalizado = 0
+LINE 162 |     carritoCO.fechaLimite = ''
+LINE 163 |     localStorage.removeItem('carritoCO')
+LINE 164 |   }
+LINE 165 | 
+LINE 166 |   const validarDescripcion = (scope, row) => {
+LINE 167 |     const producto = carritoCO.listaProductos.find(
+LINE 168 |       (p) => Number(p.idproductoalmacen) === Number(row.idproductoalmacen),
+LINE 169 |     )
+LINE 170 |     if (producto) {
+LINE 171 |       producto.descripcionAdicional = scope.value
+LINE 172 |       scope.set()
+LINE 173 |     }
+LINE 174 |   }
+LINE 175 | 
+LINE 176 |   // Persistencia en localStorage
+LINE 177 |   watch(
+LINE 178 |     carritoCO,
+LINE 179 |     (newVal) => {
+LINE 180 |       localStorage.setItem('carritoCO', JSON.stringify(newVal))
+LINE 181 |     },
+LINE 182 |     { deep: true },
+LINE 183 |   )
+LINE 184 | 
+LINE 185 |   return {
+LINE 186 |     carritoCO,
+LINE 187 |     totalSaleAmount,
+LINE 188 |     canAddProduct,
+LINE 189 |     anadirProductoACarrito,
+LINE 190 |     eliminarProductoCarrito,
+LINE 191 |     calcularTotalesCarrito,
+LINE 192 |     aplicarDescuento,
+LINE 193 |     resetCarrito,
+LINE 194 |     validarDescripcion,
+LINE 195 |   }
+LINE 196 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\useCliente.js
+==============================================================
+```js
+LINE   1 | // src/modules/Cotizacion/composables/useCliente.js
+LINE   2 | import { ref } from 'vue'
+LINE   3 | import { api } from 'src/boot/axios'
+LINE   4 | import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
+LINE   5 | import { useQuasar } from 'quasar'
+LINE   6 | 
+LINE   7 | export function useCliente(options) {
+LINE   8 |   const $q = useQuasar()
+LINE   9 |   const { soloAlmacen, almacenesOptions, salesChannels } = options
+LINE  10 | 
+LINE  11 |   const clientesOptions = ref([])
+LINE  12 |   const filteredClients = ref([])
+LINE  13 |   const selectedClient = ref(null)
+LINE  14 |   const idclienteCO = ref('')
+LINE  15 | 
+LINE  16 |   const sucursalesOptions = ref([])
+LINE  17 |   const filteredSucursales = ref([])
+LINE  18 |   const selectedSucursal = ref(null)
+LINE  19 |   const idsucursalCOS = ref('')
+LINE  20 | 
+LINE  21 |   const canalventa = ref(null)
+LINE  22 | 
+LINE  23 |   // ─── Cargar clientes ──────────────────────────────────────────────────────
+LINE  24 |   async function cargarClientes() {
+LINE  25 |     const user = await validarUsuario()
+LINE  26 |     const idempresa = user[0]?.empresa?.idempresa
+LINE  27 |     if (!idempresa) return
+LINE  28 | 
+LINE  29 |     try {
+LINE  30 |       const response = await api.get(`listaCliente/${idempresa}`)
+LINE  31 |       let data = response.data
+LINE  32 |       if (data[0] === 'error') {
+LINE  33 |         console.error(data.error)
+LINE  34 |         return
+LINE  35 |       }
+LINE  36 | 
+LINE  37 |       if (soloAlmacen.value) {
+LINE  38 |         const allowedIds = almacenesOptions.value.map((a) => a.idalmacen)
+LINE  39 |         data = data.filter((c) => {
+LINE  40 |           if (!c.almacenes || c.almacenes.length === 0) return true
+LINE  41 |           return c.almacenes.some((al) => allowedIds.includes(al.idalmacen))
+LINE  42 |         })
+LINE  43 |       }
+LINE  44 | 
+LINE  45 |       clientesOptions.value = data.map((c) => ({
+LINE  46 |         ...c,
+LINE  47 |         display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+LINE  48 |       }))
+LINE  49 |       filteredClients.value = clientesOptions.value
+LINE  50 |     } catch (error) {
+LINE  51 |       console.error('Error cargando clientes:', error)
+LINE  52 |       $q.notify({ type: 'negative', message: 'Error al cargar clientes' })
+LINE  53 |     }
+LINE  54 |   }
+LINE  55 | 
+LINE  56 |   // ─── Seleccionar sucursales ──────────────────────────────────────────────
+LINE  57 |   async function selectSucursal(clientId) {
+LINE  58 |     if (!clientId) {
+LINE  59 |       sucursalesOptions.value = []
+LINE  60 |       selectedSucursal.value = null
+LINE  61 |       idsucursalCOS.value = ''
+LINE  62 |       return
+LINE  63 |     }
+LINE  64 |     try {
+LINE  65 |       const response = await api.get(`listaSucursal/${clientId}`)
+LINE  66 |       const data = response.data
+LINE  67 |       if (data.length === 0) {
+LINE  68 |         $q.notify({ type: 'info', message: 'No hay sucursales para este cliente.' })
+LINE  69 |         sucursalesOptions.value = []
+LINE  70 |         selectedSucursal.value = null
+LINE  71 |         idsucursalCOS.value = ''
+LINE  72 |       } else {
+LINE  73 |         sucursalesOptions.value = data
+LINE  74 |         selectedSucursal.value = data[0]
+LINE  75 |         idsucursalCOS.value = data[0].id
+LINE  76 |       }
+LINE  77 |     } catch (error) {
+LINE  78 |       console.error('Error cargando sucursales:', error)
+LINE  79 |       $q.notify({ type: 'negative', message: 'Error al cargar sucursales' })
+LINE  80 |     }
+LINE  81 |   }
+LINE  82 | 
+LINE  83 |   function selectCanalVenta(canalId) {
+LINE  84 |     canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalId)) || null
+LINE  85 |   }
+LINE  86 | 
+LINE  87 |   function elegirUnCliente(client) {
+LINE  88 |     if (client) {
+LINE  89 |       idclienteCO.value = client.id
+LINE  90 |       selectSucursal(client.id)
+LINE  91 |       selectCanalVenta(client.idcanal)
+LINE  92 |     } else {
+LINE  93 |       idclienteCO.value = ''
+LINE  94 |       selectedSucursal.value = null
+LINE  95 |       idsucursalCOS.value = ''
+LINE  96 |     }
+LINE  97 |   }
+LINE  98 | 
+LINE  99 |   // ─── Filtros para QSelect ────────────────────────────────────────────────
+LINE 100 |   function filterClient(val, update) {
+LINE 101 |     update(() => {
+LINE 102 |       const needle = normalizeText(val).toLowerCase()
+LINE 103 |       filteredClients.value = clientesOptions.value.filter((v) =>
+LINE 104 |         normalizeText(v.display).toLowerCase().includes(needle),
+LINE 105 |       )
+LINE 106 |     })
+LINE 107 |   }
+LINE 108 | 
+LINE 109 |   function setClientInputValue(val) {
+LINE 110 |     if (!clientesOptions.value.some((c) => c.display === val)) {
+LINE 111 |       selectedClient.value = null
+LINE 112 |       idclienteCO.value = ''
+LINE 113 |       selectedSucursal.value = null
+LINE 114 |       idsucursalCOS.value = ''
+LINE 115 |     }
+LINE 116 |   }
+LINE 117 | 
+LINE 118 |   function filterSucursal(val, update) {
+LINE 119 |     update(() => {
+LINE 120 |       const needle = normalizeText(val).toLowerCase()
+LINE 121 |       filteredSucursales.value = sucursalesOptions.value.filter((v) =>
+LINE 122 |         normalizeText(v.nombre).toLowerCase().includes(needle),
+LINE 123 |       )
+LINE 124 |     })
+LINE 125 |   }
+LINE 126 | 
+LINE 127 |   function setSucursalInputValue(val) {
+LINE 128 |     if (!sucursalesOptions.value.some((s) => s.nombre === val)) {
+LINE 129 |       selectedSucursal.value = null
+LINE 130 |       idsucursalCOS.value = ''
+LINE 131 |     }
+LINE 132 |   }
+LINE 133 | 
+LINE 134 |   function elegirUnaSucursal(sucursal) {
+LINE 135 |     if (sucursal) idsucursalCOS.value = sucursal.id
+LINE 136 |     else idsucursalCOS.value = ''
+LINE 137 |   }
+LINE 138 | 
+LINE 139 |   // ─── Registro rápido de cliente (modal) ─────────────────────────────────
+LINE 140 |   const showAddModal = ref(false)
+LINE 141 |   function RegistrarCliente() {
+LINE 142 |     showAddModal.value = !showAddModal.value
+LINE 143 |   }
+LINE 144 | 
+LINE 145 |   async function handleRecordCreated(newRecordData) {
+LINE 146 |     const formData = new FormData()
+LINE 147 |     Object.keys(newRecordData).forEach((key) => {
+LINE 148 |       formData.append(key, newRecordData[key])
+LINE 149 |     })
+LINE 150 |     try {
+LINE 151 |       const response = await api.post('', formData)
+LINE 152 |       if (response.data.estado === 'exito') {
+LINE 153 |         await cargarClientes()
+LINE 154 |         RegistrarCliente()
+LINE 155 |         $q.notify({ type: 'positive', message: 'Cliente guardado correctamente' })
+LINE 156 |       } else {
+LINE 157 |         $q.notify({ type: 'negative', message: response.data.mensaje || 'Error al guardar' })
+LINE 158 |       }
+LINE 159 |     } catch (error) {
+LINE 160 |       console.error(error)
+LINE 161 |       $q.notify({ type: 'negative', message: 'Error en el registro' })
+LINE 162 |     }
+LINE 163 |   }
+LINE 164 | 
+LINE 165 |   return {
+LINE 166 |     clientesOptions,
+LINE 167 |     filteredClients,
+LINE 168 |     selectedClient,
+LINE 169 |     idclienteCO,
+LINE 170 |     sucursalesOptions,
+LINE 171 |     filteredSucursales,
+LINE 172 |     selectedSucursal,
+LINE 173 |     idsucursalCOS,
+LINE 174 |     canalventa,
+LINE 175 |     showAddModal,
+LINE 176 |     cargarClientes,
+LINE 177 |     selectSucursal,
+LINE 178 |     selectCanalVenta,
+LINE 179 |     elegirUnCliente,
+LINE 180 |     filterClient,
+LINE 181 |     setClientInputValue,
+LINE 182 |     filterSucursal,
+LINE 183 |     setSucursalInputValue,
+LINE 184 |     elegirUnaSucursal,
+LINE 185 |     RegistrarCliente,
+LINE 186 |     handleRecordCreated,
+LINE 187 |   }
+LINE 188 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\useCotizacion.js
+==============================================================
+```js
+LINE   1 | // src/modules/Cotizacion/composables/useCotizacion.js
+LINE   2 | import { ref } from 'vue'
+LINE   3 | import { useQuasar } from 'quasar'
+LINE   4 | import { api } from 'src/boot/axios'
+LINE   5 | import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
+LINE   6 | import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
+LINE   7 | import { validarUsuario } from 'src/composables/FuncionesG'
+LINE   8 | 
+LINE   9 | export function useCotizacion(options) {
+LINE  10 |   const $q = useQuasar()
+LINE  11 |   const {
+LINE  12 |     carritoCO,
+LINE  13 |     tipoOperacion,
+LINE  14 |     idclienteCO,
+LINE  15 |     idsucursalCOS,
+LINE  16 |     filtroAlmacenCO,
+LINE  17 |     filtroCategoriaCO,
+LINE  18 |     puntoVenta,
+LINE  19 |     idcajaBancoSeleccionada,
+LINE  20 |     almacenesOptions,
+LINE  21 |     cotizacionFormRef,
+LINE  22 |     formClientes,
+LINE  23 |     resetCarrito,
+LINE  24 |     cargarAlmacenes,
+LINE  25 |     cargarCLientes,
+LINE  26 |     idempresa, // nuevo
+LINE  27 |     onReset,
+LINE  28 |   } = options
+LINE  29 | 
+LINE  30 |   const pdfData = ref(null)
+LINE  31 |   const mostrarModal = ref(false)
+LINE  32 |   const isMobile = ref(window.innerWidth < 768)
+LINE  33 |   const mobileFallbackUrl = ref(null)
+LINE  34 |   const dialog = ref(false)
+LINE  35 |   const position = ref('top')
+LINE  36 |   let resolver = null
+LINE  37 |   const detallesCotizacion = ref([])
+LINE  38 |   const idcliente = ref('')
+LINE  39 | 
+LINE  40 |   // ─── Envío de cotización ──────────────────────────────────────────────────
+LINE  41 |   async function enviarCotizacion() {
+LINE  42 |     const isValidForm = await cotizacionFormRef.value?.validate()
+LINE  43 |     const isValidCliente = await formClientes.value?.validate()
+LINE  44 |     if (!isValidForm || !isValidCliente) {
+LINE  45 |       $q.notify({ type: 'info', message: 'Complete todos los campos requeridos.' })
+LINE  46 |       return false
+LINE  47 |     }
+LINE  48 |     if (carritoCO.listaProductos.length === 0) {
+LINE  49 |       $q.notify({ type: 'info', message: 'Debe añadir al menos un producto.' })
+LINE  50 |       return false
+LINE  51 |     }
+LINE  52 | 
+LINE  53 |     carritoCO.tipoOperacion = tipoOperacion.value?.value
+LINE  54 |     carritoCO.ipv = Number(puntoVenta.value?.value)
+LINE  55 |     carritoCO.idalmacen = filtroAlmacenCO.value
+LINE  56 |     carritoCO.tipopago = carritoCO.credito ? 'credito' : 'contado'
+LINE  57 |     carritoCO.cajabanco = idcajaBancoSeleccionada.value
+LINE  58 |     carritoCO.idcliente = idclienteCO.value
+LINE  59 |     carritoCO.md5_em = idempresa
+LINE  60 |     carritoCO.almacen = almacenesOptions.value
+LINE  61 |       .find((obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value))
+LINE  62 |       ?.almacen.onCancel(() => {
+LINE  63 |         onReset?.()
+LINE  64 |       })
+LINE  65 |     const formData = new FormData()
+LINE  66 |     formData.append('ver', 'registrarCotizacion')
+LINE  67 |     formData.append('filtroALmacen', filtroAlmacenCO.value)
+LINE  68 |     formData.append('filtroCategoria', filtroCategoriaCO.value)
+LINE  69 |     formData.append('idcliente', idclienteCO.value)
+LINE  70 |     formData.append('idsucursal', idsucursalCOS.value)
+LINE  71 |     formData.append('listaProductos', JSON.stringify(carritoCO))
+LINE  72 |     formData.append('tipo_operacion', tipoOperacion.value?.value)
+LINE  73 | 
+LINE  74 |     $q.loading.show({ message: 'Registrando cotización...' })
+LINE  75 |     try {
+LINE  76 |       const response = await api.post('', formData)
+LINE  77 |       const data = response.data
+LINE  78 |       if (data.estado === 'exito') {
+LINE  79 |         resetCarrito()
+LINE  80 |         $q.notify({ type: 'positive', message: 'Cotización realizada exitosamente.' })
+LINE  81 |         cotizacionFormRef.value?.resetValidation()
+LINE  82 |         // Mostrar diálogo para ver comprobante
+LINE  83 |         return new Promise((resolve) => {
+LINE  84 |           $q.dialog({
+LINE  85 |             title: 'Cotización Exitosa',
+LINE  86 |             message: 'Su comprobante está listo. ¿Desea verlo?',
+LINE  87 |             cancel: true,
+LINE  88 |             persistent: true,
+LINE  89 |           })
+LINE  90 |             .onOk(() => {
+LINE  91 |               generarComprobante(data.id)
+LINE  92 |               resolve(true)
+LINE  93 |             })
+LINE  94 |             .onCancel(() => {
+LINE  95 |               resolve(false)
+LINE  96 |             })
+LINE  97 |         })
+LINE  98 |       } else {
+LINE  99 |         $q.notify({ type: 'negative', message: data.mensaje || 'Error al registrar.' })
+LINE 100 |         return false
+LINE 101 |       }
+LINE 102 |     } catch (error) {
+LINE 103 |       console.error(error)
+LINE 104 |       $q.notify({ type: 'negative', message: 'Error de conexión o servidor.' })
+LINE 105 |       return false
+LINE 106 |     } finally {
+LINE 107 |       $q.loading.hide()
+LINE 108 |     }
+LINE 109 |   }
+LINE 110 | 
+LINE 111 |   // ─── Generar comprobante PDF ─────────────────────────────────────────────
+LINE 112 |   async function generarComprobante(id) {
+LINE 113 |     const user = await validarUsuario()
+LINE 114 |     const idempresa = user[0]?.empresa?.idempresa
+LINE 115 |     if (!idempresa) {
+LINE 116 |       $q.notify({ type: 'negative', message: 'Error: empresa no disponible.' })
+LINE 117 |       return
+LINE 118 |     }
+LINE 119 | 
+LINE 120 |     $q.loading.show({ message: 'Generando comprobante...' })
+LINE 121 |     try {
+LINE 122 |       const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
+LINE 123 |       const data = response.data
+LINE 124 |       if (data[0] === 'error') {
+LINE 125 |         console.error(data.error)
+LINE 126 |         $q.notify({ type: 'negative', message: 'Error al cargar detalles.' })
+LINE 127 |         return
+LINE 128 |       }
+LINE 129 | 
+LINE 130 |       const resultado = await generarPdfCotizacion(data)
+LINE 131 |       if (!resultado || !resultado.doc) {
+LINE 132 |         $q.notify({ type: 'negative', message: 'Error al generar PDF.' })
+LINE 133 |         return
+LINE 134 |       }
+LINE 135 | 
+LINE 136 |       // Limpiar blob anterior
+LINE 137 |       if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+LINE 138 | 
+LINE 139 |       if (isMobile.value) {
+LINE 140 |         mobileFallbackUrl.value = resultado.mobileBlobUrl
+LINE 141 |       } else {
+LINE 142 |         const pdfBlob = resultado.doc.output('blob')
+LINE 143 |         pdfData.value = URL.createObjectURL(pdfBlob)
+LINE 144 |         openDialog('right', data[0]?.cliente.idcliente, data)
+LINE 145 |         mostrarModal.value = true
+LINE 146 |       }
+LINE 147 |     } catch (error) {
+LINE 148 |       console.error(error)
+LINE 149 |       $q.notify({ type: 'negative', message: 'Error al generar comprobante.' })
+LINE 150 |     } finally {
+LINE 151 |       $q.loading.hide()
+LINE 152 |     }
+LINE 153 |   }
+LINE 154 | 
+LINE 155 |   // ─── Diálogo de confirmación de envío ────────────────────────────────────
+LINE 156 |   function openDialog(pos, idcot, data) {
+LINE 157 |     position.value = pos
+LINE 158 |     dialog.value = true
+LINE 159 |     idcliente.value = idcot
+LINE 160 |     detallesCotizacion.value = data
+LINE 161 |     return new Promise((resolve) => {
+LINE 162 |       resolver = resolve
+LINE 163 |     })
+LINE 164 |   }
+LINE 165 | 
+LINE 166 |   const confirmar = (idcliente, data) => {
+LINE 167 |     resolver?.(true)
+LINE 168 |     PDFenviarComprobanteCorreo(idcliente, data, $q)
+LINE 169 |     dialog.value = false
+LINE 170 |   }
+LINE 171 | 
+LINE 172 |   const cancelar = () => {
+LINE 173 |     resolver?.(false)
+LINE 174 |     dialog.value = false
+LINE 175 |   }
+LINE 176 | 
+LINE 177 |   // ─── Reset formulario ─────────────────────────────────────────────────────
+LINE 178 |   async function resetFormulario() {
+LINE 179 |     // Resetear campos y cargar datos iniciales
+LINE 180 |     if (cargarAlmacenes) await cargarAlmacenes()
+LINE 181 |     if (cargarCLientes) await cargarCLientes()
+LINE 182 |     // Resetear carrito y otros campos
+LINE 183 |     resetCarrito()
+LINE 184 |     // ... más lógica de reset
+LINE 185 |   }
+LINE 186 | 
+LINE 187 |   // ─── Handlers ─────────────────────────────────────────────────────────────
+LINE 188 |   const handleTipoOperacionChange = () => {
+LINE 189 |     cotizacionFormRef.value?.resetValidation()
+LINE 190 |     resetFormulario()
+LINE 191 |   }
+LINE 192 | 
+LINE 193 |   const cambioFecha = (nuevaFecha) => {
+LINE 194 |     carritoCO.fecha = nuevaFecha
+LINE 195 |     if (carritoCO.credito) {
+LINE 196 |       // calcular fechas
+LINE 197 |     }
+LINE 198 |     cotizacionFormRef.value?.resetValidation()
+LINE 199 |   }
+LINE 200 | 
+LINE 201 |   const cotizacion_proforma = async () => {
+LINE 202 |     if (Number(tipoOperacion.value?.value) === 0) {
+LINE 203 |       await enviarCotizacion()
+LINE 204 |     } else {
+LINE 205 |       // abrir modal de pago
+LINE 206 |     }
+LINE 207 |   }
+LINE 208 | 
+LINE 209 |   return {
+LINE 210 |     pdfData,
+LINE 211 |     mostrarModal,
+LINE 212 |     isMobile,
+LINE 213 |     mobileFallbackUrl,
+LINE 214 |     dialog,
+LINE 215 |     position,
+LINE 216 |     detallesCotizacion,
+LINE 217 |     generarComprobante,
+LINE 218 |     enviarCotizacion,
+LINE 219 |     confirmar,
+LINE 220 |     cancelar,
+LINE 221 |     cotizacion_proforma,
+LINE 222 |     resetFormulario,
+LINE 223 |     handleTipoOperacionChange,
+LINE 224 |     cambioFecha,
+LINE 225 |     openDialog,
+LINE 226 |   }
+LINE 227 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\usePago.js
+==============================================================
+```js
+LINE   1 | // src/modules/Cotizacion/composables/usePago.js
+LINE   2 | import { ref, computed } from 'vue'
+LINE   3 | 
+LINE   4 | export function usePago(carritoCO) {
+LINE   5 |   const metodosPagos = ref([])
+LINE   6 |   const idcajaBancoSeleccionada = ref(null)
+LINE   7 |   const periodOptions = [
+LINE   8 |     { label: 'Personalizado', value: 0 },
+LINE   9 |     { label: '15 días', value: 15 },
+LINE  10 |     { label: '30 días', value: 30 },
+LINE  11 |     { label: '60 días', value: 60 },
+LINE  12 |     { label: '90 días', value: 90 },
+LINE  13 |   ]
+LINE  14 | 
+LINE  15 |   const totalSaleAmount = computed(() => parseFloat(carritoCO.ventatotal) || 0)
+LINE  16 |   const totalPaidAmount = computed(() => {
+LINE  17 |     if (carritoCO.variablePago === 'dividido') {
+LINE  18 |       return carritoCO.pagosDivididos.reduce((sum, p) => sum + parseFloat(p.monto || 0), 0)
+LINE  19 |     }
+LINE  20 |     return 0
+LINE  21 |   })
+LINE  22 |   const remainingAmount = computed(() => totalSaleAmount.value - totalPaidAmount.value)
+LINE  23 | 
+LINE  24 |   // ─── Cálculos de crédito ──────────────────────────────────────────────────
+LINE  25 |   const calculatePayments = () => {
+LINE  26 |     if (carritoCO.credito && carritoCO.cantidadPagos > 0 && totalSaleAmount.value > 0) {
+LINE  27 |       carritoCO.montoPagos = (totalSaleAmount.value / carritoCO.cantidadPagos).toFixed(2)
+LINE  28 |     } else {
+LINE  29 |       carritoCO.montoPagos = 0
+LINE  30 |     }
+LINE  31 |   }
+LINE  32 | 
+LINE  33 |   const calculateDueDate = () => {
+LINE  34 |     if (!carritoCO.credito || !carritoCO.fecha) return
+LINE  35 |     const fecha = new Date(carritoCO.fecha)
+LINE  36 |     let daysToAdd = 0
+LINE  37 |     const selectedPeriod = Number(carritoCO.periodo)
+LINE  38 |     if (selectedPeriod === 0) {
+LINE  39 |       daysToAdd = Number(carritoCO.plazoPersonalizado) || 0
+LINE  40 |     } else if (selectedPeriod > 0) {
+LINE  41 |       daysToAdd = selectedPeriod * carritoCO.cantidadPagos
+LINE  42 |     }
+LINE  43 |     if (daysToAdd > 0) {
+LINE  44 |       fecha.setDate(fecha.getDate() + daysToAdd)
+LINE  45 |       carritoCO.fechaLimite = fecha.toISOString().slice(0, 10)
+LINE  46 |     } else {
+LINE  47 |       carritoCO.fechaLimite = ''
+LINE  48 |     }
+LINE  49 |   }
+LINE  50 | 
+LINE  51 |   // ─── Pago dividido ────────────────────────────────────────────────────────
+LINE  52 |   const calculateRemainingAmount = (index) => {
+LINE  53 |     const payment = carritoCO.pagosDivididos[index]
+LINE  54 |     const monto = parseFloat(payment.monto) || 0
+LINE  55 |     if (monto >= 0 && monto <= totalSaleAmount.value && totalSaleAmount.value > 0) {
+LINE  56 |       payment.porcentaje = ((monto * 100) / totalSaleAmount.value).toFixed(2)
+LINE  57 |     } else {
+LINE  58 |       payment.porcentaje = 0
+LINE  59 |     }
+LINE  60 |   }
+LINE  61 | 
+LINE  62 |   const calculateAmountFromPercentage = (index) => {
+LINE  63 |     const payment = carritoCO.pagosDivididos[index]
+LINE  64 |     const percentage = parseFloat(payment.porcentaje) || 0
+LINE  65 |     if (percentage >= 0 && percentage <= 100 && totalSaleAmount.value > 0) {
+LINE  66 |       payment.monto = (totalSaleAmount.value * (percentage / 100)).toFixed(2)
+LINE  67 |     } else {
+LINE  68 |       payment.monto = 0
+LINE  69 |     }
+LINE  70 |   }
+LINE  71 | 
+LINE  72 |   const addPaymentMethod = () => {
+LINE  73 |     carritoCO.pagosDivididos.push({ metodoPago: null, monto: 0, porcentaje: 0 })
+LINE  74 |   }
+LINE  75 | 
+LINE  76 |   const removePaymentMethod = (index) => {
+LINE  77 |     if (carritoCO.pagosDivididos.length > 1) {
+LINE  78 |       carritoCO.pagosDivididos.splice(index, 1)
+LINE  79 |     }
+LINE  80 |   }
+LINE  81 | 
+LINE  82 |   const handleTipoPagoGeneralChange = (val) => {
+LINE  83 |     if (val) {
+LINE  84 |       calculatePayments()
+LINE  85 |       calculateDueDate()
+LINE  86 |     }
+LINE  87 |   }
+LINE  88 | 
+LINE  89 |   return {
+LINE  90 |     metodosPagos,
+LINE  91 |     idcajaBancoSeleccionada,
+LINE  92 |     periodOptions,
+LINE  93 |     totalSaleAmount,
+LINE  94 |     totalPaidAmount,
+LINE  95 |     remainingAmount,
+LINE  96 |     calculatePayments,
+LINE  97 |     calculateDueDate,
+LINE  98 |     calculateRemainingAmount,
+LINE  99 |     calculateAmountFromPercentage,
+LINE 100 |     addPaymentMethod,
+LINE 101 |     removePaymentMethod,
+LINE 102 |     handleTipoPagoGeneralChange,
+LINE 103 |   }
+LINE 104 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\composables\useProducto.js
+==============================================================
+```js
+LINE   1 | // src/modules/Cotizacion/composables/useProducto.js
+LINE   2 | import { ref, watch } from 'vue'
+LINE   3 | import { api } from 'src/boot/axios'
+LINE   4 | import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
+LINE   5 | import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+LINE   6 | 
+LINE   7 | export function useProducto(options) {
+LINE   8 |   // const $q = useQuasar()
+LINE   9 |   const { idempresa, filtroCategoriaCO, carritoCO } = options
+LINE  10 | 
+LINE  11 |   const esProductoUnico = ref(false)
+LINE  12 |   const registrarComoProductoUnico = ref(true)
+LINE  13 |   const CodigosUnicosSeleccionados = ref([])
+LINE  14 |   const { config } = useProductoConfig(idempresa)
+LINE  15 | 
+LINE  16 |   watch(
+LINE  17 |     () => config.value.idempresa,
+LINE  18 |     (val) => {
+LINE  19 |       if (val) esProductoUnico.value = Boolean(config.value.productounico)
+LINE  20 |     },
+LINE  21 |     { deep: true },
+LINE  22 |   )
+LINE  23 | 
+LINE  24 |   const productosDisponibles = ref([])
+LINE  25 |   const filteredProducts = ref([])
+LINE  26 |   const selectedProduct = ref(null)
+LINE  27 |   const cantidaddisponibleCO = ref('')
+LINE  28 |   const cantidadCO = ref(0)
+LINE  29 |   const precioCO = ref(0)
+LINE  30 |   const idstockCO = ref('')
+LINE  31 |   const idporcentajeCO = ref('')
+LINE  32 |   const idproductoalmacenCO = ref('')
+LINE  33 | 
+LINE  34 |   // ─── Cargar productos ─────────────────────────────────────────────────────
+LINE  35 |   async function listaProductosDisponibles() {
+LINE  36 |     const user = await validarUsuario()
+LINE  37 |     const idempresa = user[0]?.empresa?.idempresa
+LINE  38 |     if (!idempresa || !filtroCategoriaCO.value) {
+LINE  39 |       productosDisponibles.value = []
+LINE  40 |       return
+LINE  41 |     }
+LINE  42 | 
+LINE  43 |     try {
+LINE  44 |       const response = await api.get(`listaProductosDisponiblesVenta/${idempresa}`)
+LINE  45 |       const data = response.data
+LINE  46 |       if (data[0] === 'error') {
+LINE  47 |         console.error(data.error)
+LINE  48 |         productosDisponibles.value = []
+LINE  49 |         return
+LINE  50 |       }
+LINE  51 | 
+LINE  52 |       let use = data.datos.filter((u) => Number(u.idporcentaje) === Number(filtroCategoriaCO.value))
+LINE  53 | 
+LINE  54 |       if (carritoCO.listaProductos.length > 0) {
+LINE  55 |         use = use.filter(
+LINE  56 |           (u) => !carritoCO.listaProductos.some((cp) => cp.idproductoalmacen === u.id),
+LINE  57 |         )
+LINE  58 |       }
+LINE  59 | 
+LINE  60 |       productosDisponibles.value = use.map((p) => ({
+LINE  61 |         ...p,
+LINE  62 |         display: `${p.codigo} - ${p.descripcion}`,
+LINE  63 |       }))
+LINE  64 |       filteredProducts.value = productosDisponibles.value
+LINE  65 |     } catch (error) {
+LINE  66 |       console.error('Error cargando productos:', error)
+LINE  67 |       productosDisponibles.value = []
+LINE  68 |     }
+LINE  69 |   }
+LINE  70 | 
+LINE  71 |   // ─── Filtros para QSelect ────────────────────────────────────────────────
+LINE  72 |   function filterProduct(val, update) {
+LINE  73 |     update(() => {
+LINE  74 |       const needle = normalizeText(val).toLowerCase()
+LINE  75 |       filteredProducts.value = productosDisponibles.value.filter((v) =>
+LINE  76 |         normalizeText(v.display).toLowerCase().includes(needle),
+LINE  77 |       )
+LINE  78 |     })
+LINE  79 |   }
+LINE  80 | 
+LINE  81 |   function setProductInputValue(val) {
+LINE  82 |     if (!productosDisponibles.value.some((p) => p.display === val)) {
+LINE  83 |       selectedProduct.value = null
+LINE  84 |     }
+LINE  85 |   }
+LINE  86 | 
+LINE  87 |   function elegirUnProducto(product) {
+LINE  88 |     if (product) {
+LINE  89 |       cantidaddisponibleCO.value = product.stock
+LINE  90 |       precioCO.value = product.precio
+LINE  91 |       idstockCO.value = product.idstock
+LINE  92 |       idporcentajeCO.value = product.idporcentaje
+LINE  93 |       idproductoalmacenCO.value = product.id
+LINE  94 |       cantidadCO.value = 1
+LINE  95 |     } else {
+LINE  96 |       resetProductoInputs()
+LINE  97 |     }
+LINE  98 |   }
+LINE  99 | 
+LINE 100 |   function resetProductoInputs() {
+LINE 101 |     selectedProduct.value = null
+LINE 102 |     cantidaddisponibleCO.value = ''
+LINE 103 |     cantidadCO.value = 1
+LINE 104 |     precioCO.value = 1
+LINE 105 |     idstockCO.value = ''
+LINE 106 |     idporcentajeCO.value = ''
+LINE 107 |     idproductoalmacenCO.value = ''
+LINE 108 |   }
+LINE 109 | 
+LINE 110 |   function guardarCodigosEnVenta(codigos) {
+LINE 111 |     CodigosUnicosSeleccionados.value = codigos
+LINE 112 |     cantidadCO.value = codigos.length
+LINE 113 |   }
+LINE 114 | 
+LINE 115 |   return {
+LINE 116 |     esProductoUnico,
+LINE 117 |     registrarComoProductoUnico,
+LINE 118 |     CodigosUnicosSeleccionados,
+LINE 119 |     productosDisponibles,
+LINE 120 |     filteredProducts,
+LINE 121 |     selectedProduct,
+LINE 122 |     cantidaddisponibleCO,
+LINE 123 |     cantidadCO,
+LINE 124 |     precioCO,
+LINE 125 |     idstockCO,
+LINE 126 |     idporcentajeCO,
+LINE 127 |     idproductoalmacenCO,
+LINE 128 |     listaProductosDisponibles,
+LINE 129 |     filterProduct,
+LINE 130 |     setProductInputValue,
+LINE 131 |     elegirUnProducto,
+LINE 132 |     resetProductoInputs,
+LINE 133 |     guardarCodigosEnVenta,
+LINE 134 |   }
+LINE 135 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\page\CotizacionPage.vue
+==============================================================
+```vue
+LINE   1 | <template>
+LINE   2 |   <q-page class="q-pa-lg bg-fondo page-min-height">
+LINE   3 |     <CabeceraCotizacion />
+LINE   4 | 
+LINE   5 |     <q-card class="my-card q-mb-xl shadow-3 card-cotizacion">
+LINE   6 |       <q-card-section
+LINE   7 |         class="bg-primary text-white q-py-md q-px-lg flex justify-between items-center bg-primary-gradient"
+LINE   8 |       >
+LINE   9 |         <div class="flex items-center">
+LINE  10 |           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
+LINE  11 |           <div class="text-subtitle1 text-weight-bold">Datos del Cliente y Configuración</div>
+LINE  12 |         </div>
+LINE  13 |         <div class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2 radius-20">
+LINE  14 |           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
+LINE  15 |           <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
+LINE  16 |           <q-btn
+LINE  17 |             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
+LINE  18 |             dense
+LINE  19 |             flat
+LINE  20 |             :color="permitirStock ? 'positive' : 'grey'"
+LINE  21 |             size="md"
+LINE  22 |             @click="permitirStockvacio"
+LINE  23 |             class="q-pa-none"
+LINE  24 |           />
+LINE  25 |         </div>
+LINE  26 |       </q-card-section>
+LINE  27 | 
+LINE  28 |       <DatosCliente
+LINE  29 |         :tipo-operacion="tipoOperacion"
+LINE  30 |         :option-operacion="optionOperacion"
+LINE  31 |         :fecha="fecha"
+LINE  32 |         :selected-client="selectedClient"
+LINE  33 |         :filtered-clients="filteredClients"
+LINE  34 |         :selected-sucursal="selectedSucursal"
+LINE  35 |         :filtered-sucursales="filteredSucursales"
+LINE  36 |         :canalventa="canalventa"
+LINE  37 |         :sales-channels="salesChannels"
+LINE  38 |         :modalfirma-activo="modalfirmaActivo"
+LINE  39 |         @tipo-operacion-change="handleTipoOperacionChange"
+LINE  40 |         @fecha-change="cambioFecha"
+LINE  41 |         @registrar-cliente="RegistrarCliente"
+LINE  42 |         @filter-client="filterClient"
+LINE  43 |         @set-client-input="setClientInputValue"
+LINE  44 |         @elegir-cliente="elegirUnCliente"
+LINE  45 |         @filter-sucursal="filterSucursal"
+LINE  46 |         @set-sucursal-input="setSucursalInputValue"
+LINE  47 |         @elegir-sucursal="elegirUnaSucursal"
+LINE  48 |         @on-success-firma="alTerminarFirma"
+LINE  49 |         @on-error-firma="alFallarFirma"
+LINE  50 |       />
+LINE  51 | 
+LINE  52 |       <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
+LINE  53 | 
+LINE  54 |       <ConfiguracionInicial
+LINE  55 |         :filtro-almacen="filtroAlmacenCO"
+LINE  56 |         :almacenes-options="almacenesOptions"
+LINE  57 |         :filtro-categoria="filtroCategoriaCO"
+LINE  58 |         :categorias-options="categoriasOptions"
+LINE  59 |         :punto-venta="puntoVenta"
+LINE  60 |         :puntos-venta="puntosVenta"
+LINE  61 |         @almacen-change="listaCategoria"
+LINE  62 |         @categoria-change="listaProductosDisponibles"
+LINE  63 |       />
+LINE  64 |     </q-card>
+LINE  65 | 
+LINE  66 |     <q-card class="my-card q-mb-xl shadow-3 card-cotizacion">
+LINE  67 |       <q-card-section
+LINE  68 |         class="bg-secondary text-white q-py-md q-px-lg flex items-center bg-secondary-gradient"
+LINE  69 |       >
+LINE  70 |         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
+LINE  71 |         <div class="text-subtitle1 text-weight-bold">Añadir Productos</div>
+LINE  72 |       </q-card-section>
+LINE  73 | 
+LINE  74 |       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
+LINE  75 |         <AgregarProducto
+LINE  76 |           :es-producto-unico="esProductoUnico"
+LINE  77 |           :registrar-como-producto-unico="registrarComoProductoUnico"
+LINE  78 |           :selected-product="selectedProduct"
+LINE  79 |           :filtered-products="filteredProducts"
+LINE  80 |           :cantidad-disponible="cantidaddisponibleCO"
+LINE  81 |           :cantidad="cantidadCO"
+LINE  82 |           :precio="precioCO"
+LINE  83 |           :id-producto-almacen="idproductoalmacenCO"
+LINE  84 |           :can-add-product="canAddProduct"
+LINE  85 |           :divisa-activa="divisaActiva"
+LINE  86 |           :permisos-store="permisosStore"
+LINE  87 |           @filter-product="filterProduct"
+LINE  88 |           @set-product-input="setProductInputValue"
+LINE  89 |           @elegir-producto="elegirUnProducto"
+LINE  90 |           @anadir-producto="anadirProductoACarrito"
+LINE  91 |           @guardar-codigos="guardarCodigosEnVenta"
+LINE  92 |         />
+LINE  93 |       </q-card-section>
+LINE  94 | 
+LINE  95 |       <ResumenCarrito
+LINE  96 |         :carrito="carritoCO"
+LINE  97 |         :divisa="divisaActiva"
+LINE  98 |         :es-producto-unico="esProductoUnico"
+LINE  99 |         @eliminar-producto="eliminarProductoCarrito"
+LINE 100 |         @recalcular-totales="calcularTotalesCarrito"
+LINE 101 |         @aplicar-descuento="aplicarDescuento"
+LINE 102 |       />
+LINE 103 | 
+LINE 104 |       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
+LINE 105 |         <div class="row justify-end items-center q-gutter-x-md">
+LINE 106 |           <q-btn
+LINE 107 |             flat
+LINE 108 |             color="negative"
+LINE 109 |             icon="close"
+LINE 110 |             label="Cancelar"
+LINE 111 |             @click="$emit('cancelarregistro')"
+LINE 112 |             class="q-px-md btn-rounded-100"
+LINE 113 |           />
+LINE 114 |           <q-btn
+LINE 115 |             outline
+LINE 116 |             color="primary"
+LINE 117 |             icon="edit_note"
+LINE 118 |             label="Firma del Cliente"
+LINE 119 |             @click="RegistrarFirma"
+LINE 120 |             class="q-px-lg bg-white btn-firma"
+LINE 121 |           />
+LINE 122 |           <q-btn
+LINE 123 |             label="Continuar"
+LINE 124 |             color="primary"
+LINE 125 |             icon="task_alt"
+LINE 126 |             size="lg"
+LINE 127 |             :disable="carritoCO.listaProductos.length === 0"
+LINE 128 |             @click="cotizacion_proforma"
+LINE 129 |             class="q-px-xl text-weight-bolder btn-continuar"
+LINE 130 |             :class="{ 'btn-continuar--enabled': carritoCO.listaProductos.length > 0 }"
+LINE 131 |           />
+LINE 132 |         </div>
+LINE 133 |       </q-card-section>
+LINE 134 |     </q-card>
+LINE 135 | 
+LINE 136 |     <DialogoPago
+LINE 137 |       :mostrar="modalmetodopago"
+LINE 138 |       :carrito="carritoCO"
+LINE 139 |       :remaining-amount="remainingAmount"
+LINE 140 |       @tipo-pago-change="handleTipoPagoGeneralChange"
+LINE 141 |       @confirmar-pago="enviarDatos"
+LINE 142 |     />
+LINE 143 | 
+LINE 144 |     <DialogoConfirmacion :mostrar="dialog" @cancelar="cancelar" @confirmar="confirmar" />
+LINE 145 | 
+LINE 146 |     <DialogoPDF
+LINE 147 |       :mostrar="mostrarModal"
+LINE 148 |       :pdf-data="pdfData"
+LINE 149 |       :is-mobile="isMobile"
+LINE 150 |       :mobile-fallback-url="mobileFallbackUrl"
+LINE 151 |       @reiniciar="$emit('reiniciar')"
+LINE 152 |     />
+LINE 153 | 
+LINE 154 |     <q-dialog v-model="showAddModal">
+LINE 155 |       <MyRegistrationForm @recordCreated="handleRecordCreated" />
+LINE 156 |     </q-dialog>
+LINE 157 |   </q-page>
+LINE 158 | </template>
+LINE 159 | // src/modules/Cotizacion/page/CotizacionPage.vue (script refactorizado)
+LINE 160 | <script setup>
+LINE 161 | import { ref, onMounted, onBeforeUnmount } from 'vue'
+LINE 162 | import { useQuasar } from 'quasar'
+LINE 163 | import { useCarrito } from '../composables/useCarrito'
+LINE 164 | import { useCliente } from '../composables/useCliente'
+LINE 165 | import { useProducto } from '../composables/useProducto'
+LINE 166 | import { useCotizacion } from '../composables/useCotizacion'
+LINE 167 | import { usePago } from '../composables/usePago'
+LINE 168 | import { useConfiguracion } from '../composables/useConfiguracion'
+LINE 169 | import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+LINE 170 | import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE 171 | import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+LINE 172 | 
+LINE 173 | import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+LINE 174 | 
+LINE 175 | const $q = useQuasar()
+LINE 176 | const idempresa = idempresa_md5()
+LINE 177 | const permisosStore = useOperacionesPermitidas()
+LINE 178 | const fecha = ref(obtenerFechaActualDato())
+LINE 179 | const showAddModal = ref(false)
+LINE 180 | const modalfirmaActivo = ref(false)
+LINE 181 | const dialog = ref(false)
+LINE 182 | 
+LINE 183 | // ─── Configuración (almacenes, categorías, divisas, puntos de venta, etc.) ───
+LINE 184 | const {
+LINE 185 |   almacenesOptions,
+LINE 186 |   categoriasOptions,
+LINE 187 |   puntosVenta,
+LINE 188 |   salesChannels,
+LINE 189 |   divisaActiva,
+LINE 190 | 
+LINE 191 |   cargarConfiguracionInicial,
+LINE 192 |   cargarAlmacenes,
+LINE 193 | 
+LINE 194 |   fetchEstadoActual,
+LINE 195 | } = useConfiguracion()
+LINE 196 | 
+LINE 197 | // ─── Cliente ──────────────────────────────────────────────────────────────────
+LINE 198 | const {
+LINE 199 |   selectedClient,
+LINE 200 |   filteredClients,
+LINE 201 |   selectedSucursal,
+LINE 202 |   filteredSucursales,
+LINE 203 | 
+LINE 204 |   idclienteCO,
+LINE 205 |   idsucursalCOS,
+LINE 206 |   canalventa,
+LINE 207 |   filterClient,
+LINE 208 |   setClientInputValue,
+LINE 209 |   elegirUnCliente,
+LINE 210 |   filterSucursal,
+LINE 211 |   setSucursalInputValue,
+LINE 212 |   elegirUnaSucursal,
+LINE 213 | 
+LINE 214 |   RegistrarCliente,
+LINE 215 |   handleRecordCreated,
+LINE 216 | } = useCliente()
+LINE 217 | 
+LINE 218 | // ─── Producto ─────────────────────────────────────────────────────────────────
+LINE 219 | const {
+LINE 220 |   selectedProduct,
+LINE 221 |   filteredProducts,
+LINE 222 |   cantidaddisponibleCO,
+LINE 223 |   cantidadCO,
+LINE 224 |   precioCO,
+LINE 225 |   idstockCO,
+LINE 226 |   idporcentajeCO,
+LINE 227 |   idproductoalmacenCO,
+LINE 228 |   esProductoUnico,
+LINE 229 |   registrarComoProductoUnico,
+LINE 230 |   CodigosUnicosSeleccionados,
+LINE 231 |   filterProduct,
+LINE 232 |   setProductInputValue,
+LINE 233 |   elegirUnProducto,
+LINE 234 |   resetProductoInputs,
+LINE 235 |   listaProductosDisponibles,
+LINE 236 |   guardarCodigosEnVenta,
+LINE 237 |   // productoConfig
+LINE 238 | } = useProducto()
+LINE 239 | 
+LINE 240 | // ─── Carrito ──────────────────────────────────────────────────────────────────
+LINE 241 | const {
+LINE 242 |   carritoCO,
+LINE 243 |   canAddProduct,
+LINE 244 |   anadirProductoACarrito,
+LINE 245 |   eliminarProductoCarrito,
+LINE 246 |   calcularTotalesCarrito,
+LINE 247 |   aplicarDescuento,
+LINE 248 |   resetCarrito,
+LINE 249 | } = useCarrito({
+LINE 250 |   divisa: divisaActiva,
+LINE 251 |   idempresa,
+LINE 252 |   tipoOperacion,
+LINE 253 |   permitirStock,
+LINE 254 |   filtroAlmacenCO,
+LINE 255 |   selectedProduct,
+LINE 256 |   cantidadCO,
+LINE 257 |   precioCO,
+LINE 258 |   idproductoalmacenCO,
+LINE 259 |   idstockCO,
+LINE 260 |   idporcentajeCO,
+LINE 261 |   cantidaddisponibleCO,
+LINE 262 |   CodigosUnicosSeleccionados,
+LINE 263 |   listaProductosDisponibles,
+LINE 264 |   resetProductoInputs,
+LINE 265 | })
+LINE 266 | 
+LINE 267 | // ─── Métodos de Pago ──────────────────────────────────────────────────────────
+LINE 268 | const {
+LINE 269 |   idcajaBancoSeleccionada,
+LINE 270 | 
+LINE 271 |   remainingAmount,
+LINE 272 | } = usePago(carritoCO, divisaActiva)
+LINE 273 | 
+LINE 274 | // ─── Cotización (envío, comprobante, firma) ────────────────────────────────
+LINE 275 | const {
+LINE 276 |   pdfData,
+LINE 277 |   mostrarModal,
+LINE 278 |   isMobile,
+LINE 279 |   mobileFallbackUrl,
+LINE 280 |   confirmar,
+LINE 281 |   cancelar,
+LINE 282 |   cotizacion_proforma,
+LINE 283 |   alTerminarFirma,
+LINE 284 |   alFallarFirma,
+LINE 285 |   handleTipoOperacionChange,
+LINE 286 |   cambioFecha,
+LINE 287 | } = useCotizacion({
+LINE 288 |   carritoCO,
+LINE 289 |   fecha,
+LINE 290 |   tipoOperacion,
+LINE 291 |   idclienteCO,
+LINE 292 |   idsucursalCOS,
+LINE 293 |   filtroAlmacenCO,
+LINE 294 |   filtroCategoriaCO,
+LINE 295 |   puntoVenta,
+LINE 296 |   idcajaBancoSeleccionada,
+LINE 297 |   selectedClient,
+LINE 298 |   selectedSucursal,
+LINE 299 |   // dependencias
+LINE 300 |   divisaActiva,
+LINE 301 |   almacenesOptions,
+LINE 302 |   cotizacionFormRef,
+LINE 303 |   formClientes,
+LINE 304 |   resetCarrito,
+LINE 305 |   listaProductosDisponibles,
+LINE 306 |   cargarAlmacenes,
+LINE 307 | })
+LINE 308 | 
+LINE 309 | // ─── Otros estados ──────────────────────────────────────────────────────────
+LINE 310 | const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
+LINE 311 | const optionOperacion = ref([
+LINE 312 |   { value: 0, label: 'Cotización Normal' },
+LINE 313 |   { value: 1, label: 'Cotización Preferencial' },
+LINE 314 | ])
+LINE 315 | const puntoVenta = ref(null)
+LINE 316 | const filtroAlmacenCO = ref(null)
+LINE 317 | const filtroCategoriaCO = ref(null)
+LINE 318 | const permitirStock = ref(false)
+LINE 319 | const cotizacionFormRef = ref(null)
+LINE 320 | const formClientes = ref(null)
+LINE 321 | 
+LINE 322 | // ─── Computed ────────────────────────────────────────────────────────────────
+LINE 323 | 
+LINE 324 | // ─── Watchers ─────────────────────────────────────────────────────────────────
+LINE 325 | // Sincronizar fecha con carrito
+LINE 326 | cambioFecha(fecha.value)
+LINE 327 | 
+LINE 328 | // ─── Métodos expuestos (eventos) ────────────────────────────────────────────
+LINE 329 | const permitirStockvacio = () => {
+LINE 330 |   permitirStock.value = !permitirStock.value
+LINE 331 |   if (!permitirStock.value) {
+LINE 332 |     // limpiar carrito si existe
+LINE 333 |     resetCarrito()
+LINE 334 |     emit('reiniciar')
+LINE 335 |   }
+LINE 336 | }
+LINE 337 | 
+LINE 338 | const RegistrarFirma = () => {
+LINE 339 |   if (selectedClient.value) {
+LINE 340 |     modalfirmaActivo.value = true
+LINE 341 |   } else {
+LINE 342 |     $q.notify({ type: 'warning', message: 'Seleccione un cliente antes de firmar.' })
+LINE 343 |   }
+LINE 344 | }
+LINE 345 | 
+LINE 346 | // ─── Emit ────────────────────────────────────────────────────────────────────
+LINE 347 | const emit = defineEmits(['reiniciar', 'cancelarregistro'])
+LINE 348 | 
+LINE 349 | // ─── Ciclo de vida ──────────────────────────────────────────────────────────
+LINE 350 | onMounted(async () => {
+LINE 351 |   isMobile.value = window.innerWidth < 768
+LINE 352 |   await fetchEstadoActual()
+LINE 353 |   await cargarConfiguracionInicial()
+LINE 354 |   await permisosStore.cargarPermisos()
+LINE 355 | 
+LINE 356 |   // Detectar Quick Consult
+LINE 357 |   const quickConsult = localStorage.getItem('quickConsult')
+LINE 358 |   if (quickConsult) {
+LINE 359 |     const data = JSON.parse(quickConsult)
+LINE 360 |     if (data.destination === 'quotation') {
+LINE 361 |       tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
+LINE 362 |       // Restaurar almacén y categoría
+LINE 363 |       if (data.almacen) {
+LINE 364 |         filtroAlmacenCO.value = data.almacen.value
+LINE 365 |       }
+LINE 366 |       if (data.categoria) {
+LINE 367 |         filtroCategoriaCO.value = data.categoria.value
+LINE 368 |       }
+LINE 369 |       // Cargar productos del quick consult
+LINE 370 |       carritoCO.listaProductos = data.listaProductos.map((p, idx) => ({
+LINE 371 |         num: idx + 1,
+LINE 372 |         ...p,
+LINE 373 |         codigosUnicos: p.codigosUnicos || [],
+LINE 374 |       }))
+LINE 375 |       calcularTotalesCarrito()
+LINE 376 |       await listaProductosDisponibles()
+LINE 377 |       localStorage.removeItem('quickConsult')
+LINE 378 |       $q.notify({ type: 'positive', message: 'Productos de Consulta Rápida cargados' })
+LINE 379 |     }
+LINE 380 |   }
+LINE 381 | })
+LINE 382 | 
+LINE 383 | onBeforeUnmount(() => {
+LINE 384 |   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+LINE 385 | })
+LINE 386 | </script>
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\services\almacenService.js
+==============================================================
+```js
+LINE  1 | import { api, apiCt } from 'src/boot/axios'
+LINE  2 | 
+LINE  3 | export const listarAlmacenesResponsable = async (idempresa) => {
+LINE  4 |   const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
+LINE  5 |   return response.data
+LINE  6 | }
+LINE  7 | 
+LINE  8 | export const listarPuntoVentaFacturaCotizacion = async (idusuario) => {
+LINE  9 |   const response = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
+LINE 10 |   return response.data
+LINE 11 | }
+LINE 12 | 
+LINE 13 | export const listarCajaBancos = async (idempresa) => {
+LINE 14 |   const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
+LINE 15 |   return response.data
+LINE 16 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\services\clienteService.js
+==============================================================
+```js
+LINE  1 | import { api } from 'src/boot/axios'
+LINE  2 | 
+LINE  3 | export const listarClientes = async (idempresa) => {
+LINE  4 |   const response = await api.get(`listaCliente/${idempresa}`)
+LINE  5 |   return response.data
+LINE  6 | }
+LINE  7 | 
+LINE  8 | export const listarSucursales = async (clienteId) => {
+LINE  9 |   const response = await api.get(`listaSucursal/${clienteId}`)
+LINE 10 |   return response.data
+LINE 11 | }
+LINE 12 | 
+LINE 13 | export const registrarCliente = async (formData) => {
+LINE 14 |   const response = await api.post('', formData)
+LINE 15 |   return response.data
+LINE 16 | }
+LINE 17 | 
+LINE 18 | export const obtenerConfiguracionClientesAlmacen = async (idempresa) => {
+LINE 19 |   const response = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
+LINE 20 |   return response.data
+LINE 21 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\services\cotizacionService.js
+==============================================================
+```js
+LINE  1 | import { api } from 'src/boot/axios'
+LINE  2 | 
+LINE  3 | export const registrarCotizacion = async (formData) => {
+LINE  4 |   const response = await api.post('', formData)
+LINE  5 |   return response.data
+LINE  6 | }
+LINE  7 | 
+LINE  8 | export const detallesCotizacion = async (id, idempresa) => {
+LINE  9 |   const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
+LINE 10 |   return response.data
+LINE 11 | }
+LINE 12 | 
+LINE 13 | export const listarLeyendaCotizacion = async (idempresa) => {
+LINE 14 |   const response = await api.get(`listaLeyendaCotizacion/${idempresa}`)
+LINE 15 |   return response.data
+LINE 16 | }
+LINE 17 | 
+LINE 18 | export const listarLeyendaFactura = async (idempresa, token, tipoFactura) => {
+LINE 19 |   const response = await api.get(`listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`)
+LINE 20 |   return response.data
+LINE 21 | }
+LINE 22 | 
+LINE 23 | export const listarDivisa = async (idempresa, token, tipoFactura) => {
+LINE 24 |   let endpoint = `listaDivisa/${idempresa}`
+LINE 25 |   if (token && tipoFactura) {
+LINE 26 |     endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+LINE 27 |   }
+LINE 28 |   const response = await api.get(endpoint)
+LINE 29 |   return response.data
+LINE 30 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\services\pagoService.js
+==============================================================
+```js
+LINE 1 | import { api } from 'src/boot/axios'
+LINE 2 | 
+LINE 3 | export const listarMetodosPagoFactura = async (idempresa, token, tipo) => {
+LINE 4 |   const response = await api.get(`listaMetodopagoFactura/${idempresa}/${token}/${tipo}`)
+LINE 5 |   return response.data
+LINE 6 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\services\productoService.js
+==============================================================
+```js
+LINE  1 | import { api } from 'src/boot/axios'
+LINE  2 | 
+LINE  3 | export const listarCanalVentaActivos = async (idempresa) => {
+LINE  4 |   const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
+LINE  5 |   return response.data
+LINE  6 | }
+LINE  7 | 
+LINE  8 | export const listarCategoriaPrecioVenta = async (idempresa) => {
+LINE  9 |   const response = await api.get(`listarCategoriaPrecioVenta/${idempresa}`)
+LINE 10 |   return response.data
+LINE 11 | }
+LINE 12 | 
+LINE 13 | export const listarProductosDisponiblesVenta = async (idempresa) => {
+LINE 14 |   const response = await api.get(`listaProductosDisponiblesVenta/${idempresa}`)
+LINE 15 |   return response.data
+LINE 16 | }
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\stores\cotizacionStore.js
+==============================================================
+```js
+LINE   1 | // src/stores/cotizacionStore.js
+LINE   2 | import { defineStore } from 'pinia'
+LINE   3 | import { reactive, ref, computed } from 'vue'
+LINE   4 | import { useQuasar } from 'quasar'
+LINE   5 | import {
+LINE   6 |   calcularSubtotal,
+LINE   7 |   calcularTotales,
+LINE   8 |   validarDescuento,
+LINE   9 | } from 'src/composables/useCalculosCotizacion'
+LINE  10 | import { usePago } from 'src/composables/usePago'
+LINE  11 | 
+LINE  12 | export const useCotizacionStore = defineStore('cotizacion', () => {
+LINE  13 |   const $q = useQuasar()
+LINE  14 | 
+LINE  15 |   const carrito = reactive({
+LINE  16 |     ventatotal: 0,
+LINE  17 |     subtotal: 0,
+LINE  18 |     descuento: 0,
+LINE  19 |     idalmacen: 0,
+LINE  20 |     divisa: 0,
+LINE  21 |     ipv: null,
+LINE  22 |     idusuario: 0,
+LINE  23 |     listaProductos: [],
+LINE  24 |     pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
+LINE  25 |     metodoPago: 0,
+LINE  26 |     variablePago: 'directo',
+LINE  27 |     fecha: '',
+LINE  28 |     credito: false,
+LINE  29 |     idfirma: null,
+LINE  30 |     codigosUnicos: [],
+LINE  31 |     cajabanco: null,
+LINE  32 |     cantidadPagos: 1,
+LINE  33 |     montoPagos: 0,
+LINE  34 |     periodo: 30,
+LINE  35 |     plazoPersonalizado: 0,
+LINE  36 |     fechaLimite: '',
+LINE  37 |   })
+LINE  38 | 
+LINE  39 |   // Estado de selección (se mantiene igual que en Phase 6)
+LINE  40 |   const selectedClient = ref(null)
+LINE  41 |   const idclienteCO = ref('')
+LINE  42 |   const selectedSucursal = ref(null)
+LINE  43 |   const idsucursalCOS = ref('')
+LINE  44 |   const filtroAlmacenCO = ref(null)
+LINE  45 |   const filtroCategoriaCO = ref(null)
+LINE  46 |   const puntoVenta = ref(null)
+LINE  47 | 
+LINE  48 |   const selectedProduct = ref(null)
+LINE  49 |   const cantidaddisponibleCO = ref('')
+LINE  50 |   const cantidadCO = ref(0)
+LINE  51 |   const precioCO = ref(0)
+LINE  52 |   const idstockCO = ref('')
+LINE  53 |   const idporcentajeCO = ref('')
+LINE  54 |   const idproductoalmacenCO = ref('')
+LINE  55 |   const CodigosUnicosSeleccionados = ref([])
+LINE  56 |   const tipoOperacion = ref(null)
+LINE  57 | 
+LINE  58 |   // Inicializar el composable de pagos con el carrito reactivo
+LINE  59 |   const pago = usePago(carrito)
+LINE  60 | 
+LINE  61 |   // Getters
+LINE  62 |   const canAddProduct = computed(() => {
+LINE  63 |     if (carrito.permitirStock && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
+LINE  64 |       return true
+LINE  65 |     }
+LINE  66 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
+LINE  67 |       return false
+LINE  68 |     }
+LINE  69 |     if (tipoOperacion.value?.value === 1) {
+LINE  70 |       return cantidadCO.value <= cantidaddisponibleCO.value
+LINE  71 |     }
+LINE  72 |     return true
+LINE  73 |   })
+LINE  74 | 
+LINE  75 |   // Acciones
+LINE  76 |   function calcularTotalesCarrito() {
+LINE  77 |     const subtotal = calcularSubtotal(carrito.listaProductos)
+LINE  78 |     const { ventatotal, descuento } = calcularTotales(subtotal, carrito.descuento)
+LINE  79 |     carrito.subtotal = subtotal
+LINE  80 |     carrito.descuento = descuento
+LINE  81 |     carrito.ventatotal = ventatotal
+LINE  82 |   }
+LINE  83 | 
+LINE  84 |   function aplicarDescuento() {
+LINE  85 |     const descuentoValido = validarDescuento(carrito.subtotal, carrito.descuento)
+LINE  86 |     if (descuentoValido !== carrito.descuento) {
+LINE  87 |       $q.notify({
+LINE  88 |         type: 'warning',
+LINE  89 |         message: 'El descuento sobrepasa el subtotal.',
+LINE  90 |       })
+LINE  91 |       carrito.descuento = descuentoValido
+LINE  92 |     }
+LINE  93 |     calcularTotalesCarrito()
+LINE  94 |   }
+LINE  95 | 
+LINE  96 |   async function anadirProductoACarrito() {
+LINE  97 |     // Lógica ya existente, se mantiene igual
+LINE  98 |   }
+LINE  99 | 
+LINE 100 |   function eliminarProductoCarrito(idProductoAlmacen) {
+LINE 101 |     carrito.listaProductos = carrito.listaProductos.filter(
+LINE 102 |       (p) => p.idproductoalmacen !== idProductoAlmacen,
+LINE 103 |     )
+LINE 104 |     calcularTotalesCarrito()
+LINE 105 |   }
+LINE 106 | 
+LINE 107 |   function resetCarrito() {
+LINE 108 |     carrito.ventatotal = 0
+LINE 109 |     carrito.subtotal = 0
+LINE 110 |     carrito.descuento = 0
+LINE 111 |     carrito.listaProductos = []
+LINE 112 |     carrito.metodoPago = null
+LINE 113 |     carrito.variablePago = 'directo'
+LINE 114 |     carrito.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
+LINE 115 |     carrito.credito = false
+LINE 116 |     carrito.cantidadPagos = 1
+LINE 117 |     carrito.montoPagos = 0
+LINE 118 |     carrito.periodo = 30
+LINE 119 |     carrito.plazoPersonalizado = 0
+LINE 120 |     carrito.fechaLimite = ''
+LINE 121 |   }
+LINE 122 | 
+LINE 123 |   function resetProductoInputs() {
+LINE 124 |     selectedProduct.value = null
+LINE 125 |     cantidaddisponibleCO.value = ''
+LINE 126 |     cantidadCO.value = 1
+LINE 127 |     precioCO.value = 1
+LINE 128 |     idstockCO.value = ''
+LINE 129 |     idporcentajeCO.value = ''
+LINE 130 |     idproductoalmacenCO.value = ''
+LINE 131 |     CodigosUnicosSeleccionados.value = []
+LINE 132 |   }
+LINE 133 | 
+LINE 134 |   return {
+LINE 135 |     // State
+LINE 136 |     carrito,
+LINE 137 |     selectedClient,
+LINE 138 |     idclienteCO,
+LINE 139 |     selectedSucursal,
+LINE 140 |     idsucursalCOS,
+LINE 141 |     filtroAlmacenCO,
+LINE 142 |     filtroCategoriaCO,
+LINE 143 |     puntoVenta,
+LINE 144 |     selectedProduct,
+LINE 145 |     cantidaddisponibleCO,
+LINE 146 |     cantidadCO,
+LINE 147 |     precioCO,
+LINE 148 |     idstockCO,
+LINE 149 |     idporcentajeCO,
+LINE 150 |     idproductoalmacenCO,
+LINE 151 |     CodigosUnicosSeleccionados,
+LINE 152 |     // Getters
+LINE 153 |     canAddProduct,
+LINE 154 |     // Actions
+LINE 155 |     calcularTotalesCarrito,
+LINE 156 |     aplicarDescuento,
+LINE 157 |     anadirProductoACarrito,
+LINE 158 |     eliminarProductoCarrito,
+LINE 159 |     resetCarrito,
+LINE 160 |     resetProductoInputs,
+LINE 161 |     // Pagos
+LINE 162 |     ...pago,
+LINE 163 |   }
+LINE 164 | })
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\validators\commonValidators.js
+==============================================================
+```js
+LINE  1 | // src/validators/commonValidators.js
+LINE  2 | 
+LINE  3 | /**
+LINE  4 |  * Validador de campo requerido.
+LINE  5 |  * @param {string} message - Mensaje de error.
+LINE  6 |  * @returns {Array<Function>} Regla Quasar.
+LINE  7 |  */
+LINE  8 | export const required = (message = 'Campo requerido') => [(val) => !!val || message]
+LINE  9 | 
+LINE 10 | /**
+LINE 11 |  * Validador de número positivo mayor a 0.
+LINE 12 |  * @param {string} message - Mensaje de error.
+LINE 13 |  * @returns {Array<Function>} Regla Quasar.
+LINE 14 |  */
+LINE 15 | export const positive = (message = 'Debe ser mayor a 0') => [(val) => Number(val) > 0 || message]
+LINE 16 | 
+LINE 17 | /**
+LINE 18 |  * Validador de campo requerido y número positivo.
+LINE 19 |  * @param {string} message - Mensaje de error.
+LINE 20 |  * @returns {Array<Function>} Regla Quasar.
+LINE 21 |  */
+LINE 22 | export const requiredPositive = (message = 'Requerido') => [
+LINE 23 |   (val) => (!!val && Number(val) > 0) || message,
+LINE 24 | ]
+```
+
+==============================================================
+FILE: src\modules\Cotizacion\validators\cotizacionValidators.js
+==============================================================
+```js
+LINE  1 | // src/validators/cotizacionValidators.js
+LINE  2 | 
+LINE  3 | import { required, positive, requiredPositive } from './commonValidators'
+LINE  4 | 
+LINE  5 | // Reglas generales de cotización
+LINE  6 | export const tipoOperacionRules = required('Campo requerido')
+LINE  7 | export const fechaRules = required('Campo requerido')
+LINE  8 | export const clienteRules = required('Campo requerido')
+LINE  9 | export const sucursalRules = required('Campo requerido')
+LINE 10 | export const canalVentaRules = required('Seleccione un canal')
+LINE 11 | export const almacenRules = required('Campo requerido')
+LINE 12 | export const categoriaRules = required('Campo requerido')
+LINE 13 | export const puntoVentaRules = required('Campo requerido')
+LINE 14 | 
+LINE 15 | // Reglas de producto
+LINE 16 | export const cantidadRules = positive('Debe ser mayor a 0')
+LINE 17 | export const precioRules = positive('Debe ser mayor a 0')
+LINE 18 | 
+LINE 19 | // Reglas de método de pago
+LINE 20 | export const metodoPagoRules = required('Seleccione un método de pago')
+LINE 21 | export const paymentMetodoPagoRules = required('Requerido')
+LINE 22 | export const paymentMontoRules = required('Requerido')
+LINE 23 | export const paymentPorcentajeRules = required('Requerido')
+LINE 24 | 
+LINE 25 | // Reglas de crédito
+LINE 26 | export const cantidadPagosRules = requiredPositive('Requerido')
+LINE 27 | export const plazoPersonalizadoRules = required('Requerido')
+```
+
+==============================================================
+FILE: src\pages\cotizacion\CotizacionPage.vue
+==============================================================
+```vue
+LINE    1 | <template>
+LINE    2 |   <q-page class="q-pa-lg bg-fondo" style="min-height: 100vh">
+LINE    3 |     <!-- Encabezado de la Página -->
+LINE    4 |     <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
+LINE    5 |       <div class="col-12 flex items-center">
+LINE    6 |         <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2" style="border-radius: 12px">
+LINE    7 |           <q-icon name="request_quote" size="36px" color="primary" />
+LINE    8 |         </div>
+LINE    9 |         <div>
+LINE   10 |           <h1
+LINE   11 |             class="text-h4 text-weight-bolder q-my-none text-primary"
+LINE   12 |             style="letter-spacing: -0.5px"
+LINE   13 |           >
+LINE   14 |             Emisión de Cotización
+LINE   15 |           </h1>
+LINE   16 |           <div class="text-subtitle1 text-grey-7 q-mt-xs">
+LINE   17 |             Registre los detalles de la nueva cotización y añada productos
+LINE   18 |           </div>
+LINE   19 |         </div>
+LINE   20 |       </div>
+LINE   21 |     </div>
+LINE   22 | 
+LINE   23 |     <!-- Primera Sección: Datos Generales (Card) -->
+LINE   24 |     <q-card
+LINE   25 |       class="my-card q-mb-xl shadow-3"
+LINE   26 |       style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
+LINE   27 |     >
+LINE   28 |       <q-card-section
+LINE   29 |         class="bg-primary text-white q-py-md q-px-lg flex justify-between items-center"
+LINE   30 |         style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%)"
+LINE   31 |       >
+LINE   32 |         <div class="flex items-center">
+LINE   33 |           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
+LINE   34 |           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
+LINE   35 |             Datos del Cliente y Configuración
+LINE   36 |           </div>
+LINE   37 |         </div>
+LINE   38 | 
+LINE   39 |         <!-- Toggle Venta sin Stock incorporado al header para ahorrar espacio y lucir elegante -->
+LINE   40 |         <div
+LINE   41 |           class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2"
+LINE   42 |           style="border-radius: 20px"
+LINE   43 |           id="ventaSinStockCotizacion"
+LINE   44 |         >
+LINE   45 |           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
+LINE   46 |           <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
+LINE   47 |           <q-btn
+LINE   48 |             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
+LINE   49 |             dense
+LINE   50 |             flat
+LINE   51 |             :color="permitirStock ? 'positive' : 'grey'"
+LINE   52 |             size="md"
+LINE   53 |             :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
+LINE   54 |             @click="permitirStockvacio()"
+LINE   55 |             class="q-pa-none"
+LINE   56 |             style="transition: all 0.3s"
+LINE   57 |           />
+LINE   58 |         </div>
+LINE   59 |       </q-card-section>
+LINE   60 | 
+LINE   61 |       <q-card-section class="q-pa-lg">
+LINE   62 |         <!-- Sección: Datos del cliente -->
+LINE   63 |         <q-form ref="formClientes" class="q-mb-md">
+LINE   64 |           <div class="row q-col-gutter-lg q-mb-md">
+LINE   65 |             <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
+LINE   66 |               <label
+LINE   67 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE   68 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE   69 |                 for="tipooperacion"
+LINE   70 |                 >Tipo de Operación <span class="text-negative">*</span></label
+LINE   71 |               >
+LINE   72 |               <q-select
+LINE   73 |                 v-model="tipoOperacion"
+LINE   74 |                 :options="optionOperacion"
+LINE   75 |                 id="tipooperacion"
+LINE   76 |                 map-options
+LINE   77 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE   78 |                 @update:model-value="handleTipoOperacionChange"
+LINE   79 |                 outlined
+LINE   80 |                 dense
+LINE   81 |                 bg-color="white"
+LINE   82 |                 hide-bottom-space
+LINE   83 |                 class="premium-input"
+LINE   84 |               />
+LINE   85 |             </div>
+LINE   86 |             <div class="col-12 col-md-3" id="fechaCotizacion">
+LINE   87 |               <label
+LINE   88 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE   89 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE   90 |                 for="fecha"
+LINE   91 |                 >Fecha <span class="text-negative">*</span></label
+LINE   92 |               >
+LINE   93 |               <q-input
+LINE   94 |                 v-model="fecha"
+LINE   95 |                 id="fecha"
+LINE   96 |                 type="date"
+LINE   97 |                 map-options
+LINE   98 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE   99 |                 @update:model-value="cambioFecha"
+LINE  100 |                 outlined
+LINE  101 |                 dense
+LINE  102 |                 bg-color="white"
+LINE  103 |                 hide-bottom-space
+LINE  104 |                 class="premium-input"
+LINE  105 |               />
+LINE  106 |             </div>
+LINE  107 |             <div class="col-12 col-md-6" id="clienteCotizacion">
+LINE  108 |               <label
+LINE  109 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  110 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  111 |                 for="cliente"
+LINE  112 |                 >Cliente <span class="text-negative">*</span></label
+LINE  113 |               >
+LINE  114 |               <div class="row no-wrap">
+LINE  115 |                 <q-select
+LINE  116 |                   class="col premium-input"
+LINE  117 |                   v-model="selectedClient"
+LINE  118 |                   use-input
+LINE  119 |                   hide-selected
+LINE  120 |                   fill-input
+LINE  121 |                   input-debounce="0"
+LINE  122 |                   id="cliente"
+LINE  123 |                   :options="filteredClients"
+LINE  124 |                   @filter="filterClient"
+LINE  125 |                   @input-value="setClientInputValue"
+LINE  126 |                   @update:model-value="elegirUnCliente"
+LINE  127 |                   option-value="id"
+LINE  128 |                   option-label="display"
+LINE  129 |                   :rules="[(val) => !!val || 'Campo requerido']"
+LINE  130 |                   outlined
+LINE  131 |                   dense
+LINE  132 |                   bg-color="white"
+LINE  133 |                   hide-bottom-space
+LINE  134 |                 >
+LINE  135 |                   <template v-slot:no-option>
+LINE  136 |                     <q-item>
+LINE  137 |                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE  138 |                     </q-item>
+LINE  139 |                   </template>
+LINE  140 |                 </q-select>
+LINE  141 |                 <div class="q-ml-md" id="botonRegistrarCliente">
+LINE  142 |                   <q-btn
+LINE  143 |                     color="primary"
+LINE  144 |                     unelevated
+LINE  145 |                     class="full-height shadow-2"
+LINE  146 |                     style="border-radius: 8px; width: 44px"
+LINE  147 |                     icon="person_add"
+LINE  148 |                     @click="RegistrarCliente"
+LINE  149 |                   >
+LINE  150 |                     <q-tooltip class="bg-primary text-caption shadow-4"
+LINE  151 |                       >Registrar Nuevo Cliente</q-tooltip
+LINE  152 |                     >
+LINE  153 |                   </q-btn>
+LINE  154 |                 </div>
+LINE  155 |               </div>
+LINE  156 |               <input type="hidden" v-model="idclienteCO" name="idcliente" />
+LINE  157 |             </div>
+LINE  158 |           </div>
+LINE  159 |           <div class="row q-col-gutter-lg">
+LINE  160 |             <div class="col-12 col-md-6" id="sucursalCotizacion">
+LINE  161 |               <label
+LINE  162 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  163 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  164 |                 for="sucursal"
+LINE  165 |                 >Sucursal <span class="text-negative">*</span></label
+LINE  166 |               >
+LINE  167 |               <q-select
+LINE  168 |                 v-model="selectedSucursal"
+LINE  169 |                 use-input
+LINE  170 |                 hide-selected
+LINE  171 |                 fill-input
+LINE  172 |                 input-debounce="0"
+LINE  173 |                 id="sucursal"
+LINE  174 |                 :options="filteredSucursales"
+LINE  175 |                 @filter="filterSucursal"
+LINE  176 |                 @input-value="setSucursalInputValue"
+LINE  177 |                 @update:model-value="elegirUnaSucursal"
+LINE  178 |                 option-value="id"
+LINE  179 |                 option-label="nombre"
+LINE  180 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE  181 |                 outlined
+LINE  182 |                 dense
+LINE  183 |                 bg-color="white"
+LINE  184 |                 hide-bottom-space
+LINE  185 |                 class="premium-input"
+LINE  186 |               >
+LINE  187 |                 <template v-slot:no-option>
+LINE  188 |                   <q-item>
+LINE  189 |                     <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE  190 |                   </q-item>
+LINE  191 |                 </template>
+LINE  192 |               </q-select>
+LINE  193 |               <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
+LINE  194 |             </div>
+LINE  195 |             <div class="col-8 col-md-6">
+LINE  196 |               <label for="canalVenta">Canal de venta*</label>
+LINE  197 |               <q-select
+LINE  198 |                 v-model="canalventa"
+LINE  199 |                 id="canalVenta"
+LINE  200 |                 dense
+LINE  201 |                 outlined
+LINE  202 |                 :options="salesChannels"
+LINE  203 |                 option-label="label"
+LINE  204 |                 option-value="value"
+LINE  205 |                 required
+LINE  206 |                 :rules="[(val) => !!val || 'Seleccione un canal']"
+LINE  207 |               >
+LINE  208 |                 <template v-slot:prepend>
+LINE  209 |                   <q-icon name="point_of_sale" color="blue" />
+LINE  210 |                 </template>
+LINE  211 |               </q-select>
+LINE  212 |             </div>
+LINE  213 |           </div>
+LINE  214 | 
+LINE  215 |           <ModalfirmaPage
+LINE  216 |             v-model="modalfirmaActivo"
+LINE  217 |             :id-entidad="selectedClient"
+LINE  218 |             tipo-operacion="CLIENTE"
+LINE  219 |             @onSuccess="alTerminarFirma"
+LINE  220 |             @onError="alFallarFirma"
+LINE  221 |           />
+LINE  222 |         </q-form>
+LINE  223 | 
+LINE  224 |         <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
+LINE  225 | 
+LINE  226 |         <!-- Sección: Configuración inicial -->
+LINE  227 |         <q-form ref="cotizacionFormRef">
+LINE  228 |           <div class="row q-col-gutter-lg">
+LINE  229 |             <div class="col-12 col-md-4" id="almacenCotizacion">
+LINE  230 |               <label
+LINE  231 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  232 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  233 |                 for="almacen"
+LINE  234 |                 >Almacén origen <span class="text-negative">*</span></label
+LINE  235 |               >
+LINE  236 |               <q-select
+LINE  237 |                 v-model="filtroAlmacenCO"
+LINE  238 |                 :options="almacenesOptions"
+LINE  239 |                 id="almacen"
+LINE  240 |                 emit-value
+LINE  241 |                 map-options
+LINE  242 |                 option-value="idalmacen"
+LINE  243 |                 option-label="almacen"
+LINE  244 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE  245 |                 @update:model-value="listaCategoria"
+LINE  246 |                 outlined
+LINE  247 |                 dense
+LINE  248 |                 bg-color="white"
+LINE  249 |                 hide-bottom-space
+LINE  250 |                 class="premium-input"
+LINE  251 |               />
+LINE  252 |             </div>
+LINE  253 |             <div class="col-12 col-md-4" id="categoriaCotizacion">
+LINE  254 |               <label
+LINE  255 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  256 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  257 |                 for="categoria"
+LINE  258 |                 >Categoría de precio <span class="text-negative">*</span></label
+LINE  259 |               >
+LINE  260 |               <q-select
+LINE  261 |                 v-model="filtroCategoriaCO"
+LINE  262 |                 :options="categoriasOptions"
+LINE  263 |                 id="categoria"
+LINE  264 |                 emit-value
+LINE  265 |                 map-options
+LINE  266 |                 option-value="id"
+LINE  267 |                 option-label="nombre"
+LINE  268 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE  269 |                 outlined
+LINE  270 |                 dense
+LINE  271 |                 bg-color="white"
+LINE  272 |                 hide-bottom-space
+LINE  273 |                 class="premium-input"
+LINE  274 |               />
+LINE  275 |             </div>
+LINE  276 |             <div class="col-12 col-md-4" id="puntoVentaCotizacion">
+LINE  277 |               <label
+LINE  278 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  279 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  280 |                 for="puntoventa"
+LINE  281 |                 >Punto Venta <span class="text-negative">*</span></label
+LINE  282 |               >
+LINE  283 |               <q-select
+LINE  284 |                 v-model="puntoVenta"
+LINE  285 |                 :options="puntosVenta"
+LINE  286 |                 id="puntoventa"
+LINE  287 |                 emit-value
+LINE  288 |                 map-options
+LINE  289 |                 option-value="value"
+LINE  290 |                 option-label="label"
+LINE  291 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE  292 |                 outlined
+LINE  293 |                 dense
+LINE  294 |                 bg-color="white"
+LINE  295 |                 hide-bottom-space
+LINE  296 |                 class="premium-input"
+LINE  297 |               />
+LINE  298 |             </div>
+LINE  299 |           </div>
+LINE  300 |         </q-form>
+LINE  301 |       </q-card-section>
+LINE  302 |     </q-card>
+LINE  303 | 
+LINE  304 |     <!-- Segunda Sección: Añadir Productos -->
+LINE  305 |     <q-card
+LINE  306 |       class="my-card q-mb-xl shadow-3"
+LINE  307 |       style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
+LINE  308 |     >
+LINE  309 |       <q-card-section
+LINE  310 |         class="bg-secondary text-white q-py-md q-px-lg flex items-center"
+LINE  311 |         style="background: linear-gradient(135deg, #26a69a 0%, #00897b 100%)"
+LINE  312 |       >
+LINE  313 |         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
+LINE  314 |         <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
+LINE  315 |           Añadir Productos
+LINE  316 |         </div>
+LINE  317 |       </q-card-section>
+LINE  318 | 
+LINE  319 |       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
+LINE  320 |         <div class="row q-col-gutter-lg items-end">
+LINE  321 |           <div class="col-12 col-md-4" id="productoCotizacion">
+LINE  322 |             <div class="flex justify-between items-center q-mb-sm">
+LINE  323 |               <label
+LINE  324 |                 class="text-weight-bold text-grey-9 block"
+LINE  325 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  326 |                 for="producto"
+LINE  327 |                 >Producto o Servicio <span class="text-negative">*</span></label
+LINE  328 |               >
+LINE  329 |               <q-checkbox
+LINE  330 |                 v-if="esProductoUnico"
+LINE  331 |                 v-model="registrarComoProductoUnico"
+LINE  332 |                 size="xs"
+LINE  333 |                 label="Producto Único"
+LINE  334 |                 color="secondary"
+LINE  335 |                 class="text-caption text-weight-bold text-secondary q-mb-none"
+LINE  336 |               />
+LINE  337 |             </div>
+LINE  338 |             <q-select
+LINE  339 |               id="producto"
+LINE  340 |               v-model="selectedProduct"
+LINE  341 |               :options="filteredProducts"
+LINE  342 |               option-value="id"
+LINE  343 |               option-label="display"
+LINE  344 |               use-input
+LINE  345 |               hide-selected
+LINE  346 |               fill-input
+LINE  347 |               input-debounce="0"
+LINE  348 |               outlined
+LINE  349 |               dense
+LINE  350 |               bg-color="white"
+LINE  351 |               class="premium-input"
+LINE  352 |               @filter="filterProduct"
+LINE  353 |               @input-value="setProductInputValue"
+LINE  354 |               @update:model-value="elegirUnProducto"
+LINE  355 |             >
+LINE  356 |               <template v-slot:no-option>
+LINE  357 |                 <q-item>
+LINE  358 |                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
+LINE  359 |                 </q-item>
+LINE  360 |               </template>
+LINE  361 |             </q-select>
+LINE  362 |           </div>
+LINE  363 | 
+LINE  364 |           <div class="col-12 col-md-2" id="stockCotizacion">
+LINE  365 |             <label
+LINE  366 |               class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  367 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  368 |               for="stock"
+LINE  369 |               >Stock Actual</label
+LINE  370 |             >
+LINE  371 |             <q-input
+LINE  372 |               id="stock"
+LINE  373 |               v-model="cantidaddisponibleCO"
+LINE  374 |               readonly
+LINE  375 |               outlined
+LINE  376 |               dense
+LINE  377 |               bg-color="grey-2"
+LINE  378 |               hide-bottom-space
+LINE  379 |               class="premium-input text-center"
+LINE  380 |               placeholder="0"
+LINE  381 |             >
+LINE  382 |               <template v-slot:prepend>
+LINE  383 |                 <q-icon name="inventory_2" size="xs" color="grey-7" />
+LINE  384 |               </template>
+LINE  385 |             </q-input>
+LINE  386 |           </div>
+LINE  387 | 
+LINE  388 |           <div class="col-12 col-md-2" id="cantidadCotizacion">
+LINE  389 |             <label
+LINE  390 |               class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  391 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  392 |               for="cantidad"
+LINE  393 |               >Cantidad <span class="text-negative">*</span></label
+LINE  394 |             >
+LINE  395 |             <q-input
+LINE  396 |               id="cantidad"
+LINE  397 |               v-model.number="cantidadCO"
+LINE  398 |               type="number"
+LINE  399 |               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+LINE  400 |               :readonly="esProductoUnico && registrarComoProductoUnico"
+LINE  401 |               required
+LINE  402 |               outlined
+LINE  403 |               dense
+LINE  404 |               bg-color="white"
+LINE  405 |               hide-bottom-space
+LINE  406 |               class="premium-input text-center"
+LINE  407 |             />
+LINE  408 |           </div>
+LINE  409 | 
+LINE  410 |           <div class="col-12 col-md-3" id="precioCotizacion">
+LINE  411 |             <label
+LINE  412 |               class="text-weight-bold text-grey-9 q-mb-sm block"
+LINE  413 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+LINE  414 |               for="precio"
+LINE  415 |               >Precio unitario <span class="text-negative">*</span></label
+LINE  416 |             >
+LINE  417 |             <q-input
+LINE  418 |               id="precio"
+LINE  419 |               v-model.number="precioCO"
+LINE  420 |               type="number"
+LINE  421 |               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+LINE  422 |               required
+LINE  423 |               outlined
+LINE  424 |               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
+LINE  425 |               dense
+LINE  426 |               bg-color="white"
+LINE  427 |               hide-bottom-space
+LINE  428 |               class="premium-input"
+LINE  429 |             >
+LINE  430 |               <template v-slot:append>
+LINE  431 |                 <div
+LINE  432 |                   class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders"
+LINE  433 |                   style="height: 28px; line-height: 28px"
+LINE  434 |                 >
+LINE  435 |                   {{ divisaActiva.tipo }}
+LINE  436 |                 </div>
+LINE  437 |               </template>
+LINE  438 |             </q-input>
+LINE  439 |           </div>
+LINE  440 | 
+LINE  441 |           <div class="col-12 col-md-1 flex justify-center" id="botonAnadirProductoCotizacion">
+LINE  442 |             <q-btn
+LINE  443 |               icon="add_shopping_cart"
+LINE  444 |               color="secondary"
+LINE  445 |               unelevated
+LINE  446 |               class="full-width shadow-3"
+LINE  447 |               style="border-radius: 12px; height: 40px; transition: all 0.3s"
+LINE  448 |               :disable="!canAddProduct"
+LINE  449 |               @click="anadirProductoACarrito"
+LINE  450 |             >
+LINE  451 |               <q-tooltip
+LINE  452 |                 class="bg-secondary text-subtitle2 shadow-4"
+LINE  453 |                 anchor="top middle"
+LINE  454 |                 self="bottom middle"
+LINE  455 |                 >Añadir al carrito</q-tooltip
+LINE  456 |               >
+LINE  457 |             </q-btn>
+LINE  458 |           </div>
+LINE  459 |         </div>
+LINE  460 |         {{ esProductoUnico }}
+LINE  461 |         <UniqueProductSelector
+LINE  462 |           v-if="esProductoUnico"
+LINE  463 |           :product-id="idproductoalmacenCO"
+LINE  464 |           :is-unique="esProductoUnico && registrarComoProductoUnico"
+LINE  465 |           :cantidad-requerida="cantidadCO"
+LINE  466 |           @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
+LINE  467 |           class="q-mt-md"
+LINE  468 |         />
+LINE  469 |       </q-card-section>
+LINE  470 | 
+LINE  471 |       <!-- Tercera Sección: Resumen de cotización (Table inside the same parent or separate) -->
+LINE  472 |       <q-card-section
+LINE  473 |         class="bg-white q-py-sm q-px-lg flex items-center justify-between"
+LINE  474 |         style="border-bottom: 1px solid #e0e0e0"
+LINE  475 |       >
+LINE  476 |         <div class="flex items-center text-primary">
+LINE  477 |           <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
+LINE  478 |           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
+LINE  479 |             Resumen de Cotización
+LINE  480 |           </div>
+LINE  481 |         </div>
+LINE  482 |       </q-card-section>
+LINE  483 | 
+LINE  484 |       <q-table
+LINE  485 |         id="tablaResumenCotizacion"
+LINE  486 |         :rows="carritoCO.listaProductos"
+LINE  487 |         :columns="carritoColumns"
+LINE  488 |         row-key="idproductoalmacen"
+LINE  489 |         flat
+LINE  490 |         hide-bottom
+LINE  491 |         class="custom-table q-pt-md"
+LINE  492 |         table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
+LINE  493 |         :pagination="{ rowsPerPage: 0 }"
+LINE  494 |       >
+LINE  495 |         <template v-slot:body="props">
+LINE  496 |           <q-tr
+LINE  497 |             :props="props"
+LINE  498 |             :class="props.expand ? 'bg-blue-50' : 'hover-row'"
+LINE  499 |             style="transition: background 0.3s"
+LINE  500 |           >
+LINE  501 |             <q-td auto-width>
+LINE  502 |               <q-btn
+LINE  503 |                 v-if="props.row.codigosUnicos?.length > 0"
+LINE  504 |                 size="sm"
+LINE  505 |                 color="primary"
+LINE  506 |                 flat
+LINE  507 |                 round
+LINE  508 |                 @click="props.expand = !props.expand"
+LINE  509 |                 :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+LINE  510 |               />
+LINE  511 |             </q-td>
+LINE  512 | 
+LINE  513 |             <q-td key="num" :props="props" class="text-left">
+LINE  514 |               <q-chip
+LINE  515 |                 color="grey-2"
+LINE  516 |                 text-color="grey-9"
+LINE  517 |                 label-slot
+LINE  518 |                 dense
+LINE  519 |                 square
+LINE  520 |                 style="border-radius: 6px; border: 1px solid #e0e0e0"
+LINE  521 |               >
+LINE  522 |                 <span class="text-weight-bolder">{{ props.row.num }}</span>
+LINE  523 |               </q-chip>
+LINE  524 |             </q-td>
+LINE  525 |             <q-td key="codigo" :props="props" class="text-left">
+LINE  526 |               <q-chip
+LINE  527 |                 outline
+LINE  528 |                 color="primary"
+LINE  529 |                 label-slot
+LINE  530 |                 dense
+LINE  531 |                 square
+LINE  532 |                 style="border-radius: 6px; font-weight: 600"
+LINE  533 |               >
+LINE  534 |                 {{ props.row.codigo }}
+LINE  535 |               </q-chip>
+LINE  536 |             </q-td>
+LINE  537 | 
+LINE  538 |             <q-td key="descripcion" :props="props" style="vertical-align: middle">
+LINE  539 |               <div
+LINE  540 |                 class="text-weight-bolder text-grey-10 text-subtitle2"
+LINE  541 |                 style="font-family: 'Inter', sans-serif"
+LINE  542 |               >
+LINE  543 |                 {{ props.row.descripcion }}
+LINE  544 |               </div>
+LINE  545 | 
+LINE  546 |               <div
+LINE  547 |                 class="flex items-center text-primary cursor-pointer q-mt-xs"
+LINE  548 |                 style="
+LINE  549 |                   font-size: 0.85em;
+LINE  550 |                   padding: 4px 10px;
+LINE  551 |                   background: rgba(25, 118, 210, 0.08);
+LINE  552 |                   border-radius: 6px;
+LINE  553 |                   display: inline-flex;
+LINE  554 |                   border: 1px dashed rgba(25, 118, 210, 0.3);
+LINE  555 |                   transition: all 0.2s;
+LINE  556 |                 "
+LINE  557 |                 v-ripple
+LINE  558 |               >
+LINE  559 |                 <q-icon name="edit_note" size="16px" class="q-mr-xs" />
+LINE  560 |                 <span class="text-weight-medium">{{
+LINE  561 |                   props.row.descripcionAdicional || 'Añadir nota adicional...'
+LINE  562 |                 }}</span>
+LINE  563 | 
+LINE  564 |                 <q-popup-edit
+LINE  565 |                   v-model="props.row.descripcionAdicional"
+LINE  566 |                   v-slot="scope"
+LINE  567 |                   buttons
+LINE  568 |                   label-set="Guardar"
+LINE  569 |                   label-cancel="Cancelar"
+LINE  570 |                 >
+LINE  571 |                   <q-input
+LINE  572 |                     v-model="scope.value"
+LINE  573 |                     outlined
+LINE  574 |                     dense
+LINE  575 |                     autofocus
+LINE  576 |                     counter
+LINE  577 |                     @keyup.enter="validarDescripcion(scope, props.row)"
+LINE  578 |                   />
+LINE  579 |                 </q-popup-edit>
+LINE  580 |               </div>
+LINE  581 |             </q-td>
+LINE  582 | 
+LINE  583 |             <q-td key="cantidad" :props="props" class="text-right">
+LINE  584 |               <q-badge
+LINE  585 |                 color="secondary"
+LINE  586 |                 text-color="white"
+LINE  587 |                 label-slot
+LINE  588 |                 class="q-px-md q-py-xs text-weight-bolder text-subtitle2 shadow-1"
+LINE  589 |                 style="border-radius: 8px"
+LINE  590 |               >
+LINE  591 |                 {{ props.row.cantidad }}
+LINE  592 |               </q-badge>
+LINE  593 |             </q-td>
+LINE  594 | 
+LINE  595 |             <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
+LINE  596 |               {{ decimas(props.row.precio) }}
+LINE  597 |               <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+LINE  598 |                 divisaActiva.tipo
+LINE  599 |               }}</span>
+LINE  600 |             </q-td>
+LINE  601 | 
+LINE  602 |             <q-td
+LINE  603 |               key="total"
+LINE  604 |               :props="props"
+LINE  605 |               class="text-right text-weight-bolder text-primary text-subtitle1"
+LINE  606 |             >
+LINE  607 |               {{ decimas(props.row.cantidad * props.row.precio) }}
+LINE  608 |               <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+LINE  609 |                 divisaActiva.tipo
+LINE  610 |               }}</span>
+LINE  611 |             </q-td>
+LINE  612 | 
+LINE  613 |             <q-td key="options" :props="props" class="text-center">
+LINE  614 |               <q-btn
+LINE  615 |                 icon="delete_outline"
+LINE  616 |                 color="negative"
+LINE  617 |                 flat
+LINE  618 |                 round
+LINE  619 |                 dense
+LINE  620 |                 size="sm"
+LINE  621 |                 @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
+LINE  622 |                 class="hover-shake"
+LINE  623 |               >
+LINE  624 |                 <q-tooltip class="bg-negative text-weight-medium shadow-3"
+LINE  625 |                   >Quitar producto</q-tooltip
+LINE  626 |                 >
+LINE  627 |               </q-btn>
+LINE  628 |             </q-td>
+LINE  629 |           </q-tr>
+LINE  630 | 
+LINE  631 |           <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
+LINE  632 |             <q-td colspan="100%" class="q-pa-lg">
+LINE  633 |               <TableCodigosUnicos
+LINE  634 |                 v-if="esProductoUnico"
+LINE  635 |                 v-model="props.row.codigosUnicos"
+LINE  636 |                 :parent-row="props.row"
+LINE  637 |                 :can-delete="true"
+LINE  638 |                 :can-edit="true"
+LINE  639 |                 :api-mode="false"
+LINE  640 |                 @update-parent-quantity="
+LINE  641 |                   (nuevaCant) => {
+LINE  642 |                     props.row.cantidad = nuevaCant
+LINE  643 |                     calcularTotalesCarrito()
+LINE  644 |                   }
+LINE  645 |                 "
+LINE  646 |               />
+LINE  647 |             </q-td>
+LINE  648 |           </q-tr>
+LINE  649 |         </template>
+LINE  650 | 
+LINE  651 |         <template v-slot:bottom-row>
+LINE  652 |           <q-tr class="bg-grey-1">
+LINE  653 |             <q-td
+LINE  654 |               colspan="6"
+LINE  655 |               class="text-right text-subtitle2 text-grey-8"
+LINE  656 |               style="letter-spacing: 0.5px"
+LINE  657 |               >SUBTOTAL:</q-td
+LINE  658 |             >
+LINE  659 |             <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
+LINE  660 |               {{ decimas(carritoCO.subtotal) }}
+LINE  661 |               <span class="text-caption text-grey-6 text-weight-medium">{{
+LINE  662 |                 divisaActiva.tipo
+LINE  663 |               }}</span>
+LINE  664 |             </q-td>
+LINE  665 |             <q-td />
+LINE  666 |           </q-tr>
+LINE  667 | 
+LINE  668 |           <q-tr class="bg-grey-1" id="descuentoCotizacion">
+LINE  669 |             <q-td
+LINE  670 |               colspan="6"
+LINE  671 |               class="text-right text-subtitle2 text-grey-8"
+LINE  672 |               style="vertical-align: middle; letter-spacing: 0.5px"
+LINE  673 |               >DESCUENTO:</q-td
+LINE  674 |             >
+LINE  675 |             <q-td class="text-right">
+LINE  676 |               <q-input
+LINE  677 |                 v-model.number="carritoCO.descuento"
+LINE  678 |                 type="number"
+LINE  679 |                 min="0"
+LINE  680 |                 :max="carritoCO.subtotal"
+LINE  681 |                 @change="aplicarDescuento"
+LINE  682 |                 dense
+LINE  683 |                 outlined
+LINE  684 |                 bg-color="white"
+LINE  685 |                 input-class="text-right text-weight-bolder text-negative"
+LINE  686 |                 style="max-width: 140px; margin-left: auto"
+LINE  687 |                 class="premium-input"
+LINE  688 |               >
+LINE  689 |                 <template v-slot:append>
+LINE  690 |                   <div
+LINE  691 |                     class="bg-negative text-white text-weight-bold text-caption q-px-sm rounded-borders"
+LINE  692 |                     style="height: 24px; line-height: 24px"
+LINE  693 |                   >
+LINE  694 |                     {{ divisaActiva.tipo }}
+LINE  695 |                   </div>
+LINE  696 |                 </template>
+LINE  697 |               </q-input>
+LINE  698 |             </q-td>
+LINE  699 |             <q-td />
+LINE  700 |           </q-tr>
+LINE  701 | 
+LINE  702 |           <q-tr
+LINE  703 |             class="bg-primary text-white"
+LINE  704 |             style="background: linear-gradient(90deg, #1976d2 0%, #1e88e5 100%)"
+LINE  705 |           >
+LINE  706 |             <q-td
+LINE  707 |               colspan="6"
+LINE  708 |               class="text-right text-h6 text-weight-bolder text-uppercase"
+LINE  709 |               style="letter-spacing: 1px"
+LINE  710 |               >TOTAL GENERAL:</q-td
+LINE  711 |             >
+LINE  712 |             <q-td
+LINE  713 |               class="text-right text-h5 text-weight-bolder"
+LINE  714 |               style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2)"
+LINE  715 |             >
+LINE  716 |               {{ decimas(carritoCO.ventatotal) }}
+LINE  717 |               <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
+LINE  718 |                 divisaActiva.tipo
+LINE  719 |               }}</span>
+LINE  720 |             </q-td>
+LINE  721 |             <q-td />
+LINE  722 |           </q-tr>
+LINE  723 |         </template>
+LINE  724 |       </q-table>
+LINE  725 | 
+LINE  726 |       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
+LINE  727 |         <div class="row justify-end items-center q-gutter-x-md">
+LINE  728 |           <!-- Botón Cancelar -->
+LINE  729 |           <q-btn
+LINE  730 |             flat
+LINE  731 |             color="negative"
+LINE  732 |             icon="close"
+LINE  733 |             label="Cancelar"
+LINE  734 |             @click="$emit('cancelarregistro')"
+LINE  735 |             class="q-px-md"
+LINE  736 |             style="border-radius: 100px; font-weight: 500"
+LINE  737 |           />
+LINE  738 | 
+LINE  739 |           <!-- Botón Firma del Cliente -->
+LINE  740 |           <q-btn
+LINE  741 |             outline
+LINE  742 |             color="primary"
+LINE  743 |             icon="edit_note"
+LINE  744 |             label="Firma del Cliente"
+LINE  745 |             @click="RegistrarFirma"
+LINE  746 |             class="q-px-lg bg-white"
+LINE  747 |             style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
+LINE  748 |           />
+LINE  749 | 
+LINE  750 |           <!-- Botón Registrar Cotización -->
+LINE  751 |           <q-btn
+LINE  752 |             label="Continuar"
+LINE  753 |             color="primary"
+LINE  754 |             icon="task_alt"
+LINE  755 |             size="lg"
+LINE  756 |             :disable="carritoCO.listaProductos.length === 0"
+LINE  757 |             @click="cotizacion_proforma"
+LINE  758 |             class="q-px-xl text-weight-bolder"
+LINE  759 |             :class="{ 'gradient-btn': carritoCO.listaProductos.length > 0 }"
+LINE  760 |             style="border-radius: 40px; transition: all 0.2s ease"
+LINE  761 |             :style="
+LINE  762 |               carritoCO.listaProductos.length === 0
+LINE  763 |                 ? 'border-radius: 40px'
+LINE  764 |                 : 'background: linear-gradient(135deg, #1976d2, #1565c0); box-shadow: 0 4px 12px rgba(25,118,210,0.3); border-radius: 40px'
+LINE  765 |             "
+LINE  766 |           />
+LINE  767 |         </div>
+LINE  768 |       </q-card-section>
+LINE  769 |     </q-card>
+LINE  770 | 
+LINE  771 |     <!-- Diálogo: método de pago -->
+LINE  772 |     <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
+LINE  773 |       <q-card class="responsive-dialog shadow-24 column no-wrap">
+LINE  774 |         <!-- Header del Diálogo -->
+LINE  775 |         <q-card-section
+LINE  776 |           class="bg-primary text-white q-py-md q-px-md q-px-sm-md flex justify-between items-center shrink-0"
+LINE  777 |           style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
+LINE  778 |         >
+LINE  779 |           <div class="flex items-center">
+LINE  780 |             <div
+LINE  781 |               class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner"
+LINE  782 |               style="backdrop-filter: blur(8px); border-radius: 12px"
+LINE  783 |             >
+LINE  784 |               <q-icon name="account_balance_wallet" class="text-white" size="24px" />
+LINE  785 |             </div>
+LINE  786 |             <div>
+LINE  787 |               <div
+LINE  788 |                 class="text-h6 text-weight-bolder"
+LINE  789 |                 style="font-family: 'Inter', sans-serif; line-height: 1.2"
+LINE  790 |               >
+LINE  791 |                 Método de Pago
+LINE  792 |               </div>
+LINE  793 |               <div class="text-caption text-white/80 text-weight-medium gt-xs">
+LINE  794 |                 Configure la modalidad y detalles del pago
+LINE  795 |               </div>
+LINE  796 |             </div>
+LINE  797 |           </div>
+LINE  798 |           <q-btn
+LINE  799 |             icon="close"
+LINE  800 |             v-close-popup
+LINE  801 |             flat
+LINE  802 |             round
+LINE  803 |             dense
+LINE  804 |             class="text-white/80 hover:text-white transition-all"
+LINE  805 |             size="md"
+LINE  806 |           />
+LINE  807 |         </q-card-section>
+LINE  808 | 
+LINE  809 |         <q-card-section class="col scroll q-pa-lg q-pa-sm-md bg-grey-1 content-section">
+LINE  810 |           <!-- Selector de Modalidad Principal -->
+LINE  811 |           <div class="row justify-center q-mb-xl q-mb-md-sm">
+LINE  812 |             <q-btn-toggle
+LINE  813 |               v-model="carritoCO.credito"
+LINE  814 |               toggle-color="primary"
+LINE  815 |               toggle-text-color="white"
+LINE  816 |               color="grey-1"
+LINE  817 |               text-color="grey-7"
+LINE  818 |               unelevated
+LINE  819 |               rounded
+LINE  820 |               no-caps
+LINE  821 |               class="custom-premium-toggle border-grey-3 shadow-2"
+LINE  822 |               @update:model-value="handleTipoPagoGeneralChange"
+LINE  823 |               :options="[
+LINE  824 |                 { value: false, slot: 'efectivo' },
+LINE  825 |                 { value: true, slot: 'credito' },
+LINE  826 |               ]"
+LINE  827 |             >
+LINE  828 |               <!-- Custom Slots for perfect flex control -->
+LINE  829 |               <template v-slot:efectivo>
+LINE  830 |                 <div
+LINE  831 |                   class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+LINE  832 |                   style="padding: 4px 12px"
+LINE  833 |                 >
+LINE  834 |                   <q-icon name="payments" size="18px" />
+LINE  835 |                   <span>Efectivo</span>
+LINE  836 |                 </div>
+LINE  837 |               </template>
+LINE  838 | 
+LINE  839 |               <template v-slot:credito>
+LINE  840 |                 <div
+LINE  841 |                   class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+LINE  842 |                   style="padding: 4px 12px"
+LINE  843 |                 >
+LINE  844 |                   <q-icon name="credit_score" size="18px" />
+LINE  845 |                   <span>Crédito</span>
+LINE  846 |                 </div>
+LINE  847 |               </template>
+LINE  848 |             </q-btn-toggle>
+LINE  849 |           </div>
+LINE  850 | 
+LINE  851 |           <!-- SECCIÓN: PAGO EFECTIVO -->
+LINE  852 |           <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
+LINE  853 |             <div class="flex items-center justify-between q-mb-lg">
+LINE  854 |               <div
+LINE  855 |                 class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
+LINE  856 |                 style="border-left: 4px solid #1976d2"
+LINE  857 |               >
+LINE  858 |                 <q-icon name="payments" class="q-mr-sm" />
+LINE  859 |                 MODALIDAD: EFECTIVO
+LINE  860 |               </div>
+LINE  861 | 
+LINE  862 |               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
+LINE  863 |                 Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+LINE  864 |               </div>
+LINE  865 |             </div>
+LINE  866 | 
+LINE  867 |             <!-- Selector de tipo de pago en efectivo -->
+LINE  868 |             <div class="q-gutter-x-xl q-mb-xl row justify-center">
+LINE  869 |               <q-radio
+LINE  870 |                 v-model="carritoCO.variablePago"
+LINE  871 |                 val="directo"
+LINE  872 |                 color="positive"
+LINE  873 |                 label="Pago Único"
+LINE  874 |                 class="text-weight-bolder text-subtitle2"
+LINE  875 |               />
+LINE  876 |               <q-radio
+LINE  877 |                 v-model="carritoCO.variablePago"
+LINE  878 |                 val="dividido"
+LINE  879 |                 color="orange-8"
+LINE  880 |                 label="Pago Dividido"
+LINE  881 |                 class="text-weight-bolder text-subtitle2"
+LINE  882 |               />
+LINE  883 |             </div>
+LINE  884 | 
+LINE  885 |             <!-- Caso: Pago Único -->
+LINE  886 |             <div
+LINE  887 |               v-if="carritoCO.variablePago === 'directo'"
+LINE  888 |               class="row q-col-gutter-lg justify-center q-pt-sm"
+LINE  889 |             >
+LINE  890 |               <div class="col-12 col-md-10">
+LINE  891 |                 <label
+LINE  892 |                   class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+LINE  893 |                   style="font-size: 12px"
+LINE  894 |                 >
+LINE  895 |                   Método de pago principal <span class="text-negative">*</span>
+LINE  896 |                 </label>
+LINE  897 |                 <q-select
+LINE  898 |                   v-model="carritoCO.metodoPago"
+LINE  899 |                   dense
+LINE  900 |                   outlined
+LINE  901 |                   bg-color="white"
+LINE  902 |                   :options="metodosPagos"
+LINE  903 |                   emit-value
+LINE  904 |                   map-options
+LINE  905 |                   option-label="label"
+LINE  906 |                   option-value="value"
+LINE  907 |                   :rules="[(val) => !!val || 'Seleccione un método de pago']"
+LINE  908 |                   class="premium-input"
+LINE  909 |                   style="border-radius: 8px"
+LINE  910 |                 >
+LINE  911 |                   <template v-slot:prepend>
+LINE  912 |                     <q-icon name="account_balance_wallet" color="primary" />
+LINE  913 |                   </template>
+LINE  914 |                 </q-select>
+LINE  915 |               </div>
+LINE  916 |             </div>
+LINE  917 | 
+LINE  918 |             <!-- Caso: Pago Dividido -->
+LINE  919 |             <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
+LINE  920 |               <div class="text-caption text-grey-7 q-mb-md flex items-center">
+LINE  921 |                 <q-icon name="info" size="xs" class="q-mr-xs" />
+LINE  922 |                 Distribuya el monto total entre diferentes métodos de pago.
+LINE  923 |               </div>
+LINE  924 | 
+LINE  925 |               <div
+LINE  926 |                 v-for="(payment, index) in carritoCO.pagosDivididos"
+LINE  927 |                 :key="index"
+LINE  928 |                 class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
+LINE  929 |               >
+LINE  930 |                 <div class="col-12 col-md-5">
+LINE  931 |                   <label
+LINE  932 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+LINE  933 |                     >Método de Pago *</label
+LINE  934 |                   >
+LINE  935 |                   <q-select
+LINE  936 |                     v-model="payment.metodoPago"
+LINE  937 |                     dense
+LINE  938 |                     outlined
+LINE  939 |                     bg-color="grey-1"
+LINE  940 |                     :options="metodosPagos"
+LINE  941 |                     emit-value
+LINE  942 |                     map-options
+LINE  943 |                     option-label="label"
+LINE  944 |                     option-value="value"
+LINE  945 |                     :rules="[(val) => !!val || 'Requerido']"
+LINE  946 |                     hide-bottom-space
+LINE  947 |                     class="rounded-borders"
+LINE  948 |                   />
+LINE  949 |                 </div>
+LINE  950 |                 <div class="col-12 col-md-3">
+LINE  951 |                   <label
+LINE  952 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+LINE  953 |                     >Monto ({{ divisaActiva.tipo }})</label
+LINE  954 |                   >
+LINE  955 |                   <q-input
+LINE  956 |                     v-model="payment.monto"
+LINE  957 |                     type="number"
+LINE  958 |                     dense
+LINE  959 |                     outlined
+LINE  960 |                     bg-color="grey-1"
+LINE  961 |                     @update:model-value="calculateRemainingAmount(index)"
+LINE  962 |                     :rules="[(val) => !!val || 'Requerido']"
+LINE  963 |                     hide-bottom-space
+LINE  964 |                     class="rounded-borders"
+LINE  965 |                   />
+LINE  966 |                 </div>
+LINE  967 |                 <div class="col-12 col-md-3">
+LINE  968 |                   <label
+LINE  969 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+LINE  970 |                     >Porcentaje (%)</label
+LINE  971 |                   >
+LINE  972 |                   <q-input
+LINE  973 |                     v-model="payment.porcentaje"
+LINE  974 |                     type="number"
+LINE  975 |                     dense
+LINE  976 |                     outlined
+LINE  977 |                     bg-color="grey-1"
+LINE  978 |                     @update:model-value="calculateAmountFromPercentage(index)"
+LINE  979 |                     :rules="[(val) => !!val || 'Requerido']"
+LINE  980 |                     hide-bottom-space
+LINE  981 |                     class="rounded-borders"
+LINE  982 |                   />
+LINE  983 |                 </div>
+LINE  984 |                 <div class="col-12 col-md-1 flex flex-center" style="padding-top: 24px">
+LINE  985 |                   <q-btn
+LINE  986 |                     v-if="carritoCO.pagosDivididos.length > 1"
+LINE  987 |                     icon="delete_outline"
+LINE  988 |                     color="negative"
+LINE  989 |                     flat
+LINE  990 |                     round
+LINE  991 |                     size="md"
+LINE  992 |                     class="bg-red-1"
+LINE  993 |                     @click="removePaymentMethod(index)"
+LINE  994 |                   />
+LINE  995 |                 </div>
+LINE  996 |               </div>
+LINE  997 | 
+LINE  998 |               <div class="flex justify-end q-mt-md">
+LINE  999 |                 <q-btn
+LINE 1000 |                   label="Añadir Método"
+LINE 1001 |                   icon="add"
+LINE 1002 |                   color="primary"
+LINE 1003 |                   outline
+LINE 1004 |                   class="q-px-lg bg-white shadow-1 text-weight-bold"
+LINE 1005 |                   style="border-radius: 10px"
+LINE 1006 |                   @click="addPaymentMethod"
+LINE 1007 |                 />
+LINE 1008 |               </div>
+LINE 1009 | 
+LINE 1010 |               <!-- Banner de estado del pago dividido -->
+LINE 1011 |               <div
+LINE 1012 |                 v-if="remainingAmount !== 0 || totalPaidAmount !== 0"
+LINE 1013 |                 class="q-mt-xl q-pa-lg rounded-borders shadow-2"
+LINE 1014 |                 :class="
+LINE 1015 |                   remainingAmount === 0 ? 'bg-green-50 border-green' : 'bg-orange-50 border-orange'
+LINE 1016 |                 "
+LINE 1017 |                 style="border-left: 6px solid"
+LINE 1018 |               >
+LINE 1019 |                 <div class="row items-center justify-between">
+LINE 1020 |                   <div class="row q-gutter-x-xl">
+LINE 1021 |                     <div class="column">
+LINE 1022 |                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+LINE 1023 |                         >Total Pagado</span
+LINE 1024 |                       >
+LINE 1025 |                       <span
+LINE 1026 |                         class="text-h6 text-weight-bolder"
+LINE 1027 |                         :class="remainingAmount === 0 ? 'text-positive' : 'text-orange-9'"
+LINE 1028 |                       >
+LINE 1029 |                         {{ totalPaidAmount.toFixed(2) }} {{ divisaActiva.tipo }}
+LINE 1030 |                       </span>
+LINE 1031 |                     </div>
+LINE 1032 |                     <div class="column">
+LINE 1033 |                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+LINE 1034 |                         >Monto Pendiente</span
+LINE 1035 |                       >
+LINE 1036 |                       <span
+LINE 1037 |                         class="text-h6 text-weight-bolder"
+LINE 1038 |                         :class="remainingAmount === 0 ? 'text-positive' : 'text-negative'"
+LINE 1039 |                       >
+LINE 1040 |                         {{ remainingAmount.toFixed(2) }} {{ divisaActiva.tipo }}
+LINE 1041 |                       </span>
+LINE 1042 |                     </div>
+LINE 1043 |                   </div>
+LINE 1044 |                   <q-icon
+LINE 1045 |                     :name="remainingAmount === 0 ? 'check_circle' : 'warning'"
+LINE 1046 |                     :color="remainingAmount === 0 ? 'positive' : 'warning'"
+LINE 1047 |                     size="44px"
+LINE 1048 |                   />
+LINE 1049 |                 </div>
+LINE 1050 |               </div>
+LINE 1051 |             </div>
+LINE 1052 | 
+LINE 1053 |             <!-- Selección de Caja/Banco para Efectivo -->
+LINE 1054 |             <div
+LINE 1055 |               class="col-12 q-mt-xl animate__animated animate__fadeInUp"
+LINE 1056 |               v-if="listaCajaBancos.length > 0"
+LINE 1057 |             >
+LINE 1058 |               <q-separator class="q-mb-xl" />
+LINE 1059 | 
+LINE 1060 |               <label
+LINE 1061 |                 class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+LINE 1062 |                 style="font-size: 12px"
+LINE 1063 |               >
+LINE 1064 |                 Asignar a Caja o Banco <span class="text-negative">*</span>
+LINE 1065 |               </label>
+LINE 1066 | 
+LINE 1067 |               <q-select
+LINE 1068 |                 v-model="idcajaBancoSeleccionada"
+LINE 1069 |                 :options="listaCajaBancos"
+LINE 1070 |                 dense
+LINE 1071 |                 outlined
+LINE 1072 |                 emit-value
+LINE 1073 |                 map-options
+LINE 1074 |                 class="premium-input bg-white"
+LINE 1075 |                 :rules="[(val) => !!val || 'Campo requerido']"
+LINE 1076 |                 style="border-radius: 8px"
+LINE 1077 |               >
+LINE 1078 |                 <template v-slot:prepend>
+LINE 1079 |                   <q-icon name="account_balance" color="positive" />
+LINE 1080 |                 </template>
+LINE 1081 | 
+LINE 1082 |                 <template v-slot:selected-item="scope">
+LINE 1083 |                   <div v-if="scope.opt" class="q-py-xs">
+LINE 1084 |                     <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+LINE 1085 |                     <span class="q-ml-xs text-grey-8">- {{ scope.opt.nombre }}</span>
+LINE 1086 |                   </div>
+LINE 1087 |                 </template>
+LINE 1088 | 
+LINE 1089 |                 <template v-slot:option="scope">
+LINE 1090 |                   <q-item v-bind="scope.itemProps" class="q-py-md">
+LINE 1091 |                     <q-item-section avatar>
+LINE 1092 |                       <q-icon name="account_balance" color="grey-6" />
+LINE 1093 |                     </q-item-section>
+LINE 1094 |                     <q-item-section>
+LINE 1095 |                       <q-item-label class="text-weight-bolder text-primary">
+LINE 1096 |                         {{ scope.opt.codigo }}
+LINE 1097 |                       </q-item-label>
+LINE 1098 |                       <q-item-label caption class="text-weight-medium">
+LINE 1099 |                         {{ scope.opt.nombre }}
+LINE 1100 |                       </q-item-label>
+LINE 1101 |                     </q-item-section>
+LINE 1102 |                   </q-item>
+LINE 1103 |                 </template>
+LINE 1104 |               </q-select>
+LINE 1105 |             </div>
+LINE 1106 |           </div>
+LINE 1107 | 
+LINE 1108 |           <!-- SECCIÓN: PAGO A CRÉDITO -->
+LINE 1109 |           <div v-else class="animate__animated animate__fadeIn">
+LINE 1110 |             <div class="flex items-center justify-between q-mb-lg">
+LINE 1111 |               <div
+LINE 1112 |                 class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
+LINE 1113 |                 style="border-left: 4px solid #1976d2"
+LINE 1114 |               >
+LINE 1115 |                 <q-icon name="credit_score" class="q-mr-sm" />
+LINE 1116 |                 MODALIDAD: CRÉDITO
+LINE 1117 |               </div>
+LINE 1118 | 
+LINE 1119 |               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
+LINE 1120 |                 Monto Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+LINE 1121 |               </div>
+LINE 1122 |             </div>
+LINE 1123 | 
+LINE 1124 |             <div class="row q-col-gutter-xl q-pt-md">
+LINE 1125 |               <div class="col-12 col-md-6">
+LINE 1126 |                 <label
+LINE 1127 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+LINE 1128 |                   style="font-size: 11px"
+LINE 1129 |                   >Número de Cuotas *</label
+LINE 1130 |                 >
+LINE 1131 |                 <q-input
+LINE 1132 |                   v-model="carritoCO.cantidadPagos"
+LINE 1133 |                   type="number"
+LINE 1134 |                   min="1"
+LINE 1135 |                   dense
+LINE 1136 |                   outlined
+LINE 1137 |                   bg-color="white"
+LINE 1138 |                   @update:model-value="(calculatePayments(), calculateDueDate())"
+LINE 1139 |                   :rules="[(val) => (!!val && val > 0) || 'Requerido']"
+LINE 1140 |                   class="rounded-borders"
+LINE 1141 |                 >
+LINE 1142 |                   <template v-slot:prepend
+LINE 1143 |                     ><q-icon name="format_list_numbered" color="primary"
+LINE 1144 |                   /></template>
+LINE 1145 |                 </q-input>
+LINE 1146 |               </div>
+LINE 1147 | 
+LINE 1148 |               <div class="col-12 col-md-6">
+LINE 1149 |                 <label
+LINE 1150 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+LINE 1151 |                   style="font-size: 11px"
+LINE 1152 |                   >Monto por Cuota</label
+LINE 1153 |                 >
+LINE 1154 |                 <q-input
+LINE 1155 |                   v-model="carritoCO.montoPagos"
+LINE 1156 |                   dense
+LINE 1157 |                   outlined
+LINE 1158 |                   readonly
+LINE 1159 |                   class="bg-grey-2"
+LINE 1160 |                   input-class="text-weight-bolder text-primary text-subtitle1"
+LINE 1161 |                 >
+LINE 1162 |                   <template v-slot:prepend><q-icon name="paid" color="grey-6" /></template>
+LINE 1163 |                   <template v-slot:append>
+LINE 1164 |                     <span class="text-subtitle2 text-grey-7">{{ divisaActiva.tipo }}</span>
+LINE 1165 |                   </template>
+LINE 1166 |                 </q-input>
+LINE 1167 |               </div>
+LINE 1168 | 
+LINE 1169 |               <div class="col-12 col-md-6">
+LINE 1170 |                 <label
+LINE 1171 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+LINE 1172 |                   style="font-size: 11px"
+LINE 1173 |                   >Frecuencia de Pago *</label
+LINE 1174 |                 >
+LINE 1175 |                 <q-select
+LINE 1176 |                   v-model="carritoCO.periodo"
+LINE 1177 |                   dense
+LINE 1178 |                   outlined
+LINE 1179 |                   bg-color="white"
+LINE 1180 |                   :options="periodOptions"
+LINE 1181 |                   emit-value
+LINE 1182 |                   map-options
+LINE 1183 |                   @update:model-value="calculateDueDate"
+LINE 1184 |                   class="rounded-borders"
+LINE 1185 |                 >
+LINE 1186 |                   <template v-slot:prepend><q-icon name="event_repeat" color="primary" /></template>
+LINE 1187 |                 </q-select>
+LINE 1188 |               </div>
+LINE 1189 | 
+LINE 1190 |               <div
+LINE 1191 |                 v-if="carritoCO.periodo === 0"
+LINE 1192 |                 class="col-12 col-md-6 animate__animated animate__zoomIn"
+LINE 1193 |               >
+LINE 1194 |                 <label
+LINE 1195 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+LINE 1196 |                   style="font-size: 11px"
+LINE 1197 |                   >Plazo Total (Días) *</label
+LINE 1198 |                 >
+LINE 1199 |                 <q-input
+LINE 1200 |                   v-model="carritoCO.plazoPersonalizado"
+LINE 1201 |                   type="number"
+LINE 1202 |                   dense
+LINE 1203 |                   outlined
+LINE 1204 |                   bg-color="white"
+LINE 1205 |                   @update:model-value="calculateDueDate"
+LINE 1206 |                   :rules="[(val) => !!val || 'Requerido']"
+LINE 1207 |                   class="rounded-borders"
+LINE 1208 |                 >
+LINE 1209 |                   <template v-slot:prepend
+LINE 1210 |                     ><q-icon name="edit_calendar" color="primary"
+LINE 1211 |                   /></template>
+LINE 1212 |                 </q-input>
+LINE 1213 |               </div>
+LINE 1214 | 
+LINE 1215 |               <div class="col-12 col-md-6">
+LINE 1216 |                 <label
+LINE 1217 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+LINE 1218 |                   style="font-size: 11px"
+LINE 1219 |                   >Fecha de Vencimiento Estimada</label
+LINE 1220 |                 >
+LINE 1221 |                 <q-input
+LINE 1222 |                   v-model="carritoCO.fechaLimite"
+LINE 1223 |                   dense
+LINE 1224 |                   outlined
+LINE 1225 |                   type="date"
+LINE 1226 |                   readonly
+LINE 1227 |                   class="bg-grey-2"
+LINE 1228 |                 >
+LINE 1229 |                   <template v-slot:prepend
+LINE 1230 |                     ><q-icon name="event_available" color="grey-6"
+LINE 1231 |                   /></template>
+LINE 1232 |                 </q-input>
+LINE 1233 |               </div>
+LINE 1234 |             </div>
+LINE 1235 | 
+LINE 1236 |             <div class="q-mt-xl q-pa-md bg-blue-50 rounded-borders border-blue flex items-center">
+LINE 1237 |               <q-icon name="info" color="primary" size="sm" class="q-mr-md" />
+LINE 1238 |               <div class="text-caption text-blue-9 text-weight-medium">
+LINE 1239 |                 La fecha de vencimiento se calcula automáticamente según la frecuencia y el número
+LINE 1240 |                 de cuotas desde la fecha de emisión.
+LINE 1241 |               </div>
+LINE 1242 |             </div>
+LINE 1243 |           </div>
+LINE 1244 |         </q-card-section>
+LINE 1245 | 
+LINE 1246 |         <q-separator />
+LINE 1247 | 
+LINE 1248 |         <!-- Acciones del Diálogo -->
+LINE 1249 |         <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
+LINE 1250 |           <q-btn
+LINE 1251 |             flat
+LINE 1252 |             label="Regresar"
+LINE 1253 |             color="grey-8"
+LINE 1254 |             v-close-popup
+LINE 1255 |             class="q-px-md text-weight-bold rounded-pill"
+LINE 1256 |           />
+LINE 1257 |           <q-btn
+LINE 1258 |             unelevated
+LINE 1259 |             label="Confirmar Cotización"
+LINE 1260 |             color="primary"
+LINE 1261 |             icon="task_alt"
+LINE 1262 |             class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"
+LINE 1263 |             style="
+LINE 1264 |               border-radius: 50px;
+LINE 1265 |               height: 48px;
+LINE 1266 |               background: linear-gradient(45deg, #1976d2, #42a5f5);
+LINE 1267 |             "
+LINE 1268 |             @click="enviarDatos"
+LINE 1269 |             :disable="carritoCO.variablePago === 'dividido' && remainingAmount !== 0"
+LINE 1270 |           />
+LINE 1271 |         </q-card-actions>
+LINE 1272 |       </q-card>
+LINE 1273 |     </q-dialog>
+LINE 1274 |     <!-- Diálogo: Vista previa PDF -->
+LINE 1275 |     <q-dialog
+LINE 1276 |       v-model="mostrarModal"
+LINE 1277 |       full-width
+LINE 1278 |       full-height
+LINE 1279 |       transition-show="scale"
+LINE 1280 |       transition-hide="scale"
+LINE 1281 |       @hide="emit('reiniciar')"
+LINE 1282 |     >
+LINE 1283 |       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
+LINE 1284 |         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
+LINE 1285 |           <div class="text-h6 flex items-center q-px-sm">
+LINE 1286 |             <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de
+LINE 1287 |             PDF
+LINE 1288 |           </div>
+LINE 1289 |           <q-space />
+LINE 1290 |           <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
+LINE 1291 |         </q-card-section>
+LINE 1292 | 
+LINE 1293 |         <q-separator color="grey-9" />
+LINE 1294 | 
+LINE 1295 |         <q-card-section class="q-pa-none bg-grey-3" style="height: calc(100% - 54px)">
+LINE 1296 |           <iframe
+LINE 1297 |             v-if="pdfData"
+LINE 1298 |             :src="pdfData"
+LINE 1299 |             style="width: 100%; height: 100%; border: none"
+LINE 1300 |           ></iframe>
+LINE 1301 |           <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+LINE 1302 |             <q-icon name="check_circle" color="positive" size="2em" />
+LINE 1303 |             <p>
+LINE 1304 |               Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+LINE 1305 |             </p>
+LINE 1306 |             <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+LINE 1307 |               Descargar comprobante
+LINE 1308 |             </a>
+LINE 1309 |           </div>
+LINE 1310 |         </q-card-section>
+LINE 1311 |       </q-card>
+LINE 1312 |     </q-dialog>
+LINE 1313 | 
+LINE 1314 |     <!-- Modal Confirmación Envio -->
+LINE 1315 |     <q-dialog
+LINE 1316 |       v-model="dialog"
+LINE 1317 |       :position="position"
+LINE 1318 |       :id="idcliente"
+LINE 1319 |       :data="detallesCotizacion"
+LINE 1320 |       backdrop-filter="blur(4px)"
+LINE 1321 |     >
+LINE 1322 |       <q-card
+LINE 1323 |         class="dialog-card shadow-10"
+LINE 1324 |         style="border-radius: 16px; overflow: hidden; width: 450px; max-width: 95vw"
+LINE 1325 |       >
+LINE 1326 |         <q-card-section
+LINE 1327 |           class="q-pa-lg text-white flex items-center justify-center column"
+LINE 1328 |           style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%)"
+LINE 1329 |         >
+LINE 1330 |           <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
+LINE 1331 |             <q-icon name="check" size="40px" color="positive" />
+LINE 1332 |           </div>
+LINE 1333 |           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
+LINE 1334 |             ¡Cotización Exitosa!
+LINE 1335 |           </div>
+LINE 1336 |         </q-card-section>
+LINE 1337 | 
+LINE 1338 |         <q-card-section class="q-pa-xl text-center bg-white">
+LINE 1339 |           <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
+LINE 1340 |             El comprobante ha sido generado y guardado correctamente en el sistema.
+LINE 1341 |           </div>
+LINE 1342 |           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
+LINE 1343 |             ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
+LINE 1344 |           </div>
+LINE 1345 |         </q-card-section>
+LINE 1346 | 
+LINE 1347 |         <q-separator />
+LINE 1348 | 
+LINE 1349 |         <q-card-actions align="center" class="q-pa-md bg-grey-1" style="border-top: 1px solid #eee">
+LINE 1350 |           <q-btn
+LINE 1351 |             flat
+LINE 1352 |             label="No, gracias"
+LINE 1353 |             color="grey-7"
+LINE 1354 |             @click="cancelar()"
+LINE 1355 |             class="q-px-md text-weight-bold"
+LINE 1356 |             style="border-radius: 8px"
+LINE 1357 |           />
+LINE 1358 |           <q-btn
+LINE 1359 |             unelevated
+LINE 1360 |             label="Enviar PDF por Correo"
+LINE 1361 |             color="positive"
+LINE 1362 |             icon="send"
+LINE 1363 |             class="q-px-md text-weight-bold shadow-3 q-ml-sm"
+LINE 1364 |             style="border-radius: 8px"
+LINE 1365 |             @click="confirmar(idcliente, detallesCotizacion)"
+LINE 1366 |           />
+LINE 1367 |         </q-card-actions>
+LINE 1368 |       </q-card>
+LINE 1369 |     </q-dialog>
+LINE 1370 | 
+LINE 1371 |     <q-dialog v-model="showAddModal">
+LINE 1372 |       <MyRegistrationForm @recordCreated="handleRecordCreated" />
+LINE 1373 |     </q-dialog>
+LINE 1374 |   </q-page>
+LINE 1375 | </template>
+LINE 1376 | <script setup>
+LINE 1377 | import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+LINE 1378 | import { useQuasar } from 'quasar'
+LINE 1379 | import { api, apiCt } from 'src/boot/axios'
+LINE 1380 | import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
+LINE 1381 | import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
+LINE 1382 | import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+LINE 1383 | import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE 1384 | import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+LINE 1385 | import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
+LINE 1386 | import { objectToFormData } from 'src/composables/FuncionesGenerales'
+LINE 1387 | import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
+LINE 1388 | import ModalfirmaPage from './ModalfirmaPage.vue'
+LINE 1389 | import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+LINE 1390 | import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+LINE 1391 | import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+LINE 1392 | import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+LINE 1393 | 
+LINE 1394 | const permisosStore = useOperacionesPermitidas()
+LINE 1395 | //console.log(permisosStore.tienePermiso('editarprecioventa'))
+LINE 1396 | 
+LINE 1397 | const showAddModal = ref(false)
+LINE 1398 | const esProductoUnico = ref(false)
+LINE 1399 | const registrarComoProductoUnico = ref(true)
+LINE 1400 | const idempresa = idempresa_md5()
+LINE 1401 | const isInitializing = ref(false)
+LINE 1402 | const CodigosUnicosSeleccionados = ref([])
+LINE 1403 | const { config } = useProductoConfig(idempresa)
+LINE 1404 | const listaCajaBancos = ref([])
+LINE 1405 | const idcajaBancoSeleccionada = ref(null)
+LINE 1406 | const soloAlmacen = ref(false)
+LINE 1407 | 
+LINE 1408 | watch(
+LINE 1409 |   () => config.value.idempresa,
+LINE 1410 |   (nuevoValor) => {
+LINE 1411 |     if (nuevoValor) {
+LINE 1412 |       esProductoUnico.value = Boolean(config.value.productounico)
+LINE 1413 |       console.log(esProductoUnico.value)
+LINE 1414 |     }
+LINE 1415 |   },
+LINE 1416 |   { deep: true },
+LINE 1417 | )
+LINE 1418 | 
+LINE 1419 | const guardarCodigosEnVenta = (codigos) => {
+LINE 1420 |   CodigosUnicosSeleccionados.value = codigos
+LINE 1421 |   cantidadCO.value = codigos.length
+LINE 1422 | }
+LINE 1423 | 
+LINE 1424 | const modalfirmaActivo = ref(false)
+LINE 1425 | const token = getToken()
+LINE 1426 | const tipoFactura = getTipoFactura()
+LINE 1427 | const fecha = ref(obtenerFechaActualDato())
+LINE 1428 | const modalmetodopago = ref(false)
+LINE 1429 | const pdfData = ref(null)
+LINE 1430 | const mostrarModal = ref(false)
+LINE 1431 | const $q = useQuasar()
+LINE 1432 | const dialog = ref(false)
+LINE 1433 | const position = ref('top')
+LINE 1434 | const idcliente = ref('')
+LINE 1435 | let resolver = null
+LINE 1436 | const detallesCotizacion = ref([])
+LINE 1437 | // --- Estados reactivos ---
+LINE 1438 | const cotizacionFormRef = ref(null) // Para el q-form
+LINE 1439 | const formClientes = ref(null) // Para el q-form
+LINE 1440 | const idalmacenfiltro = ref(0)
+LINE 1441 | const idporcentajeventa = ref(0)
+LINE 1442 | const divisaActiva = reactive({ id: 0, nombre: '', tipo: '', codigosin: 0 })
+LINE 1443 | const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se usa en este formulario, se mantiene por original
+LINE 1444 | const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
+LINE 1445 | const canalventa = ref(null)
+LINE 1446 | const salesChannels = ref([])
+LINE 1447 | 
+LINE 1448 | const error = ref(null)
+LINE 1449 | const isMobile = ref(false)
+LINE 1450 | const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
+LINE 1451 | 
+LINE 1452 | // Tipo de operación: cotizacion o venta
+LINE 1453 | const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
+LINE 1454 | const optionOperacion = ref([
+LINE 1455 |   { value: 0, label: 'Cotización Normal' },
+LINE 1456 |   { value: 1, label: 'Cotización Preferencial' },
+LINE 1457 | ])
+LINE 1458 | 
+LINE 1459 | const periodOptions = [
+LINE 1460 |   { label: 'Personalizado', value: 0 },
+LINE 1461 |   { label: '15 días', value: 15 },
+LINE 1462 |   { label: '30 días', value: 30 },
+LINE 1463 |   { label: '60 días', value: 60 },
+LINE 1464 |   { label: '90 días', value: 90 },
+LINE 1465 | ]
+LINE 1466 | 
+LINE 1467 | // Datos del formulario
+LINE 1468 | const filtroAlmacenCO = ref(null)
+LINE 1469 | const almacenesOptions = ref([])
+LINE 1470 | 
+LINE 1471 | const filtroCategoriaCO = ref(null)
+LINE 1472 | const categoriasOptions = ref([])
+LINE 1473 | 
+LINE 1474 | const idclienteCO = ref('')
+LINE 1475 | const selectedClient = ref(null) // Objeto del cliente seleccionado
+LINE 1476 | const clientesOptions = ref([])
+LINE 1477 | const filteredClients = ref([])
+LINE 1478 | 
+LINE 1479 | const idsucursalCOS = ref('')
+LINE 1480 | const selectedSucursal = ref(null) // Objeto de la sucursal seleccionada
+LINE 1481 | const sucursalesOptions = ref([])
+LINE 1482 | const filteredSucursales = ref([])
+LINE 1483 | 
+LINE 1484 | const puntosVenta = ref([])
+LINE 1485 | const puntoVenta = ref(null)
+LINE 1486 | 
+LINE 1487 | const selectedProduct = ref(null) // Objeto del producto seleccionado
+LINE 1488 | const cantidaddisponibleCO = ref('')
+LINE 1489 | const cantidadCO = ref(0)
+LINE 1490 | const precioCO = ref(0)
+LINE 1491 | const idstockCO = ref('')
+LINE 1492 | const idporcentajeCO = ref('')
+LINE 1493 | const idproductoalmacenCO = ref('')
+LINE 1494 | const productosDisponibles = ref([])
+LINE 1495 | const filteredProducts = ref([])
+LINE 1496 | const metodosPagos = ref([])
+LINE 1497 | const permitirStock = ref(false)
+LINE 1498 | const carritoCO = reactive({
+LINE 1499 |   ventatotal: 0,
+LINE 1500 |   subtotal: 0,
+LINE 1501 |   descuento: 0,
+LINE 1502 |   idalmacen: 0,
+LINE 1503 |   divisa: divisaActiva.id,
+LINE 1504 |   ipv: puntoVenta.value,
+LINE 1505 |   idusuario: 0,
+LINE 1506 |   listaProductos: [],
+LINE 1507 |   pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
+LINE 1508 |   metodoPago: 0,
+LINE 1509 |   variablePago: 'directo',
+LINE 1510 |   fecha: fecha.value,
+LINE 1511 |   credito: false,
+LINE 1512 |   idfirma: null,
+LINE 1513 |   codigosUnicos: [], // Para productos únicos
+LINE 1514 |   cajabanco: null,
+LINE 1515 |   // Campos de crédito persistentes
+LINE 1516 |   cantidadPagos: 1,
+LINE 1517 |   montoPagos: 0,
+LINE 1518 |   periodo: 30,
+LINE 1519 |   plazoPersonalizado: 0,
+LINE 1520 |   fechaLimite: '',
+LINE 1521 | })
+LINE 1522 | const RegistrarFirma = () => {
+LINE 1523 |   console.log(selectedClient.value)
+LINE 1524 |   if (selectedClient.value != null) {
+LINE 1525 |     modalfirmaActivo.value = true
+LINE 1526 |     console.log(modalfirmaActivo.value)
+LINE 1527 |   } else {
+LINE 1528 |     $q.notify({
+LINE 1529 |       type: 'warning',
+LINE 1530 |       message: 'Por favor, selecciona un cliente antes de continuar.',
+LINE 1531 |       position: 'top',
+LINE 1532 |     })
+LINE 1533 |   }
+LINE 1534 | }
+LINE 1535 | const alTerminarFirma = (respuesta) => {
+LINE 1536 |   console.log('Firma registrada:', respuesta)
+LINE 1537 |   if (respuesta.id_firma) {
+LINE 1538 |     carritoCO.idfirma = respuesta.id_firma
+LINE 1539 |     console.log(carritoCO.idfirma)
+LINE 1540 |   }
+LINE 1541 |   // 2. Cerrar el modal (aunque el hijo ya lo hace, aseguramos el estado)
+LINE 1542 |   modalfirmaActivo.value = false
+LINE 1543 | 
+LINE 1544 |   // 3. Notificación de Quasar (Feedback visual)
+LINE 1545 |   $q.notify({
+LINE 1546 |     type: 'positive',
+LINE 1547 |     message: 'Documento firmado correctamente',
+LINE 1548 |     caption: `ID de Firma: ${respuesta.id_firma || 'N/A'}`,
+LINE 1549 |     position: 'top-right',
+LINE 1550 |   })
+LINE 1551 | }
+LINE 1552 | 
+LINE 1553 | const alFallarFirma = (err) => {
+LINE 1554 |   console.error('El registro falló:', err)
+LINE 1555 | }
+LINE 1556 | const calculatePayments = () => {
+LINE 1557 |   if (carritoCO.credito && carritoCO.cantidadPagos > 0 && totalSaleAmount.value > 0) {
+LINE 1558 |     carritoCO.montoPagos = (totalSaleAmount.value / carritoCO.cantidadPagos).toFixed(2)
+LINE 1559 |   } else {
+LINE 1560 |     carritoCO.montoPagos = 0
+LINE 1561 |   }
+LINE 1562 | }
+LINE 1563 | const calculateDueDate = () => {
+LINE 1564 |   if (!carritoCO.credito || !carritoCO.fecha) return // Corregido
+LINE 1565 | 
+LINE 1566 |   const fecha = new Date(carritoCO.fecha) // Corregido
+LINE 1567 |   let daysToAdd = 0
+LINE 1568 | 
+LINE 1569 |   const selectedPeriod = Number(carritoCO.periodo) // Corregido
+LINE 1570 | 
+LINE 1571 |   if (selectedPeriod === 0) {
+LINE 1572 |     daysToAdd = Number(carritoCO.plazoPersonalizado) || 0 // Corregido (usando carritoCO)
+LINE 1573 |   } else if (selectedPeriod > 0) {
+LINE 1574 |     daysToAdd = selectedPeriod * carritoCO.cantidadPagos // Corregido
+LINE 1575 |   }
+LINE 1576 | 
+LINE 1577 |   if (daysToAdd > 0) {
+LINE 1578 |     fecha.setDate(fecha.getDate() + daysToAdd)
+LINE 1579 |     carritoCO.fechaLimite = fecha.toISOString().slice(0, 10) // Corregido
+LINE 1580 |   } else {
+LINE 1581 |     carritoCO.fechaLimite = '' // Corregido
+LINE 1582 |   }
+LINE 1583 | }
+LINE 1584 | const CONSTANTES = {
+LINE 1585 |   tipopago: 'contado',
+LINE 1586 | }
+LINE 1587 | console.log(CONSTANTES.tipopago)
+LINE 1588 | const emit = defineEmits(['reiniciar', 'cancelarregistro'])
+LINE 1589 | 
+LINE 1590 | // premitir stock
+LINE 1591 | const permitirStockvacio = () => {
+LINE 1592 |   permitirStock.value = !permitirStock.value
+LINE 1593 | 
+LINE 1594 |   if (!permitirStock.value) {
+LINE 1595 |     const datos = JSON.parse(localStorage.getItem('carritoCO')) || {}
+LINE 1596 | 
+LINE 1597 |     console.log(datos)
+LINE 1598 |     const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
+LINE 1599 |     console.log(productos)
+LINE 1600 | 
+LINE 1601 |     const carrito = Array.isArray(carritoCO.value) && carritoCO.value.length > 0
+LINE 1602 |     console.log(carrito)
+LINE 1603 | 
+LINE 1604 |     if (carrito || productos) {
+LINE 1605 |       emit('reiniciar')
+LINE 1606 |     }
+LINE 1607 |   }
+LINE 1608 | }
+LINE 1609 | // Columnas para la tabla del carrito
+LINE 1610 | const carritoColumns = [
+LINE 1611 |   { name: 'exp', label: '', align: 'left' },
+LINE 1612 | 
+LINE 1613 |   { name: 'num', label: 'N°', align: 'left', field: 'num' },
+LINE 1614 |   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
+LINE 1615 |   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
+LINE 1616 |   {
+LINE 1617 |     name: 'cantidad',
+LINE 1618 |     label: 'Cantidad',
+LINE 1619 |     align: 'center',
+LINE 1620 |     field: (row) => decimas(row.cantidad),
+LINE 1621 |   },
+LINE 1622 |   {
+LINE 1623 |     name: 'precio',
+LINE 1624 |     label: 'Precio unitario',
+LINE 1625 |     align: 'center',
+LINE 1626 |     field: (row) => decimas(row.precio),
+LINE 1627 |   },
+LINE 1628 |   {
+LINE 1629 |     name: 'total',
+LINE 1630 |     label: 'Total',
+LINE 1631 |     align: 'center',
+LINE 1632 |     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
+LINE 1633 |   },
+LINE 1634 |   { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
+LINE 1635 | ]
+LINE 1636 | 
+LINE 1637 | // Columnas para la tabla del comprobante
+LINE 1638 | 
+LINE 1639 | // --- Computed Properties ---
+LINE 1640 | const canAddProduct = computed(() => {
+LINE 1641 |   if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
+LINE 1642 |     return true
+LINE 1643 |   }
+LINE 1644 |   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
+LINE 1645 |     return false
+LINE 1646 |   }
+LINE 1647 |   console.log('tipo operacion: ' + tipoOperacion.value?.value)
+LINE 1648 |   if (tipoOperacion.value?.value === 1) {
+LINE 1649 |     return cantidadCO.value <= cantidaddisponibleCO.value
+LINE 1650 |   }
+LINE 1651 | 
+LINE 1652 |   return true // Para cotización, no se valida stock venta Proforma La cantidad solicitada excede el stock disponible
+LINE 1653 | })
+LINE 1654 | 
+LINE 1655 | // --- Watchers ---
+LINE 1656 | 
+LINE 1657 | // Sincronizar carrito con localStorage
+LINE 1658 | watch(
+LINE 1659 |   carritoCO,
+LINE 1660 |   (newVal) => {
+LINE 1661 |     localStorage.setItem('carritoCO', JSON.stringify(newVal))
+LINE 1662 |   },
+LINE 1663 |   { deep: true },
+LINE 1664 | )
+LINE 1665 | const handleTipoOperacionChange = () => {
+LINE 1666 |   cotizacionFormRef.value.resetValidation() // Resetear validación
+LINE 1667 | 
+LINE 1668 |   resetFormulario()
+LINE 1669 |   console.log(tipoOperacion.value)
+LINE 1670 | }
+LINE 1671 | const cambioFecha = () => {
+LINE 1672 |   carritoCO.fecha = fecha.value
+LINE 1673 |   if (carritoCO.credito) {
+LINE 1674 |     calculateDueDate()
+LINE 1675 |   }
+LINE 1676 |   cotizacionFormRef.value?.resetValidation()
+LINE 1677 | }
+LINE 1678 | 
+LINE 1679 | // Watcher para el filtro de almacén para recargar categorías
+LINE 1680 | watch(filtroAlmacenCO, (newVal) => {
+LINE 1681 |   idalmacenfiltro.value = newVal
+LINE 1682 |   listaCategoria()
+LINE 1683 | })
+LINE 1684 | 
+LINE 1685 | // Watcher para el filtro de categoría para recargar productos
+LINE 1686 | watch(filtroCategoriaCO, (newVal) => {
+LINE 1687 |   idporcentajeventa.value = newVal
+LINE 1688 |   listaProductosDisponibles()
+LINE 1689 | })
+LINE 1690 | 
+LINE 1691 | // Watcher para resetear campos de producto cuando se selecciona otro producto o se borra el input
+LINE 1692 | watch(selectedProduct, (newVal) => {
+LINE 1693 |   if (!newVal) {
+LINE 1694 |     cantidaddisponibleCO.value = ''
+LINE 1695 |     cantidadCO.value = 1
+LINE 1696 |     precioCO.value = 1
+LINE 1697 |     idstockCO.value = ''
+LINE 1698 |     idporcentajeCO.value = ''
+LINE 1699 |     idproductoalmacenCO.value = ''
+LINE 1700 |   }
+LINE 1701 | })
+LINE 1702 | 
+LINE 1703 | const cotizacion_proforma = async () => {
+LINE 1704 |   console.log(tipoOperacion.value)
+LINE 1705 |   const tipo_cotz = tipoOperacion.value
+LINE 1706 |   if (Number(tipo_cotz.value) == 0) {
+LINE 1707 |     await enviarDatos()
+LINE 1708 |   } else {
+LINE 1709 |     modalmetodopago.value = true
+LINE 1710 |   }
+LINE 1711 | }
+LINE 1712 | 
+LINE 1713 | // ======================== TIpo de pago combinado =================
+LINE 1714 | 
+LINE 1715 | const totalSaleAmount = computed(() => {
+LINE 1716 |   return parseFloat(carritoCO.ventatotal) || 0
+LINE 1717 | })
+LINE 1718 | 
+LINE 1719 | const totalPaidAmount = computed(() => {
+LINE 1720 |   if (carritoCO.variablePago === 'dividido') {
+LINE 1721 |     return carritoCO.pagosDivididos.reduce(
+LINE 1722 |       (sum, payment) => sum + parseFloat(payment.monto || 0),
+LINE 1723 |       0,
+LINE 1724 |     )
+LINE 1725 |   }
+LINE 1726 |   return 0
+LINE 1727 | })
+LINE 1728 | 
+LINE 1729 | const remainingAmount = computed(() => {
+LINE 1730 |   if (carritoCO.variablePago === 'dividido') {
+LINE 1731 |     return totalSaleAmount.value - totalPaidAmount.value
+LINE 1732 |   }
+LINE 1733 |   return 0
+LINE 1734 | })
+LINE 1735 | 
+LINE 1736 | const addPaymentMethod = () => {
+LINE 1737 |   carritoCO.pagosDivididos.push({ metodoPago: null, monto: 0, porcentaje: 0 })
+LINE 1738 | }
+LINE 1739 | 
+LINE 1740 | const cargarCanales = async () => {
+LINE 1741 |   try {
+LINE 1742 |     const respuesta = await validarUsuario()
+LINE 1743 |     const idempresa = respuesta[0]?.empresa?.idempresa
+LINE 1744 |     const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
+LINE 1745 |     salesChannels.value = response.data.map((item) => ({
+LINE 1746 |       label: item.canal,
+LINE 1747 |       value: item.id,
+LINE 1748 |     }))
+LINE 1749 |   } catch (error) {
+LINE 1750 |     console.error('Error cargando canales:', error)
+LINE 1751 |   }
+LINE 1752 | }
+LINE 1753 | 
+LINE 1754 | const removePaymentMethod = (index) => {
+LINE 1755 |   carritoCO.pagosDivididos.splice(index, 1)
+LINE 1756 | }
+LINE 1757 | const calculateAmountFromPercentage = (index) => {
+LINE 1758 |   console.log(index)
+LINE 1759 |   const payment = carritoCO.pagosDivididos[index]
+LINE 1760 |   console.log(payment)
+LINE 1761 |   // Ensure percentage is treated as a number and within valid range
+LINE 1762 |   const percentage = parseFloat(payment.porcentaje) || 0
+LINE 1763 |   if (percentage >= 0 && percentage <= 100 && totalSaleAmount.value > 0) {
+LINE 1764 |     payment.monto = (totalSaleAmount.value * (percentage / 100)).toFixed(2)
+LINE 1765 |   } else {
+LINE 1766 |     payment.monto = 0
+LINE 1767 |   }
+LINE 1768 | }
+LINE 1769 | const calculateRemainingAmount = (index) => {
+LINE 1770 |   console.log(index)
+LINE 1771 |   const payment = carritoCO.pagosDivididos[index]
+LINE 1772 |   console.log(payment)
+LINE 1773 |   const monto = parseFloat(payment.monto) || 0
+LINE 1774 |   if (monto >= 0 && monto <= totalSaleAmount.value && totalSaleAmount.value > 0) {
+LINE 1775 |     payment.porcentaje = ((monto * 100) / totalSaleAmount.value).toFixed(2)
+LINE 1776 |   } else {
+LINE 1777 |     payment.porcentaje = 0
+LINE 1778 |   }
+LINE 1779 | }
+LINE 1780 | // --- Funciones de Lógica de Negocio y Peticiones ---
+LINE 1781 | 
+LINE 1782 | async function getUserData() {
+LINE 1783 |   const contenidousuario = validarUsuario()
+LINE 1784 |   return contenidousuario[0]
+LINE 1785 | }
+LINE 1786 | 
+LINE 1787 | const cargarMetodoPagoFactura = async () => {
+LINE 1788 |   try {
+LINE 1789 |     const respuesta = await validarUsuario()
+LINE 1790 |     const token = respuesta[0]?.factura?.access_token
+LINE 1791 |     const tipo = respuesta[0]?.factura?.tipo
+LINE 1792 |     const idempresa = respuesta[0]?.empresa?.idempresa
+LINE 1793 |     const response = await api.get(`listaMetodopagoFactura/${idempresa}/${token}/${tipo}`)
+LINE 1794 |     const filtrado = response.data.filter((u) => u.estado == 1)
+LINE 1795 |     console.log(response.data)
+LINE 1796 |     metodosPagos.value = filtrado.map((item) => ({
+LINE 1797 |       label: item.nombre,
+LINE 1798 |       value: item.id,
+LINE 1799 |     }))
+LINE 1800 |   } catch (error) {
+LINE 1801 |     console.error('Error cargando canales:', error)
+LINE 1802 |   }
+LINE 1803 | }
+LINE 1804 | async function leyendaActiva() {
+LINE 1805 |   let endpoint = null
+LINE 1806 | 
+LINE 1807 |   if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
+LINE 1808 |     endpoint = `listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`
+LINE 1809 |   } else {
+LINE 1810 |     leyendaFacturaActiva.id = 0
+LINE 1811 |     leyendaFacturaActiva.codigosin = 0
+LINE 1812 |     return
+LINE 1813 |   }
+LINE 1814 | 
+LINE 1815 |   try {
+LINE 1816 |     if (endpoint != null) {
+LINE 1817 |       const response = await api.get(endpoint)
+LINE 1818 |       const resultado = response.data
+LINE 1819 |       console.log(resultado)
+LINE 1820 |       if (resultado[0] === 'error') {
+LINE 1821 |         console.error(resultado.error)
+LINE 1822 |       } else {
+LINE 1823 |         let use = resultado.filter((u) => u.estado === 1)
+LINE 1824 |         if (use.length > 0) {
+LINE 1825 |           leyendaFacturaActiva.id = use[0].id || 0
+LINE 1826 |           leyendaFacturaActiva.codigosin = use[0].leyendasin.codigo || 0
+LINE 1827 |         }
+LINE 1828 |       }
+LINE 1829 |     }
+LINE 1830 |   } catch (error) {
+LINE 1831 |     console.error('Error al cargar leyenda activa:', error)
+LINE 1832 |   }
+LINE 1833 | }
+LINE 1834 | 
+LINE 1835 | async function divisaEmonedaActiva() {
+LINE 1836 |   let endpoint = ``
+LINE 1837 |   if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
+LINE 1838 |     endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+LINE 1839 |   } else {
+LINE 1840 |     endpoint = `listaDivisa/${idempresa}`
+LINE 1841 |   }
+LINE 1842 | 
+LINE 1843 |   console.log(endpoint)
+LINE 1844 |   try {
+LINE 1845 |     const response = await api.get(endpoint)
+LINE 1846 |     const resultado = response.data
+LINE 1847 |     console.log(resultado)
+LINE 1848 |     if (resultado[0] === 'error') {
+LINE 1849 |       console.error(resultado.error)
+LINE 1850 |     } else {
+LINE 1851 |       let use = resultado.filter((u) => Number(u.estado) === 1)
+LINE 1852 |       if (use.length > 0) {
+LINE 1853 |         divisaActiva.id = use[0].id
+LINE 1854 |         divisaActiva.nombre = use[0].nombre
+LINE 1855 |         divisaActiva.tipo = use[0].tipo || 0
+LINE 1856 |         divisaActiva.codigosin = use[0]?.monedasin?.codigo ?? 0
+LINE 1857 |       }
+LINE 1858 |       console.log(divisaActiva)
+LINE 1859 |     }
+LINE 1860 |   } catch (error) {
+LINE 1861 |     console.error('Error al cargar divisa activa:', error)
+LINE 1862 |   }
+LINE 1863 | }
+LINE 1864 | 
+LINE 1865 | async function listaAlmacenes() {
+LINE 1866 |   const contenidousuario = await getUserData()
+LINE 1867 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 1868 |   const idusuario = contenidousuario?.idusuario
+LINE 1869 |   const endpoint = `listaResponsableAlmacen/${idempresa}`
+LINE 1870 |   try {
+LINE 1871 |     const response = await api.get(endpoint)
+LINE 1872 |     const resultado = response.data
+LINE 1873 |     console.log(resultado)
+LINE 1874 |     if (resultado[0] === 'error') {
+LINE 1875 |       console.error(resultado.error)
+LINE 1876 |     } else {
+LINE 1877 |       almacenesOptions.value = resultado.filter((u) => u.idusuario === idusuario)
+LINE 1878 |       console.log(isInitializing.value)
+LINE 1879 |       if (almacenesOptions.value.length > 0) {
+LINE 1880 |         console.log(isInitializing.value)
+LINE 1881 |         filtroAlmacenCO.value = almacenesOptions.value[0].idalmacen // Seleccionar el primero por defecto
+LINE 1882 |       }
+LINE 1883 |     }
+LINE 1884 |     await listaCLientes()
+LINE 1885 |   } catch (error) {
+LINE 1886 |     console.error('Error al cargar almacenes:', error)
+LINE 1887 |   }
+LINE 1888 | }
+LINE 1889 | watch(filtroAlmacenCO, (newVal) => {
+LINE 1890 |   console.log('filtroAlmacenCO ha cambiado a:', newVal) // <--- AÑADIR ESTO num
+LINE 1891 |   idalmacenfiltro.value = newVal
+LINE 1892 |   listaCategoria()
+LINE 1893 | })
+LINE 1894 | async function listaCategoria() {
+LINE 1895 |   cargarPuntoVentas()
+LINE 1896 |   const contenidousuario = await getUserData()
+LINE 1897 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 1898 |   const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
+LINE 1899 |   try {
+LINE 1900 |     const response = await api.get(endpoint)
+LINE 1901 |     const resultado = response.data
+LINE 1902 |     if (resultado[0] === 'error') {
+LINE 1903 |       console.error(resultado.error)
+LINE 1904 |     } else {
+LINE 1905 |       // Filtrado por el idalmacenfiltro.value que se actualiza desde el watcher
+LINE 1906 |       categoriasOptions.value = resultado.filter((u) => {
+LINE 1907 |         return Number(u.estado) === 1 && Number(u.idalmacen) === Number(idalmacenfiltro.value)
+LINE 1908 |       })
+LINE 1909 |       if (categoriasOptions.value.length > 0) {
+LINE 1910 |         filtroCategoriaCO.value = categoriasOptions.value[0].id // Seleccionar el primero por defecto
+LINE 1911 |       } else {
+LINE 1912 |         filtroCategoriaCO.value = null // Resetear si no hay categorías
+LINE 1913 |       }
+LINE 1914 |     }
+LINE 1915 |   } catch (error) {
+LINE 1916 |     console.error('Error al cargar categorías:', error)
+LINE 1917 |   }
+LINE 1918 | }
+LINE 1919 | const cargarPuntoVentas = async () => {
+LINE 1920 |   try {
+LINE 1921 |     const response = await validarUsuario()
+LINE 1922 |     const idusuario = response[0]?.idusuario
+LINE 1923 | 
+LINE 1924 |     if (idusuario) {
+LINE 1925 |       const { data } = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
+LINE 1926 |       console.log(data)
+LINE 1927 |       const idalmacen = Number(idalmacenfiltro.value)
+LINE 1928 |       console.log()
+LINE 1929 |       if (data.estado == 'error') {
+LINE 1930 |         console.log(data.error)
+LINE 1931 |       } else {
+LINE 1932 |         const filtrados = data.datos.filter((u) => u.idalmacen == idalmacen)
+LINE 1933 |         console.log(filtrados)
+LINE 1934 |         puntosVenta.value = filtrados.map((item) => ({
+LINE 1935 |           label: item.nombre,
+LINE 1936 |           value: item.idpuntoventa,
+LINE 1937 |           Data: item,
+LINE 1938 |         }))
+LINE 1939 |         puntoVenta.value = puntosVenta.value[0]
+LINE 1940 |         console.log(puntosVenta.value)
+LINE 1941 |       }
+LINE 1942 |     }
+LINE 1943 |   } catch (error) {
+LINE 1944 |     console.error(error)
+LINE 1945 |   }
+LINE 1946 | }
+LINE 1947 | async function listaProductosDisponibles() {
+LINE 1948 |   const contenidousuario = await getUserData()
+LINE 1949 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 1950 |   if (!idempresa) {
+LINE 1951 |     $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+LINE 1952 |     return
+LINE 1953 |   }
+LINE 1954 |   if (!idporcentajeventa.value) {
+LINE 1955 |     productosDisponibles.value = []
+LINE 1956 |     return
+LINE 1957 |   }
+LINE 1958 | 
+LINE 1959 |   const endpoint = `listaProductosDisponiblesVenta/${idempresa}`
+LINE 1960 |   try {
+LINE 1961 |     const response = await api.get(endpoint)
+LINE 1962 |     console.log(response.data)
+LINE 1963 |     const resultado = response.data
+LINE 1964 |     if (resultado[0] === 'error') {
+LINE 1965 |       console.error(resultado.error)
+LINE 1966 |       productosDisponibles.value = []
+LINE 1967 |     } else {
+LINE 1968 |       console.log(idporcentajeventa.value)
+LINE 1969 |       console.log(idporcentajeventa.value)
+LINE 1970 |       let use = resultado.datos.filter(
+LINE 1971 |         (u) => Number(u.idporcentaje) === Number(idporcentajeventa.value),
+LINE 1972 |       )
+LINE 1973 |       console.log(use)
+LINE 1974 |       // Filtrar productos que ya están en el carrito
+LINE 1975 |       if (carritoCO.listaProductos.length > 0) {
+LINE 1976 |         use = use.filter(
+LINE 1977 |           (u) => !carritoCO.listaProductos.some((cp) => cp.idproductoalmacen === u.id),
+LINE 1978 |         )
+LINE 1979 |       }
+LINE 1980 |       console.log(use)
+LINE 1981 |       productosDisponibles.value = use.map((p) => ({
+LINE 1982 |         ...p,
+LINE 1983 |         display: `${p.codigo} - ${p.descripcion}`,
+LINE 1984 |       }))
+LINE 1985 |     }
+LINE 1986 |   } catch (error) {
+LINE 1987 |     console.error('Error al cargar productos disponibles:', error)
+LINE 1988 |     productosDisponibles.value = []
+LINE 1989 |   }
+LINE 1990 | }
+LINE 1991 | 
+LINE 1992 | async function listaCLientes() {
+LINE 1993 |   const contenidousuario = await getUserData()
+LINE 1994 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 1995 |   if (!idempresa) {
+LINE 1996 |     $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+LINE 1997 |     return
+LINE 1998 |   }
+LINE 1999 |   const endpoint = `listaCliente/${idempresa}`
+LINE 2000 |   try {
+LINE 2001 |     const response = await api.get(endpoint)
+LINE 2002 |     const resultado = response.data
+LINE 2003 |     if (resultado[0] === 'error') {
+LINE 2004 |       console.error(resultado.error)
+LINE 2005 |     } else {
+LINE 2006 |       if (soloAlmacen.value) {
+LINE 2007 |         console.log(soloAlmacen)
+LINE 2008 |         const allowedAlmacenIds = almacenesOptions.value.map((a) => a.idalmacen)
+LINE 2009 | 
+LINE 2010 |         // Filtrar clientes: se muestran si no tienen almacén (globales) o si tienen al menos uno permitido
+LINE 2011 |         const clientesFiltrados = resultado.filter((c) => {
+LINE 2012 |           // Cliente sin almacenes → se muestra siempre
+LINE 2013 |           if (!c.almacenes || c.almacenes.length === 0) return true
+LINE 2014 |           // Cliente con al menos un almacén permitido
+LINE 2015 |           return c.almacenes.some((al) => allowedAlmacenIds.includes(al.idalmacen))
+LINE 2016 |         })
+LINE 2017 | 
+LINE 2018 |         clientesOptions.value = clientesFiltrados.map((c) => ({
+LINE 2019 |           ...c,
+LINE 2020 |           display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+LINE 2021 |         }))
+LINE 2022 |       } else {
+LINE 2023 |         clientesOptions.value = resultado.map((c) => ({
+LINE 2024 |           ...c,
+LINE 2025 |           display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+LINE 2026 |         }))
+LINE 2027 |       }
+LINE 2028 |     }
+LINE 2029 |   } catch (error) {
+LINE 2030 |     console.error('Error al cargar clientes:', error)
+LINE 2031 |   }
+LINE 2032 | }
+LINE 2033 | async function selectSucursal(clientId) {
+LINE 2034 |   if (!clientId) {
+LINE 2035 |     sucursalesOptions.value = []
+LINE 2036 |     selectedSucursal.value = null
+LINE 2037 |     idsucursalCOS.value = ''
+LINE 2038 |     return
+LINE 2039 |   }
+LINE 2040 |   try {
+LINE 2041 |     const endpoint = `listaSucursal/${clientId}`
+LINE 2042 |     const response = await api.get(endpoint)
+LINE 2043 |     const data = response.data
+LINE 2044 |     if (data.length === 0) {
+LINE 2045 |       $q.notify({
+LINE 2046 |         type: 'info',
+LINE 2047 |         message: 'No existen sucursales registradas del cliente seleccionado.',
+LINE 2048 |       })
+LINE 2049 |       sucursalesOptions.value = []
+LINE 2050 |       selectedSucursal.value = null
+LINE 2051 |       idsucursalCOS.value = ''
+LINE 2052 |     } else {
+LINE 2053 |       sucursalesOptions.value = data
+LINE 2054 |       // Seleccionar la primera sucursal por defecto
+LINE 2055 |       selectedSucursal.value = data[0]
+LINE 2056 |       idsucursalCOS.value = data[0].id
+LINE 2057 |     }
+LINE 2058 |   } catch (error) {
+LINE 2059 |     console.error('Error al cargar sucursales:', error)
+LINE 2060 |     sucursalesOptions.value = []
+LINE 2061 |     selectedSucursal.value = null
+LINE 2062 |     idsucursalCOS.value = ''
+LINE 2063 |   }
+LINE 2064 | }
+LINE 2065 | 
+LINE 2066 | async function cargarLeyendasCotizacion() {
+LINE 2067 |   const contenidousuario = await getUserData()
+LINE 2068 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 2069 |   if (!idempresa) {
+LINE 2070 |     leyendasCotizacion.value = []
+LINE 2071 |     return
+LINE 2072 |   }
+LINE 2073 |   const endpoint = `listaLeyendaCotizacion/${idempresa}`
+LINE 2074 | 
+LINE 2075 |   try {
+LINE 2076 |     const response = await api.get(endpoint)
+LINE 2077 |     const resultado = response.data
+LINE 2078 |     if (resultado[0] === 'error') {
+LINE 2079 |       console.error(resultado.error)
+LINE 2080 |       leyendasCotizacion.value = []
+LINE 2081 |     } else {
+LINE 2082 |       leyendasCotizacion.value = resultado.filter((u) => u.estado === 1)
+LINE 2083 |     }
+LINE 2084 |   } catch (error) {
+LINE 2085 |     console.error('Error al cargar leyendas de cotización:', error)
+LINE 2086 |     leyendasCotizacion.value = []
+LINE 2087 |   }
+LINE 2088 | }
+LINE 2089 | 
+LINE 2090 | // --- Lógica de filtrado para Quasar Select ---
+LINE 2091 | 
+LINE 2092 | function filterClient(val, update) {
+LINE 2093 |   if (val === '') {
+LINE 2094 |     update(() => {
+LINE 2095 |       filteredClients.value = clientesOptions.value
+LINE 2096 |     })
+LINE 2097 |     return
+LINE 2098 |   }
+LINE 2099 |   update(() => {
+LINE 2100 |     const needle = normalizeText(val).toLowerCase()
+LINE 2101 |     filteredClients.value = clientesOptions.value.filter(
+LINE 2102 |       (v) => normalizeText(v.display).toLowerCase().indexOf(needle) > -1,
+LINE 2103 |     )
+LINE 2104 |   })
+LINE 2105 | }
+LINE 2106 | 
+LINE 2107 | function setClientInputValue(val) {
+LINE 2108 |   // Esta función se dispara cuando el usuario escribe en el input
+LINE 2109 |   // Si el valor no coincide con un cliente seleccionado, resetea la selección
+LINE 2110 |   if (!clientesOptions.value.some((c) => c.display === val)) {
+LINE 2111 |     selectedClient.value = null
+LINE 2112 |     idclienteCO.value = ''
+LINE 2113 |     selectedSucursal.value = null
+LINE 2114 |     idsucursalCOS.value = ''
+LINE 2115 |   }
+LINE 2116 | }
+LINE 2117 | 
+LINE 2118 | function elegirUnCliente(client) {
+LINE 2119 |   //console.log(client)
+LINE 2120 |   if (client) {
+LINE 2121 |     idclienteCO.value = client.id
+LINE 2122 |     selectSucursal(client.id)
+LINE 2123 |     selectCanalVenta(client.idcanal)
+LINE 2124 |   } else {
+LINE 2125 |     idclienteCO.value = ''
+LINE 2126 |     selectedSucursal.value = null
+LINE 2127 |     idsucursalCOS.value = ''
+LINE 2128 |   }
+LINE 2129 | }
+LINE 2130 | function selectCanalVenta(canalid) {
+LINE 2131 |   console.log(canalid)
+LINE 2132 | 
+LINE 2133 |   canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalid)) || null
+LINE 2134 | }
+LINE 2135 | function filterSucursal(val, update) {
+LINE 2136 |   if (val === '') {
+LINE 2137 |     update(() => {
+LINE 2138 |       filteredSucursales.value = sucursalesOptions.value
+LINE 2139 |     })
+LINE 2140 |     return
+LINE 2141 |   }
+LINE 2142 |   update(() => {
+LINE 2143 |     const needle = normalizeText(val).toLowerCase()
+LINE 2144 |     filteredSucursales.value = sucursalesOptions.value.filter(
+LINE 2145 |       (v) => normalizeText(v.nombre).toLowerCase().indexOf(needle) > -1,
+LINE 2146 |     )
+LINE 2147 |   })
+LINE 2148 | }
+LINE 2149 | 
+LINE 2150 | function setSucursalInputValue(val) {
+LINE 2151 |   if (!sucursalesOptions.value.some((s) => s.nombre === val)) {
+LINE 2152 |     selectedSucursal.value = null
+LINE 2153 |     idsucursalCOS.value = ''
+LINE 2154 |   }
+LINE 2155 | }
+LINE 2156 | 
+LINE 2157 | function elegirUnaSucursal(sucursal) {
+LINE 2158 |   if (sucursal) {
+LINE 2159 |     idsucursalCOS.value = sucursal.id
+LINE 2160 |   } else {
+LINE 2161 |     idsucursalCOS.value = ''
+LINE 2162 |   }
+LINE 2163 | }
+LINE 2164 | 
+LINE 2165 | function filterProduct(val, update) {
+LINE 2166 |   if (val === '') {
+LINE 2167 |     update(() => {
+LINE 2168 |       filteredProducts.value = productosDisponibles.value
+LINE 2169 |     })
+LINE 2170 |     return
+LINE 2171 |   }
+LINE 2172 |   update(() => {
+LINE 2173 |     const needle = normalizeText(val).toLowerCase()
+LINE 2174 |     filteredProducts.value = productosDisponibles.value.filter(
+LINE 2175 |       (v) => normalizeText(v.display).toLowerCase().indexOf(needle) > -1,
+LINE 2176 |     )
+LINE 2177 |   })
+LINE 2178 | }
+LINE 2179 | 
+LINE 2180 | function setProductInputValue(val) {
+LINE 2181 |   if (!productosDisponibles.value.some((p) => p.display === val)) {
+LINE 2182 |     selectedProduct.value = null
+LINE 2183 |   }
+LINE 2184 | }
+LINE 2185 | 
+LINE 2186 | function elegirUnProducto(product) {
+LINE 2187 |   if (product) {
+LINE 2188 |     cantidaddisponibleCO.value = product.stock
+LINE 2189 |     precioCO.value = product.precio
+LINE 2190 |     idstockCO.value = product.idstock
+LINE 2191 |     idporcentajeCO.value = product.idporcentaje
+LINE 2192 |     idproductoalmacenCO.value = product.id
+LINE 2193 |     cantidadCO.value = 1 // Set default quantity to 1
+LINE 2194 |   } else {
+LINE 2195 |     cantidaddisponibleCO.value = ''
+LINE 2196 |     precioCO.value = 1
+LINE 2197 |     idstockCO.value = ''
+LINE 2198 |     idporcentajeCO.value = ''
+LINE 2199 |     idproductoalmacenCO.value = ''
+LINE 2200 |     cantidadCO.value = 0
+LINE 2201 |   }
+LINE 2202 | }
+LINE 2203 | 
+LINE 2204 | // --- Lógica del Carrito ---
+LINE 2205 | 
+LINE 2206 | async function anadirProductoACarrito() {
+LINE 2207 |   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
+LINE 2208 |     $q.notify({
+LINE 2209 |       type: 'info',
+LINE 2210 |       message: 'Llene todos los campos para poder cargar productos a la lista.',
+LINE 2211 |       actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2212 |     })
+LINE 2213 |     return
+LINE 2214 |   }
+LINE 2215 | 
+LINE 2216 |   if (Number(tipoOperacion.value?.value) === 1) {
+LINE 2217 |     if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
+LINE 2218 |       $q.notify({
+LINE 2219 |         type: 'warning',
+LINE 2220 |         message: 'La cantidad solicitada excede el stock disponible.',
+LINE 2221 |         actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2222 |       })
+LINE 2223 |       return
+LINE 2224 |     } else {
+LINE 2225 |       if (cantidadCO.value > cantidaddisponibleCO.value && permitirStock.value) {
+LINE 2226 |         $q.notify({
+LINE 2227 |           type: 'warning',
+LINE 2228 |           message: 'La cantidad solicitada excede el stock disponible.',
+LINE 2229 |           actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2230 |         })
+LINE 2231 |       }
+LINE 2232 |     }
+LINE 2233 |   } else {
+LINE 2234 |     if (Number(tipoOperacion.value?.value) === 2 && cantidadCO.value > cantidaddisponibleCO.value) {
+LINE 2235 |       $q.notify({
+LINE 2236 |         type: 'warning',
+LINE 2237 |         message: 'La cantidad solicitada excede el stock disponible.',
+LINE 2238 |         actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2239 |       })
+LINE 2240 |     }
+LINE 2241 |   }
+LINE 2242 | 
+LINE 2243 |   const contenidousuario = await getUserData()
+LINE 2244 |   const idusuario = contenidousuario?.idusuario
+LINE 2245 |   const nuevoProducto = {
+LINE 2246 |     num: carritoCO.listaProductos.length + 1,
+LINE 2247 |     idproductoalmacen: idproductoalmacenCO.value,
+LINE 2248 |     cantidad: cantidadCO.value,
+LINE 2249 |     precio: precioCO.value,
+LINE 2250 |     idstock: idstockCO.value,
+LINE 2251 |     idporcentaje: idporcentajeCO.value,
+LINE 2252 |     candiponible: cantidaddisponibleCO.value,
+LINE 2253 |     descripcion: selectedProduct.value.descripcion,
+LINE 2254 |     descripcionAdicional: '',
+LINE 2255 |     codigo: selectedProduct.value.codigo,
+LINE 2256 |     despachado:
+LINE 2257 |       Number(selectedProduct.value.stock) == 0 ||
+LINE 2258 |       Number(selectedProduct.value.stock) < Number(cantidadCO.value)
+LINE 2259 |         ? 2
+LINE 2260 |         : 1,
+LINE 2261 |     codigosUnicos: [...CodigosUnicosSeleccionados.value],
+LINE 2262 |   }
+LINE 2263 |   carritoCO.idusuario = idusuario
+LINE 2264 |   carritoCO.idempresa = idempresa_md5()
+LINE 2265 |   carritoCO.divisa = divisaActiva.id // Asegúrate de que la divisa activa esté cargada
+LINE 2266 |   carritoCO.listaProductos.push(nuevoProducto)
+LINE 2267 |   carritoCO.codigosUnicos = [...carritoCO.codigosUnicos, ...CodigosUnicosSeleccionados.value]
+LINE 2268 |   calcularTotalesCarrito()
+LINE 2269 |   listaProductosDisponibles() // Recargar la lista de productos disponibles para excluir el añadido
+LINE 2270 |   resetProductoInputs()
+LINE 2271 | }
+LINE 2272 | 
+LINE 2273 | function eliminarProductoCarrito(idProductoAlmacen) {
+LINE 2274 |   carritoCO.listaProductos = carritoCO.listaProductos.filter(
+LINE 2275 |     (p) => p.idproductoalmacen !== idProductoAlmacen,
+LINE 2276 |   )
+LINE 2277 |   calcularTotalesCarrito()
+LINE 2278 |   listaProductosDisponibles() // Recargar la lista de productos disponibles
+LINE 2279 | }
+LINE 2280 | const validarDescripcion = async (scope, row) => {
+LINE 2281 |   console.log(scope.value)
+LINE 2282 | 
+LINE 2283 |   if (carritoCO && carritoCO.listaProductos) {
+LINE 2284 |     carritoCO.listaProductos = carritoCO.listaProductos.map((prod) => {
+LINE 2285 |       // Agregar o editar la descripción adicional
+LINE 2286 |       if (Number(prod.id) == Number(row.idproductoalmacen)) {
+LINE 2287 |         prod.descripcionAdicional = scope.value
+LINE 2288 |       }
+LINE 2289 |       return prod
+LINE 2290 |     })
+LINE 2291 | 
+LINE 2292 |     console.log('Descripción adicional actualizada correctamente ')
+LINE 2293 |   } else {
+LINE 2294 |     console.warn('No se encontró la lista de productos en el localStorage')
+LINE 2295 |   }
+LINE 2296 | 
+LINE 2297 |   scope.set()
+LINE 2298 | }
+LINE 2299 | function calcularTotalesCarrito() {
+LINE 2300 |   carritoCO.subtotal = carritoCO.listaProductos.reduce((sub, producto) => {
+LINE 2301 |     const precio = parseFloat(producto.precio)
+LINE 2302 |     const cantidad = parseFloat(producto.cantidad)
+LINE 2303 |     return sub + precio * cantidad
+LINE 2304 |   }, 0)
+LINE 2305 | 
+LINE 2306 |   if (carritoCO.subtotal === 0) {
+LINE 2307 |     carritoCO.descuento = 0
+LINE 2308 |   }
+LINE 2309 |   carritoCO.ventatotal = carritoCO.subtotal - carritoCO.descuento
+LINE 2310 | 
+LINE 2311 |   // Asegurar dos decimales
+LINE 2312 |   carritoCO.subtotal = redondear(carritoCO.subtotal)
+LINE 2313 |   carritoCO.ventatotal = redondear(carritoCO.ventatotal)
+LINE 2314 |   carritoCO.descuento = redondear(carritoCO.descuento)
+LINE 2315 | }
+LINE 2316 | 
+LINE 2317 | function aplicarDescuento() {
+LINE 2318 |   if (carritoCO.descuento > carritoCO.subtotal) {
+LINE 2319 |     $q.notify({
+LINE 2320 |       type: 'warning',
+LINE 2321 |       message: 'El descuento sobrepasa el subtotal.',
+LINE 2322 |       actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2323 |     })
+LINE 2324 |     carritoCO.descuento = carritoCO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
+LINE 2325 |   }
+LINE 2326 |   calcularTotalesCarrito()
+LINE 2327 | }
+LINE 2328 | 
+LINE 2329 | function resetProductoInputs() {
+LINE 2330 |   selectedProduct.value = null
+LINE 2331 |   cantidaddisponibleCO.value = ''
+LINE 2332 |   cantidadCO.value = 1
+LINE 2333 |   precioCO.value = 1
+LINE 2334 |   idstockCO.value = ''
+LINE 2335 |   idporcentajeCO.value = ''
+LINE 2336 |   idproductoalmacenCO.value = ''
+LINE 2337 | }
+LINE 2338 | 
+LINE 2339 | // --- Envío de Datos ---
+LINE 2340 | 
+LINE 2341 | async function enviarDatos() {
+LINE 2342 |   modalmetodopago.value = false
+LINE 2343 |   const isValid = await cotizacionFormRef.value.validate()
+LINE 2344 |   if (!isValid) {
+LINE 2345 |     $q.notify({
+LINE 2346 |       type: 'info',
+LINE 2347 |       message: 'Por favor, complete todos los campos requeridos.',
+LINE 2348 |       actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2349 |     })
+LINE 2350 |     return
+LINE 2351 |   }
+LINE 2352 |   //localStorage
+LINE 2353 |   const isValidCliente = await formClientes.value.validate()
+LINE 2354 |   if (!isValidCliente) {
+LINE 2355 |     $q.notify({
+LINE 2356 |       type: 'info',
+LINE 2357 |       message: 'Por favor, complete todos los campos requeridos.',
+LINE 2358 |       actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2359 |     })
+LINE 2360 |     return
+LINE 2361 |   }
+LINE 2362 | 
+LINE 2363 |   if (carritoCO.listaProductos.length === 0) {
+LINE 2364 |     $q.notify({
+LINE 2365 |       type: 'info',
+LINE 2366 |       message: 'Debe añadir al menos un producto a la cotización.',
+LINE 2367 |       actions: [{ icon: 'close', color: 'white', round: true }],
+LINE 2368 |     })
+LINE 2369 |     return
+LINE 2370 |   }
+LINE 2371 | 
+LINE 2372 |   carritoCO.tipoOperacion = tipoOperacion.value?.value
+LINE 2373 | 
+LINE 2374 |   // Preparar los datos de pago según la modalidad seleccionada
+LINE 2375 |   if (carritoCO.variablePago === 'directo') {
+LINE 2376 |     carritoCO.pagosDivididos = [
+LINE 2377 |       {
+LINE 2378 |         metodoPago: carritoCO.metodoPago,
+LINE 2379 |         monto: carritoCO.ventatotal,
+LINE 2380 |         porcentaje: 100,
+LINE 2381 |       },
+LINE 2382 |     ]
+LINE 2383 |   }
+LINE 2384 |   // Si es 'dividido', carritoCO.pagosDivididos ya contiene los datos ingresados en el formulario
+LINE 2385 | 
+LINE 2386 |   const pv = puntoVenta.value
+LINE 2387 |   carritoCO.ipv = Number(pv.value)
+LINE 2388 |   carritoCO.idalmacen = filtroAlmacenCO.value
+LINE 2389 |   carritoCO.tipopago = carritoCO.credito ? 'credito' : CONSTANTES.tipopago
+LINE 2390 |   carritoCO.cajabanco = idcajaBancoSeleccionada.value
+LINE 2391 |   carritoCO.idcliente = idclienteCO.value
+LINE 2392 |   carritoCO.md5_em = idempresa
+LINE 2393 |   carritoCO.almacen = almacenesOptions.value.find(
+LINE 2394 |     (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
+LINE 2395 |   ).almacen //filtroAlmacenCO.value
+LINE 2396 |   // console.log(carritoCO.almacen)
+LINE 2397 |   // console.log(carritoCO.cajabanco)
+LINE 2398 |   // console.log(carritoCO.cajabanco)
+LINE 2399 | 
+LINE 2400 |   const datosFormulario = new FormData()
+LINE 2401 |   datosFormulario.append('ver', 'registrarCotizacion')
+LINE 2402 |   datosFormulario.append('filtroALmacen', filtroAlmacenCO.value)
+LINE 2403 |   datosFormulario.append('filtroCategoria', filtroCategoriaCO.value)
+LINE 2404 |   datosFormulario.append('idcliente', idclienteCO.value)
+LINE 2405 |   datosFormulario.append('idsucursal', idsucursalCOS.value)
+LINE 2406 |   datosFormulario.append('listaProductos', JSON.stringify(carritoCO)) // Enviar el objeto completo del carrito
+LINE 2407 |   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
+LINE 2408 | 
+LINE 2409 |   console.log(tipoOperacion.value?.value)
+LINE 2410 |   // console.log(carritoCO)
+LINE 2411 | 
+LINE 2412 |   $q.loading.show({
+LINE 2413 |     message: 'Registrando cotización...',
+LINE 2414 |   })
+LINE 2415 |   try {
+LINE 2416 |     // Asumo que tu backend espera 'listaProductos' como un JSON string.
+LINE 2417 |     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
+LINE 2418 |     //const datosJson = {}
+LINE 2419 |     // datosFormulario.forEach((valor, clave) => {
+LINE 2420 |     //   datosJson[clave] = valor
+LINE 2421 |     // })
+LINE 2422 |     //console.log(JSON.stringify(datosJson, null, 2))
+LINE 2423 |     const response = await api.post(``, datosFormulario)
+LINE 2424 |     const data = response.data
+LINE 2425 |     console.log('Datos recibidos:', response)
+LINE 2426 | 
+LINE 2427 |     if (data.estado === 'exito') {
+LINE 2428 |       resetFormulario()
+LINE 2429 |       $q.notify({
+LINE 2430 |         type: 'positive',
+LINE 2431 |         message: 'Cotización realizada exitosamente.',
+LINE 2432 |       })
+LINE 2433 |       cotizacionFormRef.value.resetValidation() // Resetear validación
+LINE 2434 | 
+LINE 2435 |       $q.dialog({
+LINE 2436 |         title: 'Cotización Exitosa',
+LINE 2437 |         message: 'Su comprobante está listo. ¿Desea verlo?',
+LINE 2438 |         cancel: true,
+LINE 2439 |         persistent: true,
+LINE 2440 |       })
+LINE 2441 |         .onOk(() => {
+LINE 2442 |           generarComprobante(data.id)
+LINE 2443 |         })
+LINE 2444 |         .onCancel(() => {
+LINE 2445 |           emit('reiniciar')
+LINE 2446 |         })
+LINE 2447 |     } else {
+LINE 2448 |       $q.notify({
+LINE 2449 |         type: 'negative',
+LINE 2450 |         message: data.mensaje || 'Error al registrar la cotización.',
+LINE 2451 |       })
+LINE 2452 |     }
+LINE 2453 |   } catch (error) {
+LINE 2454 |     console.error('Error al realizar la solicitud:', error)
+LINE 2455 |     $q.notify({
+LINE 2456 |       type: 'negative',
+LINE 2457 |       message: 'Hubo un error de conexión o en el servidor.',
+LINE 2458 |     })
+LINE 2459 |   } finally {
+LINE 2460 |     $q.loading.hide()
+LINE 2461 |   }
+LINE 2462 | }
+LINE 2463 | 
+LINE 2464 | function resetFormulario() {
+LINE 2465 |   // Limpiar campos del formulario
+LINE 2466 |   filtroAlmacenCO.value = null // Se reestablecerá por la lógica de listaAlmacenes
+LINE 2467 |   filtroCategoriaCO.value = null
+LINE 2468 |   idclienteCO.value = ''
+LINE 2469 |   selectedClient.value = null
+LINE 2470 |   idsucursalCOS.value = ''
+LINE 2471 |   selectedSucursal.value = null
+LINE 2472 |   resetProductoInputs()
+LINE 2473 | 
+LINE 2474 |   // Limpiar carrito
+LINE 2475 |   carritoCO.ventatotal = 0
+LINE 2476 |   carritoCO.subtotal = 0
+LINE 2477 |   carritoCO.descuento = 0
+LINE 2478 |   carritoCO.listaProductos = []
+LINE 2479 |   localStorage.removeItem('carritoCO')
+LINE 2480 |   carritoCO.metodoPago = null
+LINE 2481 |   carritoCO.variablePago = 'directo'
+LINE 2482 |   carritoCO.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
+LINE 2483 |   carritoCO.credito = false
+LINE 2484 |   carritoCO.cantidadPagos = 1
+LINE 2485 |   carritoCO.montoPagos = 0
+LINE 2486 |   carritoCO.periodo = 30
+LINE 2487 |   carritoCO.plazoPersonalizado = 0
+LINE 2488 |   carritoCO.fechaLimite = ''
+LINE 2489 | 
+LINE 2490 |   // Recargar listas dependientes si es necesario
+LINE 2491 |   listaAlmacenes()
+LINE 2492 |   listaCLientes()
+LINE 2493 | }
+LINE 2494 | 
+LINE 2495 | // --- Comprobante ---
+LINE 2496 | // async function enviarCorreo(id) {
+LINE 2497 | //   console.log(id)
+LINE 2498 | // }
+LINE 2499 | function open(pos, idcot, data) {
+LINE 2500 |   position.value = pos
+LINE 2501 |   dialog.value = true
+LINE 2502 |   idcliente.value = idcot
+LINE 2503 |   detallesCotizacion.value = data
+LINE 2504 |   console.log(idcliente.value, detallesCotizacion.value)
+LINE 2505 | 
+LINE 2506 |   return new Promise((resolve) => {
+LINE 2507 |     resolver = resolve
+LINE 2508 |   })
+LINE 2509 | }
+LINE 2510 | async function generarComprobante(id) {
+LINE 2511 |   // Después que el usuario confirma el primer diálogo
+LINE 2512 | 
+LINE 2513 |   const contenidousuario = await getUserData()
+LINE 2514 |   const idempresa = contenidousuario?.empresa?.idempresa
+LINE 2515 |   console.log(idempresa)
+LINE 2516 |   if (!idempresa) {
+LINE 2517 |     $q.notify({
+LINE 2518 |       type: 'negative',
+LINE 2519 |       message: 'Error: No se pudo obtener la empresa para el comprobante.',
+LINE 2520 |     })
+LINE 2521 |     return
+LINE 2522 |   }
+LINE 2523 | 
+LINE 2524 |   $q.loading.show({
+LINE 2525 |     message: 'Generando comprobante...',
+LINE 2526 |   })
+LINE 2527 | 
+LINE 2528 |   try {
+LINE 2529 |     const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
+LINE 2530 |     const data = response.data
+LINE 2531 |     console.log('Comprobante Data:', response)
+LINE 2532 | 
+LINE 2533 |     if (data[0] === 'error') {
+LINE 2534 |       console.error(data.error)
+LINE 2535 |       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+LINE 2536 |       emit('reiniciar')
+LINE 2537 |     } else {
+LINE 2538 |       //const doc = await generarPdfCotizacion(data)
+LINE 2539 |       //console.log(doc)
+LINE 2540 |       const resultado = await generarPdfCotizacion(data)
+LINE 2541 |       if (!resultado || !resultado.doc) {
+LINE 2542 |         error.value = 'No se pudo generar el PDF.'
+LINE 2543 |         return
+LINE 2544 |       }
+LINE 2545 | 
+LINE 2546 |       // Limpiar blob anterior
+LINE 2547 |       if (pdfData.value) {
+LINE 2548 |         URL.revokeObjectURL(pdfData.value)
+LINE 2549 |         pdfData.value = null
+LINE 2550 |       }
+LINE 2551 | 
+LINE 2552 |       if (isMobile.value) {
+LINE 2553 |         // En móvil, la función ya intentó abrir/descargar.
+LINE 2554 |         // Solo guardamos la URL para el enlace manual.
+LINE 2555 |         mobileFallbackUrl.value = resultado.mobileBlobUrl
+LINE 2556 |       } else {
+LINE 2557 |         // Escritorio: crear blob para el iframe
+LINE 2558 |         const pdfBlob = resultado.doc.output('blob')
+LINE 2559 |         pdfData.value = URL.createObjectURL(pdfBlob)
+LINE 2560 |         open('right', data[0]?.cliente.idcliente, data)
+LINE 2561 |         mostrarModal.value = true
+LINE 2562 |       }
+LINE 2563 |     }
+LINE 2564 |   } catch (error) {
+LINE 2565 |     console.error('Error al generar comprobante:', error)
+LINE 2566 |     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+LINE 2567 |     emit('reiniciar')
+LINE 2568 |   } finally {
+LINE 2569 |     $q.loading.hide()
+LINE 2570 |   }
+LINE 2571 | }
+LINE 2572 | const confirmar = (idcliente, data) => {
+LINE 2573 |   resolver?.(true)
+LINE 2574 |   //JSON.parse(JSON.stringify(detalleVenta.value))
+LINE 2575 |   const detalle = JSON.parse(JSON.stringify(data))
+LINE 2576 |   console.log('Confirmado', idcliente, detalle)
+LINE 2577 |   PDFenviarComprobanteCorreo(idcliente, detalle, $q)
+LINE 2578 |   dialog.value = false
+LINE 2579 | }
+LINE 2580 | 
+LINE 2581 | const cancelar = () => {
+LINE 2582 |   resolver?.(false)
+LINE 2583 |   dialog.value = false
+LINE 2584 |   console.log('Cancelado')
+LINE 2585 | }
+LINE 2586 | 
+LINE 2587 | // --- registrar Cliente ---
+LINE 2588 | 
+LINE 2589 | const RegistrarCliente = () => {
+LINE 2590 |   showAddModal.value = !showAddModal.value
+LINE 2591 | }
+LINE 2592 | const handleRecordCreated = async (newRecordData) => {
+LINE 2593 |   // newRecordData is already the plain object, not a ref, so no .value here
+LINE 2594 |   const formData = objectToFormData(newRecordData) // Use newRecordData directly
+LINE 2595 | 
+LINE 2596 |   for (let [k, v] of formData.entries()) {
+LINE 2597 |     // Good practice to disable eslint for console.log in production
+LINE 2598 |     console.log(`${k}: ${v}`)
+LINE 2599 |   }
+LINE 2600 | 
+LINE 2601 |   try {
+LINE 2602 |     const response = await api.post(``, formData) // Replace `/your-api-endpoint` with your actual API endpoint
+LINE 2603 | 
+LINE 2604 |     // Access response.data directly, not response.value
+LINE 2605 |     console.log(response.data)
+LINE 2606 | 
+LINE 2607 |     if (response.data.estado === 'exito') {
+LINE 2608 |       listaCLientes()
+LINE 2609 |       RegistrarCliente()
+LINE 2610 |       $q.notify({
+LINE 2611 |         type: 'positive',
+LINE 2612 |         message: response.data.mensaje || 'Cliente guardado correctamente',
+LINE 2613 |       })
+LINE 2614 |       // Optionally, refresh your data or add the new client to your list
+LINE 2615 |       // For example, if you have a method to fetch clients:
+LINE 2616 |       // fetchClients();
+LINE 2617 |     } else {
+LINE 2618 |       $q.notify({
+LINE 2619 |         type: 'negative',
+LINE 2620 |         message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+LINE 2621 |       })
+LINE 2622 |     }
+LINE 2623 |   } catch (error) {
+LINE 2624 |     console.error('Error submitting form:', error)
+LINE 2625 | 
+LINE 2626 |     $q.notify({
+LINE 2627 |       color: 'negative',
+LINE 2628 |       message:
+LINE 2629 |         'Error al registrar: ' +
+LINE 2630 |         (error.response?.data?.mensaje || error.message || 'Error desconocido'),
+LINE 2631 |       icon: 'error',
+LINE 2632 |     })
+LINE 2633 |   }
+LINE 2634 | }
+LINE 2635 | const fetchEstadoActual = async () => {
+LINE 2636 |   try {
+LINE 2637 |     const { data } = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
+LINE 2638 |     console.log(data)
+LINE 2639 |     // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
+LINE 2640 |     soloAlmacen.value = data.clientesAlmacen ?? data ?? false
+LINE 2641 |   } catch (error) {
+LINE 2642 |     console.log(error)
+LINE 2643 |   }
+LINE 2644 | }
+LINE 2645 | 
+LINE 2646 | watch(
+LINE 2647 |   () => carritoCO.variablePago,
+LINE 2648 |   (nuevoValor) => {
+LINE 2649 |     console.log('Cambiando modalidad de pago:', nuevoValor)
+LINE 2650 |     // No reseteamos automáticamente para permitir al usuario cambiar de opinión sin perder datos
+LINE 2651 |     // Los datos se preparan adecuadamente en enviarDatos()
+LINE 2652 |   },
+LINE 2653 | )
+LINE 2654 | 
+LINE 2655 | const handleTipoPagoGeneralChange = (val) => {
+LINE 2656 |   if (val) {
+LINE 2657 |     // Al activar crédito, recalculamos valores basados en el estado actual
+LINE 2658 |     calculatePayments()
+LINE 2659 |     calculateDueDate()
+LINE 2660 |   }
+LINE 2661 |   // No reseteamos los datos de crédito al cambiar a efectivo para permitir la persistencia entre pestañas
+LINE 2662 | }
+LINE 2663 | async function listarcajasbanco() {
+LINE 2664 |   try {
+LINE 2665 |     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
+LINE 2666 | 
+LINE 2667 |     listaCajaBancos.value = response.data.map((item) => ({
+LINE 2668 |       label: item.codigo + ' ' + item.tipo_cuenta,
+LINE 2669 |       value: item.idcaja_bancos,
+LINE 2670 |       codigo: item.codigo, // Guardamos el código por separado
+LINE 2671 |       nombre: item.tipo_cuenta, // Guardamos el nombre por separado
+LINE 2672 |     }))
+LINE 2673 |     console.log(listaCajaBancos.value)
+LINE 2674 |   } catch (error) {
+LINE 2675 |     console.error('Error al cargar caja bancos:', error)
+LINE 2676 |     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+LINE 2677 |   }
+LINE 2678 | }
+LINE 2679 | onBeforeUnmount(() => {
+LINE 2680 |   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+LINE 2681 |   // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+LINE 2682 | })
+LINE 2683 | // --- Inicialización ---
+LINE 2684 | onMounted(async () => {
+LINE 2685 |   isMobile.value = window.innerWidth < 768
+LINE 2686 | 
+LINE 2687 |   isInitializing.value = true
+LINE 2688 |   try {
+LINE 2689 |     // Cargar datos iniciales
+LINE 2690 |     await fetchEstadoActual()
+LINE 2691 |     await divisaEmonedaActiva()
+LINE 2692 |     await leyendaActiva()
+LINE 2693 |     await listaAlmacenes()
+LINE 2694 | 
+LINE 2695 |     await cargarLeyendasCotizacion()
+LINE 2696 |     await cargarMetodoPagoFactura()
+LINE 2697 |     await permisosStore.cargarPermisos()
+LINE 2698 |     await cargarCanales()
+LINE 2699 |     await listarcajasbanco()
+LINE 2700 | 
+LINE 2701 |     // Detectar si venimos de Quick Consult
+LINE 2702 |     const quickConsult = localStorage.getItem('quickConsult')
+LINE 2703 |     if (quickConsult) {
+LINE 2704 |       const data = JSON.parse(quickConsult)
+LINE 2705 |       console.log('Procesando datos de Quick Consult en CotizacionPage:', data)
+LINE 2706 | 
+LINE 2707 |       if (data.destination === 'quotation') {
+LINE 2708 |         tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
+LINE 2709 |         const user = await getUserData()
+LINE 2710 |         carritoCO.idusuario = user?.idusuario
+LINE 2711 |         carritoCO.idempresa = idempresa
+LINE 2712 |         carritoCO.divisa = divisaActiva.id
+LINE 2713 | 
+LINE 2714 |         // Restaurar almacén y categoría
+LINE 2715 |         if (data.almacen) {
+LINE 2716 |           filtroAlmacenCO.value = data.almacen.value
+LINE 2717 |           idalmacenfiltro.value = data.almacen.value
+LINE 2718 |         }
+LINE 2719 |         if (data.categoria) {
+LINE 2720 |           console.log(data.categoria)
+LINE 2721 |           filtroCategoriaCO.value = data.categoria.value
+LINE 2722 |           idporcentajeventa.value = data.categoria.value
+LINE 2723 |         }
+LINE 2724 | 
+LINE 2725 |         // Cargar categorías del almacén seleccionado
+LINE 2726 |         await listaCategoria()
+LINE 2727 | 
+LINE 2728 |         // Mapear productos al formato de CotizacionPage
+LINE 2729 |         if (data.listaProductos) {
+LINE 2730 |           carritoCO.listaProductos = data.listaProductos.map((p, index) => ({
+LINE 2731 |             num: index + 1,
+LINE 2732 |             idproductoalmacen: p.idproductoalmacen,
+LINE 2733 |             cantidad: p.cantidad,
+LINE 2734 |             precio: p.precio,
+LINE 2735 |             idstock: p.idstock,
+LINE 2736 |             idporcentaje: p.idporcentaje,
+LINE 2737 |             candiponible: p.stock,
+LINE 2738 |             descripcion: p.descripcion,
+LINE 2739 |             descripcionAdicional: p.descripcionAdicional || '',
+LINE 2740 |             codigo: p.codigo,
+LINE 2741 |             despachado: p.despachado,
+LINE 2742 |             codigosUnicos: p.codigosUnicos || [],
+LINE 2743 |           }))
+LINE 2744 |         }
+LINE 2745 | 
+LINE 2746 |         calcularTotalesCarrito()
+LINE 2747 |         await listaProductosDisponibles()
+LINE 2748 | 
+LINE 2749 |         localStorage.removeItem('quickConsult')
+LINE 2750 |         $q.notify({
+LINE 2751 |           type: 'positive',
+LINE 2752 |           message: 'Productos de Consulta Rápida cargados correctamente',
+LINE 2753 |         })
+LINE 2754 |       }
+LINE 2755 |     } else {
+LINE 2756 |       localStorage.removeItem('carritoCO') // Limpiar solo si no venimos de Quick Consult
+LINE 2757 |       await listaProductosDisponibles()
+LINE 2758 |     }
+LINE 2759 |   } catch (error) {
+LINE 2760 |     console.error('Error en inicialización de Cotización:', error)
+LINE 2761 |   } finally {
+LINE 2762 |     setTimeout(() => {
+LINE 2763 |       isInitializing.value = false
+LINE 2764 |     }, 500)
+LINE 2765 |   }
+LINE 2766 | })
+LINE 2767 | </script>
+LINE 2768 | 
+LINE 2769 | <style lang="scss" scoped>
+LINE 2770 | .gradient-btn {
+LINE 2771 |   background: linear-gradient(135deg, #1976d2, #1565c0);
+LINE 2772 |   box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+LINE 2773 | }
+LINE 2774 | .gradient-btn:hover {
+LINE 2775 |   transform: translateY(-1px);
+LINE 2776 |   box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+LINE 2777 | }
+LINE 2778 | /* Puedes mover tus estilos relacionados con el comprobante y otros aquí */
+LINE 2779 | .invoice {
+LINE 2780 |   font-family: 'Arial', sans-serif;
+LINE 2781 |   font-size: 12px;
+LINE 2782 |   color: #333;
+LINE 2783 | 
+LINE 2784 |   header {
+LINE 2785 |     padding: 10px 0;
+LINE 2786 |     margin-bottom: 20px;
+LINE 2787 |     border-bottom: 1px solid #eee;
+LINE 2788 | 
+LINE 2789 |     .company-details {
+LINE 2790 |       text-align: left;
+LINE 2791 |     }
+LINE 2792 | 
+LINE 2793 |     .name p {
+LINE 2794 |       font-weight: bold;
+LINE 2795 |       margin-bottom: 5px;
+LINE 2796 |     }
+LINE 2797 | 
+LINE 2798 |     .col {
+LINE 2799 |       display: inline-block;
+LINE 2800 |       vertical-align: top;
+LINE 2801 |       width: 32%; /* Adjust as needed */
+LINE 2802 |     }
+LINE 2803 | 
+LINE 2804 |     .col:nth-child(2) {
+LINE 2805 |       text-align: center;
+LINE 2806 |     }
+LINE 2807 | 
+LINE 2808 |     .col:nth-child(3) {
+LINE 2809 |       text-align: right;
+LINE 2810 |     }
+LINE 2811 |   }
+LINE 2812 | 
+LINE 2813 |   main {
+LINE 2814 |     padding-bottom: 50px;
+LINE 2815 | 
+LINE 2816 |     .contacts {
+LINE 2817 |       margin-bottom: 20px;
+LINE 2818 | 
+LINE 2819 |       .invoice-to,
+LINE 2820 |       .invoice-details {
+LINE 2821 |         display: inline-block;
+LINE 2822 |         vertical-align: top;
+LINE 2823 |         width: 49%;
+LINE 2824 |       }
+LINE 2825 | 
+LINE 2826 |       .invoice-to {
+LINE 2827 |         text-align: left;
+LINE 2828 |       }
+LINE 2829 | 
+LINE 2830 |       .invoice-details {
+LINE 2831 |         text-align: right;
+LINE 2832 |       }
+LINE 2833 | 
+LINE 2834 |       .text-gray-light {
+LINE 2835 |         color: #777;
+LINE 2836 |       }
+LINE 2837 | 
+LINE 2838 |       .to {
+LINE 2839 |         font-weight: bold;
+LINE 2840 |       }
+LINE 2841 |     }
+LINE 2842 | 
+LINE 2843 |     .q-table {
+LINE 2844 |       width: 100%;
+LINE 2845 |       border-collapse: collapse;
+LINE 2846 |       thead {
+LINE 2847 |         background-color: #e0e0e0;
+LINE 2848 |         th {
+LINE 2849 |           padding: 8px;
+LINE 2850 |           border: 1px solid #ddd;
+LINE 2851 |           text-align: left;
+LINE 2852 |         }
+LINE 2853 |       }
+LINE 2854 |       tbody {
+LINE 2855 |         td {
+LINE 2856 |           padding: 8px;
+LINE 2857 |           border: 1px solid #ddd;
+LINE 2858 |         }
+LINE 2859 |       }
+LINE 2860 |       tfoot {
+LINE 2861 |         td {
+LINE 2862 |           padding: 8px;
+LINE 2863 |           border: 1px solid #ddd;
+LINE 2864 |           font-weight: bold;
+LINE 2865 |         }
+LINE 2866 |       }
+LINE 2867 |     }
+LINE 2868 | 
+LINE 2869 |     .notices {
+LINE 2870 |       margin-top: 20px;
+LINE 2871 |       font-size: 0.9em;
+LINE 2872 |       color: #555;
+LINE 2873 |     }
+LINE 2874 |   }
+LINE 2875 | }
+LINE 2876 | </style>
+LINE 2877 | 
+LINE 2878 | <style scoped>
+LINE 2879 | .dialog-card {
+LINE 2880 |   width: 400px; /* Un poco más de ancho para mejor legibilidad */
+LINE 2881 |   border-radius: 8px;
+LINE 2882 |   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+LINE 2883 |   overflow: hidden; /* Asegura que el gradiente se vea bien en los bordes */
+LINE 2884 | }
+LINE 2885 | 
+LINE 2886 | .header-gradient {
+LINE 2887 |   background: linear-gradient(to right, #219286, #044e49);
+LINE 2888 | }
+LINE 2889 | 
+LINE 2890 | .text-h6 {
+LINE 2891 |   font-family: 'Roboto', sans-serif;
+LINE 2892 |   letter-spacing: 0.5px;
+LINE 2893 | }
+LINE 2894 | 
+LINE 2895 | .text-body1 {
+LINE 2896 |   font-family: 'Open Sans', sans-serif;
+LINE 2897 |   line-height: 1.6;
+LINE 2898 | }
+LINE 2899 | 
+LINE 2900 | .button-primary {
+LINE 2901 |   background: linear-gradient(to right, #219286, #044e49);
+LINE 2902 |   color: white;
+LINE 2903 |   font-weight: 500;
+LINE 2904 |   letter-spacing: 0.5px;
+LINE 2905 |   padding: 8px 20px;
+LINE 2906 |   border-radius: 6px;
+LINE 2907 | }
+LINE 2908 | 
+LINE 2909 | .q-btn:hover:not(.disabled) {
+LINE 2910 |   opacity: 0.9;
+LINE 2911 |   transition: opacity 0.3s ease;
+LINE 2912 | }
+LINE 2913 | 
+LINE 2914 | /* Color de acento para el icono de confirmación */
+LINE 2915 | .q-icon[name='check_circle'] {
+LINE 2916 |   color: #f2c037; /* Color de acento */
+LINE 2917 | }
+LINE 2918 | 
+LINE 2919 | /* Quitar el q-linear-progress si no es funcional aquí, o darle un propósito */
+LINE 2920 | /* .q-linear-progress { display: none; } */
+LINE 2921 | </style>
+LINE 2922 | 
+LINE 2923 | <style scoped>
+LINE 2924 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+LINE 2925 | 
+LINE 2926 | /* Responsive dialog width */
+LINE 2927 | .responsive-dialog {
+LINE 2928 |   max-height: 90vh;
+LINE 2929 |   width: 95vw;
+LINE 2930 |   max-width: 95vw;
+LINE 2931 |   min-width: unset;
+LINE 2932 |   border-radius: 16px;
+LINE 2933 |   overflow: hidden;
+LINE 2934 | }
+LINE 2935 | 
+LINE 2936 | @media (min-width: 601px) {
+LINE 2937 |   .responsive-dialog {
+LINE 2938 |     width: auto;
+LINE 2939 |     min-width: 550px;
+LINE 2940 |     max-width: 800px;
+LINE 2941 |     max-height: 90vh; /* mantenlo también aquí si quieres */
+LINE 2942 |     border-radius: 20px;
+LINE 2943 |   }
+LINE 2944 | }
+LINE 2945 | 
+LINE 2946 | /* Padding responsive para el contenido */
+LINE 2947 | .content-section {
+LINE 2948 |   padding: 24px;
+LINE 2949 | }
+LINE 2950 | @media (max-width: 600px) {
+LINE 2951 |   .content-section {
+LINE 2952 |     padding: 16px !important;
+LINE 2953 |   }
+LINE 2954 | }
+LINE 2955 | 
+LINE 2956 | /* Toggle más compacto en móviles */
+LINE 2957 | .custom-premium-toggle .q-btn {
+LINE 2958 |   line-height: 1.2 !important;
+LINE 2959 |   min-height: unset;
+LINE 2960 |   padding: 8px 12px;
+LINE 2961 | }
+LINE 2962 | @media (max-width: 600px) {
+LINE 2963 |   .custom-premium-toggle .q-btn {
+LINE 2964 |     min-height: 48px;
+LINE 2965 |     font-size: 14px;
+LINE 2966 |   }
+LINE 2967 | }
+LINE 2968 | 
+LINE 2969 | /* Botón confirmar full width en móviles */
+LINE 2970 | @media (max-width: 600px) {
+LINE 2971 |   .full-width-xs {
+LINE 2972 |     width: 100%;
+LINE 2973 |     margin-top: 8px;
+LINE 2974 |   }
+LINE 2975 | }
+LINE 2976 | 
+LINE 2977 | .premium-input:hover {
+LINE 2978 |   transform: translateY(-1px);
+LINE 2979 |   transition: transform 0.2s ease;
+LINE 2980 | }
+LINE 2981 | 
+LINE 2982 | .hover-row:hover {
+LINE 2983 |   background-color: #f5f9ff !important;
+LINE 2984 | }
+LINE 2985 | 
+LINE 2986 | .hover-shake:hover {
+LINE 2987 |   transform: scale(1.1) rotate(3deg);
+LINE 2988 |   transition: transform 0.2s ease;
+LINE 2989 | }
+LINE 2990 | 
+LINE 2991 | /* Enhancing inputs */
+LINE 2992 | .q-field--outlined .q-field__control {
+LINE 2993 |   border-radius: 8px !important;
+LINE 2994 | }
+LINE 2995 | 
+LINE 2996 | .q-card {
+LINE 2997 |   transition: all 0.3s ease;
+LINE 2998 | }
+LINE 2999 | 
+LINE 3000 | .q-btn {
+LINE 3001 |   text-transform: none;
+LINE 3002 |   letter-spacing: 0.3px;
+LINE 3003 | }
+LINE 3004 | .responsive-dialog {
+LINE 3005 |   display: flex;
+LINE 3006 |   flex-direction: column;
+LINE 3007 | }
+LINE 3008 | 
+LINE 3009 | .premium-input :deep(.q-field__control) {
+LINE 3010 |   border-radius: 8px;
+LINE 3011 |   transition: all 0.3s ease;
+LINE 3012 | }
+LINE 3013 | 
+LINE 3014 | /* Estilo para que la barra de scroll sea más discreta en navegadores webkit */
+LINE 3015 | .scroll::-webkit-scrollbar {
+LINE 3016 |   width: 6px;
+LINE 3017 | }
+LINE 3018 | .scroll::-webkit-scrollbar-thumb {
+LINE 3019 |   background: #ccc;
+LINE 3020 |   border-radius: 10px;
+LINE 3021 | }
+LINE 3022 | .scroll::-webkit-scrollbar-track {
+LINE 3023 |   background: #f1f1f1;
+LINE 3024 | }
+LINE 3025 | /* Add this to your style block (scoped or global depending on your setup) */
+LINE 3026 | .custom-premium-toggle {
+LINE 3027 |   font-family: 'Inter', sans-serif;
+LINE 3028 |   letter-spacing: 0.3px;
+LINE 3029 |   overflow: hidden; /* Ensures the rounded borders clip perfectly */
+LINE 3030 | }
+LINE 3031 | 
+LINE 3032 | /* Force standard line-heights inside the button to prevent font-specific shifting */
+LINE 3033 | .custom-premium-toggle .q-btn {
+LINE 3034 |   line-height: 1 !important;
+LINE 3035 |   min-height: 100px; /* Guarantees matching, explicit heights */
+LINE 3036 | }
+LINE 3037 | </style>
+```

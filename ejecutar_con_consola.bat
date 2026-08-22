@@ -14,9 +14,9 @@ if not exist "%~dp0venv\Scripts\python.exe" (
     "%~dp0venv\Scripts\python.exe" -m pip install -r "%~dp0requirements.txt"
 )
 
-echo [INFO] Iniciando deepseek_gui.py...
+echo [INFO] Iniciando main.py...
 echo.
-"%~dp0venv\Scripts\python.exe" "%~dp0deepseek_gui.py"
+"%~dp0venv\Scripts\python.exe" "%~dp0main.py"
 
 echo.
 echo ========================================================

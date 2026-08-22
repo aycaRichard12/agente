@@ -30,7 +30,7 @@ if not exist "%~dp0venv\Scripts\python.exe" (
 
 :: 2. Ejecutar la aplicacion usando el Python del entorno virtual
 echo [INFO] Lanzando la interfaz grafica...
-start "" "%~dp0venv\Scripts\pythonw.exe" "%~dp0deepseek_gui.py"
+start "" "%~dp0venv\Scripts\pythonw.exe" "%~dp0main.py"
 
 if errorlevel 1 (
     echo [ERROR] Ocurrio un error al lanzar la aplicacion.
