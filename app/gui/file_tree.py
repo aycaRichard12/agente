@@ -87,3 +87,42 @@ class CheckboxTreeview(ttk.Treeview):
 
     def get_checked_files(self) -> List[str]:
         return list(self.checked_items)
+
+    def set_checked_files(self, target_rel_paths: Set[str]):
+        """Sets checked items to exactly match target_rel_paths."""
+        self.checked_items.clear()
+        normalized_targets = {p.replace("\\", "/") for p in target_rel_paths}
+
+        def traverse(item):
+            children = self.get_children(item)
+            if children:
+                any_child_checked = False
+                all_children_checked = True
+                for child in children:
+                    child_checked = traverse(child)
+                    if child_checked:
+                        any_child_checked = True
+                    else:
+                        all_children_checked = False
+                if any_child_checked:
+                    self.set(item, "check", "☑")
+                    self.item(item, tags=("checked",))
+                else:
+                    self.set(item, "check", "☐")
+                    self.item(item, tags=("unchecked",))
+                return any_child_checked
+            else:
+                rel_path = self.set(item, "name")
+                norm_rel = rel_path.replace("\\", "/") if rel_path else ""
+                if norm_rel and norm_rel in normalized_targets:
+                    self.set(item, "check", "☑")
+                    self.item(item, tags=("checked",))
+                    self.checked_items.add(rel_path)
+                    return True
+                else:
+                    self.set(item, "check", "☐")
+                    self.item(item, tags=("unchecked",))
+                    return False
+
+        for root_item in self.get_children():
+            traverse(root_item)

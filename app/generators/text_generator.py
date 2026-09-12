@@ -7,6 +7,7 @@ from app.models.project import ProjectSelection, ExportConfig
 from app.core.file_reader import read_and_format_file
 from app.core.project_structure import build_folder_tree_str
 from app.core.dependency_detector import DependencyDetector
+from app.models.analysis_types import get_analysis_profile
 from app.utils.file_utils import is_binary_file, get_file_size, safe_read_file
 
 
@@ -118,17 +119,30 @@ def generate_text_bundle(
                 display_name = os.path.basename(abs_f)
             process_file(abs_f, display_name)
 
+    analysis_type = getattr(config, "analysis_type", "Detect errors")
+    profile = get_analysis_profile(analysis_type)
+
     doc = []
 
     # 1. REPORTED PROBLEM
     doc.append("==============================================================")
-    doc.append("REPORTED PROBLEM / PROBLEMA REPORTADO")
+    doc.append("REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO")
     doc.append("==============================================================")
     if problem_desc.strip():
         doc.append(problem_desc.strip())
     else:
         doc.append("[No se especificó una descripción del problema]")
     doc.append("\n")
+
+    # SELECTED ANALYSIS PROFILE
+    doc.append("==============================================================")
+    doc.append(f"SELECTED ANALYSIS PROFILE / PERFIL DE ANÁLISIS: {profile.icon} {profile.name}")
+    doc.append("==============================================================")
+    doc.append(f"• Objetivo: {profile.objective}")
+    doc.append(f"• Enfoque: {profile.focus}")
+    doc.append(f"• Prioridades: {profile.priorities}")
+    doc.append(f"• Resultado esperado: {profile.expected_outcome}")
+    doc.append(f"\n⚠️ REGLA DE CONCRECIÓN TÉCNICA: {profile.response_instructions}\n")
 
     # 2. PROJECT CONTEXT & SMART SUMMARY
     doc.append("==============================================================")
@@ -171,43 +185,12 @@ def generate_text_bundle(
 
     if config.include_system_instructions:
         doc.append("--------------------------------------------------------------")
-        doc.append("INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK / RESPONSE FORMAT RULES")
+        doc.append(f"INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK ({profile.name.upper()})")
         doc.append("--------------------------------------------------------------")
-        doc.append("Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown:")
-        doc.append("""
-# DIAGNOSIS
-## Problem
-[Descripción técnica del problema]
-## Root Cause
-[Causa raíz técnica]
-
-# FILES TO MODIFY
-## 1. ruta/relativa/archivo.ext
-Approximate line: [número]
-### Problem
-[Problema en este archivo]
-### Solution
-[Solución propuesta]
-### Current Code
-[código actual]
-### Corrected Code
-[código corregido]
-
-# NEW FILES
-[Nuevos archivos requeridos o: No se requieren nuevos archivos.]
-
-# ARCHITECTURAL CHANGES
-[Cambios en estructura o: No se requieren cambios arquitectónicos.]
-
-# RISKS OR SIDE EFFECTS
-[Riesgos identificados o: Sin riesgos identificados.]
-
-# IMPLEMENTATION PLAN
-1. [Primer paso]
-2. [Segundo paso]
-3. [Tercer paso]
-""")
-        doc.append("REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba. Especifica siempre archivo, línea aproximada, código actual y código corregido.")
+        doc.append(profile.response_instructions)
+        doc.append("\nTu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al perfil:")
+        doc.append(f"\n{profile.response_template}\n")
+        doc.append("REGLA OBLIGATORIA: No respondas con JSON. Responde con el formato estructurado exacto indicado arriba.")
 
     if config.include_tree and folder_path and os.path.isdir(folder_path):
         tree_str = build_folder_tree_str(folder_path, list(selection.checked_folder_files), selection.excluded_dirs)

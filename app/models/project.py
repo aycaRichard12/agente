@@ -34,7 +34,7 @@ class ProjectSelection:
     excluded_dirs: Set[str] = field(
         default_factory=lambda: {
             ".git", "node_modules", "__pycache__", "venv", ".venv", 
-            "dist", "build", ".idea", ".vscode"
+            "dist", "build", ".idea", ".vscode", "vendor", ".quasar", ".github", "public"
         }
     )
     allowed_extensions: Set[str] = field(default_factory=lambda: set(DEFAULT_ALLOWED_EXTENSIONS))
@@ -88,3 +88,4 @@ class ExportConfig:
     max_files: int = 100
     output_format: str = "markdown"  # "markdown" or "text"
     max_chars_per_file: int = 60000
+    analysis_type: str = "Detect errors"

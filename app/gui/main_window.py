@@ -4,14 +4,20 @@ import sys
 import subprocess
 import tkinter as tk
 from tkinter import ttk, scrolledtext
+from typing import List, Set
 
 from app.models.project import ExportConfig, DEFAULT_ALLOWED_EXTENSIONS
+from app.models.analysis_types import (
+    ANALYSIS_PROFILES, get_analysis_profile, get_all_analysis_types
+)
 from app.core.file_selector import FileSelectorManager
 from app.generators.prompt_generator import PromptGenerator
 from app.generators.markdown_generator import generate_markdown_bundle
 from app.generators.text_generator import generate_text_bundle
 from app.generators.standalone_prompt_generator import generate_standalone_prompt
 from app.gui.file_tree import CheckboxTreeview
+from app.gui.analysis_dialog import ProjectAnalysisDialog
+from app.core.project_analyzer import ProjectAnalyzer
 from app.gui import dialogs
 from app.utils.file_utils import (
     copy_to_clipboard, write_text_file, KNOWN_BINARY_EXTENSIONS,
@@ -46,7 +52,7 @@ class MainWindow:
         self.selector   = FileSelectorManager()
         self.config     = ExportConfig()
 
-        default_excl    = ".git, node_modules, __pycache__, venv, .venv, dist, build, .idea, .vscode"
+        default_excl    = ".git, node_modules, __pycache__, venv, .venv, dist, build, .idea, .vscode, vendor, .quasar, .github, public"
         default_exts    = ", ".join(sorted(DEFAULT_ALLOWED_EXTENSIONS))
 
         self.var_folder   = tk.StringVar()
@@ -60,6 +66,7 @@ class MainWindow:
         self.var_max_tot  = tk.DoubleVar(value=50.0)
         self.var_max_n    = tk.IntVar(value=100)
         self.var_fmt      = tk.StringVar(value="markdown")
+        self.var_analysis_type = tk.StringVar(value="Detect errors")
 
         # Bottom stats vars
         self.sv_folder    = tk.StringVar(value="0")
@@ -182,6 +189,9 @@ class MainWindow:
         ttk.Button(fe, text="📂 Seleccionar carpeta",
                    style="Accent.TButton",
                    command=self.on_select_folder).pack(side=tk.LEFT, padx=(0, 3))
+        ttk.Button(fe, text="🔬 Analizar",
+                   style="Accent.TButton",
+                   command=self.on_analyze_project).pack(side=tk.LEFT, padx=(0, 3))
         ttk.Button(fe, text="✖",
                    style="Neutral.TButton",
                    command=self.on_remove_folder, width=3).pack(side=tk.LEFT)
@@ -216,6 +226,8 @@ class MainWindow:
                    command=self.on_select_all_tree).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="☐ Ninguno", style="Neutral.TButton",
                    command=self.on_deselect_all_tree).pack(side=tk.LEFT, padx=(0, 4))
+        ttk.Button(tb, text="🔬 Analizar proyecto", style="Accent.TButton",
+                   command=self.on_analyze_project).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="🔄 Recargar", style="Neutral.TButton",
                    command=self.reload_tree).pack(side=tk.RIGHT)
 
@@ -274,12 +286,43 @@ class MainWindow:
         right = ttk.Frame(paned, style="Panel.TFrame", padding=0)
         paned.add(right, weight=3)
 
+        # ── Analysis Type selector (top of right pane)
+        type_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 8, 10, 2))
+        type_hdr.pack(fill=tk.X)
+
+        t_row = ttk.Frame(type_hdr, style="Panel.TFrame")
+        t_row.pack(fill=tk.X)
+
+        ttk.Label(t_row, text="🎯  Tipo de análisis:", style="Sec.TLabel").pack(side=tk.LEFT, padx=(0, 6))
+
+        self.cb_analysis_type = ttk.Combobox(
+            t_row,
+            textvariable=self.var_analysis_type,
+            values=get_all_analysis_types(),
+            state="readonly",
+            font=("Segoe UI", 9, "bold"),
+            width=26
+        )
+        self.cb_analysis_type.pack(side=tk.LEFT, padx=(0, 10))
+        self.cb_analysis_type.bind("<<ComboboxSelected>>", self._on_analysis_type_changed)
+
+        self.lbl_profile_hint = ttk.Label(
+            type_hdr,
+            text="",
+            style="Muted.TLabel",
+            wraplength=600,
+            justify=tk.LEFT
+        )
+        self.lbl_profile_hint.pack(anchor="w", pady=(3, 0))
+
+        ttk.Separator(right).pack(fill=tk.X, pady=(4, 2))
+
         # ── Problem description (always visible, prominent)
-        desc_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 8, 10, 4))
+        desc_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 6, 10, 4))
         desc_hdr.pack(fill=tk.X)
-        ttk.Label(desc_hdr, text="📝  Describe el problema", style="Sec.TLabel").pack(anchor="w")
+        ttk.Label(desc_hdr, text="📝  Describe el problema / objetivo", style="Sec.TLabel").pack(anchor="w")
         ttk.Label(desc_hdr,
-                  text="Este texto se incluirá en deepseek_prompt.md como REPORTED PROBLEM",
+                  text="Este texto se incluirá en deepseek_prompt.md como REPORTED PROBLEM OR GOAL",
                   style="Muted.TLabel").pack(anchor="w")
 
         desc_body = ttk.Frame(right, style="Panel.TFrame", padding=(10, 0))
@@ -294,11 +337,8 @@ class MainWindow:
             wrap=tk.WORD,
         )
         self.problem_text.pack(fill=tk.X, expand=True)
-        self.problem_text.insert(
-            "1.0",
-            "Por favor analiza el siguiente código del proyecto. "
-            "Identifica posibles errores, refactorizaciones recomendadas y soluciones al problema."
-        )
+
+        self._on_analysis_type_changed(init=True)
 
         ttk.Separator(right).pack(fill=tk.X, pady=6)
 
@@ -366,6 +406,9 @@ class MainWindow:
         btn_strip = tk.Frame(bottom, bg=C_STAT_BG, padx=8, pady=6)
         btn_strip.pack(side=tk.LEFT)
 
+        ttk.Button(btn_strip, text="🔬 Analizar proyecto",
+                   style="Neutral.TButton",
+                   command=self.on_analyze_project).pack(side=tk.LEFT, padx=(0, 5))
         ttk.Button(btn_strip, text="⚡ Generar contexto",
                    style="Accent.TButton",
                    command=self.on_generate_prompt).pack(side=tk.LEFT, padx=(0, 5))
@@ -462,6 +505,75 @@ class MainWindow:
             self.reload_tree()
             self._refresh_selection_stats()
             self.sv_status.set(f"Carpeta seleccionada: {folder}")
+
+    def on_analyze_project(self):
+        folder = self.var_folder.get()
+        if not folder or not os.path.isdir(folder):
+            folder = dialogs.ask_folder("Seleccionar Carpeta para Analizar")
+            if not folder:
+                return
+            self.selector.set_folder(folder)
+            self.var_folder.set(folder)
+            self.reload_tree()
+
+        self.sv_status.set("Analizando estructura, tecnologías y dependencias del proyecto...")
+        self.root.update_idletasks()
+
+        self.selector.set_exclusions_from_string(self.var_excl.get())
+        excluded = self.selector.get_selection().excluded_dirs
+
+        try:
+            max_file_mb = float(self.var_max_file.get())
+        except ValueError:
+            max_file_mb = 2.0
+
+        analyzer = ProjectAnalyzer(excluded_dirs=excluded)
+        result = analyzer.analyze(folder, max_file_size_mb=max_file_mb)
+
+        self.sv_status.set(
+            f"Análisis completado: {result.total_files} archivos, {result.total_lines:,} líneas. "
+            f"Lenguaje: {result.primary_language} · Framework: {result.framework}"
+        )
+
+        ProjectAnalysisDialog(
+            self.root,
+            analysis=result,
+            on_apply_selection=self.apply_recommended_selection
+        )
+
+    def _on_analysis_type_changed(self, event=None, init: bool = False):
+        selected = self.var_analysis_type.get()
+        profile = get_analysis_profile(selected)
+        if hasattr(self, "lbl_profile_hint"):
+            self.lbl_profile_hint.config(
+                text=f"{profile.icon} {profile.objective}\nEnfoque: {profile.focus}"
+            )
+        if hasattr(self, "problem_text"):
+            current_text = self.problem_text.get("1.0", tk.END).strip()
+            all_hints = {p.default_prompt_hint for p in ANALYSIS_PROFILES.values()}
+            all_hints.add("Por favor analiza el siguiente código del proyecto. Identifica posibles errores, refactorizaciones recomendadas y soluciones al problema.")
+
+            if not current_text or current_text in all_hints or init:
+                self.problem_text.delete("1.0", tk.END)
+                self.problem_text.insert("1.0", profile.default_prompt_hint)
+
+    def apply_recommended_selection(self, selected_files: List[str], notify: bool = True):
+        if not selected_files:
+            if notify:
+                dialogs.show_warning("Atención", "No se seleccionó ningún archivo recomendado.")
+            return
+
+        self.tree.set_checked_files(set(selected_files))
+        self.selector.set_checked_folder_files(self.tree.get_checked_files())
+        self._refresh_selection_stats()
+        count = len(selected_files)
+        self.sv_status.set(f"✓ Selección recomendada aplicada: {count} archivo(s) preparados para contexto.")
+        if notify:
+            dialogs.show_info(
+                "Selección Aplicada",
+                f"Se han aplicado {count} archivo(s) recomendados para el contexto.\n\n"
+                "Puedes pulsar '⚡ Generar contexto' directamente cuando estés listo."
+            )
 
     def on_remove_folder(self):
         self.selector.remove_folder()
@@ -618,6 +730,7 @@ class MainWindow:
         self.config.include_tree            = self.var_tree.get()
         self.config.include_system_instructions = self.var_instruct.get()
         self.config.output_format           = self.var_fmt.get()
+        self.config.analysis_type           = self.var_analysis_type.get()
 
         problem_desc = self.problem_text.get("1.0", tk.END).strip()
         gen = PromptGenerator(self.config)
@@ -647,7 +760,7 @@ class MainWindow:
             self.selector.get_selection(), problem_desc, self.config)
         txt_text, _, _, _, _ = generate_text_bundle(
             self.selector.get_selection(), problem_desc, self.config)
-        prompt_text = generate_standalone_prompt(problem_desc)
+        prompt_text = generate_standalone_prompt(problem_desc, analysis_type=self.config.analysis_type)
 
         write_text_file(os.path.join(out_dir, "deepseek_project_context.md"),  md_text)
         write_text_file(os.path.join(out_dir, "deepseek_project_context.txt"), txt_text)
