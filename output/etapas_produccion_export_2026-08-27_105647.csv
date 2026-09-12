@@ -1,0 +1,29 @@
+idetapas_produccion,nombre_etapa,detalle,rubro_idrubro,seccion_idseccion,empresa_idempresa
+24,Etapa producción 1,Detalles de producción,17,83,50
+25,Etapa producción 2,Detalle producción,17,83,50
+27,Tostado,"Tostado de granos según el tipo de café a obtener, considerando la twmperatura de inicio y evaluandi la evolución de temp durante todo el proceso de tostado.",21,88,74
+28,Molido,"Proceso de molido según el tipo de producto, marca. Previa verificación la granulometría cprrecta.",21,88,74
+29,Envasado,"Colocado cada producto procesado en los envases correctos (marca, peso y tipo producto).",21,88,74
+31,Tostado,Tostado de granos,19,99,75
+32,Molido,Molido de granos,19,99,75
+33,Envasado,Envaso de producto terminado,19,99,75
+34,Procesado,"Tratamientos térmicos (cocción, ahumado, escaldado), secado y maduración, y finalmente enfriamiento y envasado para distribución, variando según el producto final (frescos, cocidos, curados)",27,105,75
+35,Envasado,Sección encargada del envasado o encapacado de los productos.,27,105,75
+36,Preparado Ingredientes,"Sección de producción: preparación de materia prima (recepción, troceado, deshuesado, molido), mezclado y adición de condimentos, embutido (relleno en tripas).",27,105,75
+37,empaquetado,empaquetado,19,100,75
+38,producion,produccion,19,99,75
+39,Corte,Corte del cuero,29,110,75
+40,Pegado y sellado,Pegado y sellado de los calzados,29,110,75
+41,Pintado y pulido,Etapa final,29,110,75
+42,Cortado,Cortado de material,31,113,119
+43,Fundido de goma,Formación de huellas,29,109,75
+44,Afinación de acabado,Bordeado de plantillas,29,109,75
+45,Aparado,Aparado de partes,31,113,119
+46,Conformado,Conformado del calzado,31,113,119
+47,Solado,Solado del calzado,31,113,119
+48,Terminado,Afinado de detalles,31,113,119
+49,Corte,Corte de piezas según modelo y talla,33,116,50
+50,Aparado,Costura y unión de piezas,33,117,50
+51,"Conformado ",Conformado de puntera y talón,33,118,50
+52,Solado,"Preparación, pegado y prensado de suela",33,119,50
+53,Terminado,"Limpieza, acabado, empaque y liberación",33,120,50

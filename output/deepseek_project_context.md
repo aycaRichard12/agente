@@ -1,249 +1,146 @@
 ==============================================================
 REPORTED PROBLEM / PROBLEMA REPORTADO
 ==============================================================
-The `CotizacionPage.vue` file is being optimized and refactored to create a modular, scalable, and easily maintainable structure.
-
-Analyze the current code of `CotizacionPage.vue` in detail and compare it to the modular implementation located in:
-
-`modules/cotizacion`
-
-The goal is to identify **why the optimized/modular version is not working correctly**, while maintaining the exact same functionality and behavior as `CotizacionPage.vue`.
-
-Perform the analysis following these rules:
-
-1. First, analyze `CotizacionPage.vue` to understand:
-
-* All its functionalities.
-
-* Data flow.
-
-* Reactive states.
-
-* Props and emits.
-
-* Methods and functions.
-
-* API calls.
-
-* Events.
-
-* Dependencies between components.
-
-* Stores, composables, and utilities used.
-
-* Validation logic and calculations.
-
-* Interface behaviors.
-
-2. Next, analyze the entire `modules/cotizacion` structure and determine:
-
-* Which functionalities were correctly ported.
-
-* Which functionalities are missing.
-
-* Which logic was incorrectly modified.
-
-* Which imports, exports, or references are incorrect.
-
-* Composition API issues, reactivity, props, emits, or events.
-
-* Routing or module resolution issues.
-
-* Pinia, composable, or service issues.
-
-* Variable or function naming issues.
-
-* Circular dependencies or incorrect coupling.
-
-* Errors that could cause the module to malfunction.
-
-* Behavioral differences between the original and modular versions.
-
-3. Do not assume that the modular architecture is correctly implemented. Verify each part against the original functionality of `CotizacionPage.vue`.
-
-4. Identify exactly where each problem is located, indicating:
-
-* File.
-
-* Approximate or exact line number.
-
-* Problematic code.
-
-* Cause of the problem.
-
-* Proposed fix.
-
-5. If there are related errors across multiple files, clearly explain the dependency chain that causes the failure.
-
-6. The refactoring must preserve **100% of the existing functionality** of `CotizacionPage.vue`. Do not remove functionality or change functional behavior without justification.
-
-7. The solution must maintain an architecture that is:
-
-* Modular.
-
-* Scalable.
-
-* Maintainable.
-
-* With clearly separated responsibilities.
-
-* Avoiding excessively large files.
-
-* Avoiding code duplication.
-
-* With reusable components and composables where appropriate.
-
-8. If you find an incorrect modular implementation, correct it by referencing the functional logic of `CotizacionPage.vue`, but without recreating a monolithic file.
-
-9. Before proposing changes, provide a clear diagnosis of why `modules/cotizacion` is currently not working.
-
-10. After the diagnosis, provide the necessary modifications file by file, indicating exactly what needs to be changed.
-
-11. Finally, conceptually verify that the corrected version of `modules/cotizacion` retains all the functionalities of `CotizacionPage.vue`.
-
-### Required Response Format
-
-Organize your response as follows:
-
-**1. General Diagnosis**
-
-* Main cause of the problem.
-
-* Other problems encountered.
-
-**2. Functional Comparison**
-
-* Functionalities of `CotizacionPage.vue`.
-
-* Status of each functionality in `modules/cotizacion`: correct, incomplete, or incorrect.
-
-**3. Errors Found**
-For each error:
-
-* File.
-
-* Line.
-
-* Problem.
-
-* Cause.
-
-* Solution.
-
-**4. Corrections**
-Specify the specific changes that need to be made to each file.
-
-**5. Final Architecture**
-Show how the `modules/cotizacion` structure should look to ensure scalability.
-
-**6. Final Verification**
-Confirm that all the original functionalities of `CotizacionPage.vue` are covered by the new architecture.
-
-Do not make changes based on assumptions. If a functionality or dependency cannot be determined with certainty from the provided files, state this explicitly.
+agregar mejoras a este proyecto para que sea mas provechoso
 
 
 ==============================================================
 PROJECT CONTEXT / CONTEXTO DEL PROYECTO
 ==============================================================
-• Nombre del Proyecto: cm-oficial
-• Ruta Base: G:\quasar\dess\comercial\cm-oficial
-• Fecha de Generación: 2026-08-22 15:25:10
+• Nombre del Proyecto: agente
+• Ruta Base: /media/richard/Nuevo vol/quasar/dess/deploy/agente
+• Fecha de Generación: 2026-09-11 21:44:33
 
 --------------------------------------------------------------
 PROJECT SUMMARY
 --------------------------------------------------------------
-Selected files: 24
+Selected files: 31
 File extensions:
-  .js: 14
-  .vue: 10
+  .py: 23
+  .bat: 3
+  .md: 2
+  .sh: 1
+  .sql: 1
+  .txt: 1
 
 Total lines:
-5,559
+2,306
 
 --------------------------------------------------------------
 DEPENDENCIES AND REFERENCES
 --------------------------------------------------------------
-• src\modules\Cotizacion\components\AgregarProducto.vue:
-  - import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
-  - import { cantidadRules, precioRules } from 'src/validators/cotizacionValidators'
-• src\modules\Cotizacion\components\ConfiguracionInicial.vue:
-  - import { almacenRules, categoriaRules, puntoVentaRules } from 'src/validators/cotizacionValidators'
-• src\modules\Cotizacion\components\DatosCliente.vue:
-  - import ModalfirmaPage from './ModalfirmaPage.vue'
-• src\modules\Cotizacion\components\ResumenCarrito.vue:
-  - import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
-  - import { decimas, redondear } from 'src/composables/FuncionesG'
-• src\modules\Cotizacion\composables\useCalculosCotizacion.js:
-  - import { redondear } from 'src/composables/FuncionesG'
-• src\modules\Cotizacion\composables\useCarrito.js:
-  - import { reactive, computed, watch } from 'vue'
-  - import { redondear } from 'src/composables/FuncionesG'
-  - import { useQuasar } from 'quasar'
-• src\modules\Cotizacion\composables\useCliente.js:
-  - import { ref } from 'vue'
-  - import { api } from 'src/boot/axios'
-  - import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
-  - import { useQuasar } from 'quasar'
-• src\modules\Cotizacion\composables\useCotizacion.js:
-  - import { ref } from 'vue'
-  - import { useQuasar } from 'quasar'
-  - import { api } from 'src/boot/axios'
-  - import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
-  - import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
-  - import { validarUsuario } from 'src/composables/FuncionesG'
-• src\modules\Cotizacion\composables\usePago.js:
-  - import { ref, computed } from 'vue'
-• src\modules\Cotizacion\composables\useProducto.js:
-  - import { ref, watch } from 'vue'
-  - import { api } from 'src/boot/axios'
-  - import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
-  - import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
-• src\modules\Cotizacion\page\CotizacionPage.vue:
-  - import { ref, onMounted, onBeforeUnmount } from 'vue'
-  - import { useQuasar } from 'quasar'
-  - import { useCarrito } from '../composables/useCarrito'
-  - import { useCliente } from '../composables/useCliente'
-  - import { useProducto } from '../composables/useProducto'
-  - import { useCotizacion } from '../composables/useCotizacion'
-  - import { usePago } from '../composables/usePago'
-  - import { useConfiguracion } from '../composables/useConfiguracion'
-  - import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-  - import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-  - import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-  - import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-• src\modules\Cotizacion\services\almacenService.js:
-  - import { api, apiCt } from 'src/boot/axios'
-• src\modules\Cotizacion\services\clienteService.js:
-  - import { api } from 'src/boot/axios'
-• src\modules\Cotizacion\services\cotizacionService.js:
-  - import { api } from 'src/boot/axios'
-• src\modules\Cotizacion\services\pagoService.js:
-  - import { api } from 'src/boot/axios'
-• src\modules\Cotizacion\services\productoService.js:
-  - import { api } from 'src/boot/axios'
-• src\modules\Cotizacion\stores\cotizacionStore.js:
-  - import { defineStore } from 'pinia'
-  - import { reactive, ref, computed } from 'vue'
-  - import { useQuasar } from 'quasar'
-  - import { usePago } from 'src/composables/usePago'
-• src\modules\Cotizacion\validators\cotizacionValidators.js:
-  - import { required, positive, requiredPositive } from './commonValidators'
-• src\pages\cotizacion\CotizacionPage.vue:
-  - import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-  - import { useQuasar } from 'quasar'
-  - import { api, apiCt } from 'src/boot/axios'
-  - import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
-  - import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
-  - import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-  - import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-  - import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-  - import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
-  - import { objectToFormData } from 'src/composables/FuncionesGenerales'
-  - import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
-  - import ModalfirmaPage from './ModalfirmaPage.vue'
-  - import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
-  - import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
-  - import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+• app/core/__init__.py:
+  - from app.core.project_scanner import scan_directory
+  - from app.core.file_selector import FileSelectorManager
+  - from app.core.file_reader import read_and_format_file
+  - from app.core.project_structure import build_folder_tree_str
+  - from app.core.dependency_detector import DependencyDetector,
+• app/core/dependency_detector.py:
+  - import os
+  - import re
+  - from typing import List,
+• app/core/file_reader.py:
+  - import os
+  - from app.utils.file_utils import safe_read_file
+• app/core/file_selector.py:
+  - from typing import List,
+  - from app.models.project import ProjectSelection
+• app/core/project_scanner.py:
+  - import os
+  - from typing import Set,
+  - from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
+• app/core/project_structure.py:
+  - import os
+  - from typing import Set,
+• app/generators/__init__.py:
+  - from app.generators.markdown_generator import generate_markdown_bundle
+  - from app.generators.text_generator import generate_text_bundle
+  - from app.generators.prompt_generator import PromptGenerator
+  - from app.generators.standalone_prompt_generator import generate_standalone_prompt
+• app/generators/markdown_generator.py:
+  - import os
+  - from collections import Counter
+  - from datetime import datetime
+  - from typing import Tuple,
+  - from app.models.project import ProjectSelection,
+  - from app.core.file_reader import read_and_format_file
+  - from app.core.project_structure import build_folder_tree_str
+  - from app.core.dependency_detector import DependencyDetector
+  - from app.utils.file_utils import is_binary_file,
+• app/generators/prompt_generator.py:
+  - from typing import Tuple
+  - from app.models.project import ProjectSelection,
+  - from app.generators.markdown_generator import generate_markdown_bundle
+  - from app.generators.text_generator import generate_text_bundle
+• app/generators/text_generator.py:
+  - import os
+  - from collections import Counter
+  - from datetime import datetime
+  - from typing import Tuple,
+  - from app.models.project import ProjectSelection,
+  - from app.core.file_reader import read_and_format_file
+  - from app.core.project_structure import build_folder_tree_str
+  - from app.core.dependency_detector import DependencyDetector
+  - from app.utils.file_utils import is_binary_file,
+• app/gui/__init__.py:
+  - from app.gui.file_tree import CheckboxTreeview
+  - from app.gui.main_window import MainWindow
+• app/gui/dialogs.py:
+  - from tkinter import messagebox,
+  - from typing import Optional,
+• app/gui/file_tree.py:
+  - import tkinter
+  - from tkinter import ttk
+  - from typing import Set,
+• app/gui/main_window.py:
+  - import os
+  - import sys
+  - import subprocess
+  - import tkinter
+  - from tkinter import ttk,
+  - from app.models.project import ExportConfig,
+  - from app.core.file_selector import FileSelectorManager
+  - from app.generators.prompt_generator import PromptGenerator
+  - from app.generators.markdown_generator import generate_markdown_bundle
+  - from app.generators.text_generator import generate_text_bundle
+  - from app.generators.standalone_prompt_generator import generate_standalone_prompt
+  - from app.gui.file_tree import CheckboxTreeview
+  - from app.gui import dialogs
+• app/models/__init__.py:
+  - from app.models.project import ProjectSelection,
+• app/models/project.py:
+  - from dataclasses import dataclass,
+  - from typing import Set,
+  - import os
+• app/utils/__init__.py:
+  - from app.utils.path_utils import normalize_path,
+  - from app.utils.file_utils import safe_read_file,
+• app/utils/file_utils.py:
+  - import os
+  - import tkinter
+  - from typing import Tuple
+• app/utils/path_utils.py:
+  - import os
+• deepseek_gui.py:
+  - from main import main
+• main.py:
+  - import sys
+  - import os
+  - import tkinter
+  - from app.gui.main_window import MainWindow
+
+--------------------------------------------------------------
+⚠️ ARCHIVOS OMITIDOS POR LÍMITES DE TAMAÑO / OMITTED FILES WARNINGS
+--------------------------------------------------------------
+File omitted:
+output/deepseek_project_context.md
+Reason:
+Exceeds the allowed limit of 2 MB.
+
+File omitted:
+output/deepseek_project_context.txt
+Reason:
+Exceeds the allowed limit of 2 MB.
 
 --------------------------------------------------------------
 INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK / RESPONSE FORMAT RULES
@@ -290,42 +187,47 @@ REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado 
 
 Estructura de Directorios:
 ```
-cm-oficial/
-└── src/
-    ├── modules/
-    │   └── Cotizacion/
-    │       ├── components/
-    │       │   ├── AgregarProducto.vue
-    │       │   ├── CabeceraCotizacion.vue
-    │       │   ├── ConfiguracionInicial.vue
-    │       │   ├── DatosCliente.vue
-    │       │   ├── DialogoConfirmacion.vue
-    │       │   ├── DialogoPDF.vue
-    │       │   ├── DialogoPago.vue
-    │       │   └── ResumenCarrito.vue
-    │       ├── composables/
-    │       │   ├── useCalculosCotizacion.js
-    │       │   ├── useCarrito.js
-    │       │   ├── useCliente.js
-    │       │   ├── useCotizacion.js
-    │       │   ├── usePago.js
-    │       │   └── useProducto.js
-    │       ├── page/
-    │       │   └── CotizacionPage.vue
-    │       ├── services/
-    │       │   ├── almacenService.js
-    │       │   ├── clienteService.js
-    │       │   ├── cotizacionService.js
-    │       │   ├── pagoService.js
-    │       │   └── productoService.js
-    │       ├── stores/
-    │       │   └── cotizacionStore.js
-    │       └── validators/
-    │           ├── commonValidators.js
-    │           └── cotizacionValidators.js
-    └── pages/
-        └── cotizacion/
-            └── CotizacionPage.vue
+agente/
+├── README.md
+├── app/
+│   ├── __init__.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── dependency_detector.py
+│   │   ├── file_reader.py
+│   │   ├── file_selector.py
+│   │   ├── project_scanner.py
+│   │   └── project_structure.py
+│   ├── generators/
+│   │   ├── __init__.py
+│   │   ├── markdown_generator.py
+│   │   ├── prompt_generator.py
+│   │   ├── standalone_prompt_generator.py
+│   │   └── text_generator.py
+│   ├── gui/
+│   │   ├── __init__.py
+│   │   ├── dialogs.py
+│   │   ├── file_tree.py
+│   │   └── main_window.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── project.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── file_utils.py
+│       └── path_utils.py
+├── deepseek_gui.py
+├── ejecutar.bat
+├── ejecutar_con_consola.bat
+├── iniciar_deepseek_debugger.sh
+├── main.py
+├── output/
+│   ├── deepseek_project_context.md
+│   ├── deepseek_project_context.txt
+│   ├── deepseek_prompt.md
+│   └── etapas_produccion_export_2026-08-27_105739.sql
+├── requirements.txt
+└── run.bat
 ```
 
 
@@ -334,5704 +236,2493 @@ ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE
 ==============================================================
 
 ==============================================================
-FILE: src\modules\Cotizacion\components\AgregarProducto.vue
+FILE: README.md
 ==============================================================
-```vue
-LINE   1 | <template>
-LINE   2 |   <div class="row q-col-gutter-lg items-end">
-LINE   3 |     <div class="col-12 col-md-4">
-LINE   4 |       <div class="flex justify-between items-center q-mb-sm">
-LINE   5 |         <label class="text-weight-bold text-grey-9 block label-cotizacion">
-LINE   6 |           Producto o Servicio <span class="text-negative">*</span>
-LINE   7 |         </label>
-LINE   8 |         <q-checkbox
-LINE   9 |           v-if="esProductoUnico"
-LINE  10 |           :model-value="registrarComoProductoUnico"
-LINE  11 |           @update:model-value="$emit('update:registrarComoProductoUnico', $event)"
-LINE  12 |           size="xs"
-LINE  13 |           label="Producto Único"
-LINE  14 |           color="secondary"
-LINE  15 |         />
-LINE  16 |       </div>
-LINE  17 |       <q-select
-LINE  18 |         :model-value="selectedProduct"
-LINE  19 |         :options="filteredProducts"
-LINE  20 |         option-value="id"
-LINE  21 |         option-label="display"
-LINE  22 |         use-input
-LINE  23 |         hide-selected
-LINE  24 |         fill-input
-LINE  25 |         input-debounce="0"
-LINE  26 |         outlined
-LINE  27 |         dense
-LINE  28 |         bg-color="white"
-LINE  29 |         class="premium-input"
-LINE  30 |         @filter="$emit('filter-product', $event)"
-LINE  31 |         @input-value="$emit('set-product-input', $event)"
-LINE  32 |         @update:model-value="$emit('elegir-producto', $event)"
-LINE  33 |       >
-LINE  34 |         <template v-slot:no-option>
-LINE  35 |           <q-item>
-LINE  36 |             <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE  37 |           </q-item>
-LINE  38 |         </template>
-LINE  39 |       </q-select>
-LINE  40 |     </div>
-LINE  41 | 
-LINE  42 |     <div class="col-12 col-md-2">
-LINE  43 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion"
-LINE  44 |         >Stock Actual</label
-LINE  45 |       >
-LINE  46 |       <q-input
-LINE  47 |         :model-value="cantidaddisponibleCO"
-LINE  48 |         readonly
-LINE  49 |         outlined
-LINE  50 |         dense
-LINE  51 |         bg-color="grey-2"
-LINE  52 |         hide-bottom-space
-LINE  53 |         class="premium-input text-center"
-LINE  54 |         placeholder="0"
-LINE  55 |       >
-LINE  56 |         <template v-slot:prepend>
-LINE  57 |           <q-icon name="inventory_2" size="xs" color="grey-7" />
-LINE  58 |         </template>
-LINE  59 |       </q-input>
-LINE  60 |     </div>
-LINE  61 | 
-LINE  62 |     <div class="col-12 col-md-2">
-LINE  63 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  64 |         Cantidad <span class="text-negative">*</span>
-LINE  65 |       </label>
-LINE  66 |       <q-input
-LINE  67 |         :model-value="cantidadCO"
-LINE  68 |         @update:model-value="$emit('update:cantidadCO', $event)"
-LINE  69 |         type="number"
-LINE  70 |         :rules="cantidadRules"
-LINE  71 |         :readonly="esProductoUnico && registrarComoProductoUnico"
-LINE  72 |         required
-LINE  73 |         outlined
-LINE  74 |         dense
-LINE  75 |         bg-color="white"
-LINE  76 |         hide-bottom-space
-LINE  77 |         class="premium-input text-center"
-LINE  78 |       />
-LINE  79 |     </div>
-LINE  80 | 
-LINE  81 |     <div class="col-12 col-md-3">
-LINE  82 |       <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  83 |         Precio unitario <span class="text-negative">*</span>
-LINE  84 |       </label>
-LINE  85 |       <q-input
-LINE  86 |         :model-value="precioCO"
-LINE  87 |         type="number"
-LINE  88 |         :rules="precioRules"
-LINE  89 |         :readonly="!permisosStore.tienePermiso('editarprecioventa')"
-LINE  90 |         required
-LINE  91 |         outlined
-LINE  92 |         dense
-LINE  93 |         bg-color="white"
-LINE  94 |         hide-bottom-space
-LINE  95 |         class="premium-input"
-LINE  96 |       >
-LINE  97 |         <template v-slot:append>
-LINE  98 |           <div
-LINE  99 |             class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders currency-append"
-LINE 100 |           >
-LINE 101 |             {{ divisaActiva.tipo }}
-LINE 102 |           </div>
-LINE 103 |         </template>
-LINE 104 |       </q-input>
-LINE 105 |     </div>
-LINE 106 | 
-LINE 107 |     <div class="col-12 col-md-1 flex justify-center">
-LINE 108 |       <q-btn
-LINE 109 |         icon="add_shopping_cart"
-LINE 110 |         color="secondary"
-LINE 111 |         unelevated
-LINE 112 |         class="full-width shadow-3 btn-add-product"
-LINE 113 |         :disable="!canAddProduct"
-LINE 114 |         @click="$emit('anadir-producto')"
-LINE 115 |       >
-LINE 116 |         <q-tooltip
-LINE 117 |           class="bg-secondary text-subtitle2 shadow-4"
-LINE 118 |           anchor="top middle"
-LINE 119 |           self="bottom middle"
-LINE 120 |         >
-LINE 121 |           Añadir al carrito
-LINE 122 |         </q-tooltip>
-LINE 123 |       </q-btn>
-LINE 124 |     </div>
-LINE 125 |   </div>
-LINE 126 | 
-LINE 127 |   <UniqueProductSelector
-LINE 128 |     v-if="esProductoUnico"
-LINE 129 |     :product-id="idproductoalmacenCO"
-LINE 130 |     :is-unique="esProductoUnico && registrarComoProductoUnico"
-LINE 131 |     :cantidad-requerida="cantidadCO"
-LINE 132 |     @update:selection="$emit('guardar-codigos', $event)"
-LINE 133 |     class="q-mt-md"
-LINE 134 |   />
-LINE 135 | </template>
-LINE 136 | 
-LINE 137 | <script setup>
-LINE 138 | import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
-LINE 139 | import { cantidadRules, precioRules } from 'src/validators/cotizacionValidators'
-LINE 140 | 
-LINE 141 | defineProps({
-LINE 142 |   esProductoUnico: Boolean,
-LINE 143 |   registrarComoProductoUnico: Boolean,
-LINE 144 |   selectedProduct: [Object, null],
-LINE 145 |   filteredProducts: Array,
-LINE 146 |   cantidaddisponibleCO: String,
-LINE 147 |   cantidadCO: Number,
-LINE 148 |   precioCO: Number,
-LINE 149 |   idproductoalmacenCO: String,
-LINE 150 |   canAddProduct: Boolean,
-LINE 151 |   divisaActiva: Object,
-LINE 152 |   permisosStore: Object,
-LINE 153 | })
-LINE 154 | 
-LINE 155 | defineEmits([
-LINE 156 |   'filter-product',
-LINE 157 |   'set-product-input',
-LINE 158 |   'elegir-producto',
-LINE 159 |   'anadir-producto',
-LINE 160 |   'guardar-codigos',
-LINE 161 |   'update:registrarComoProductoUnico',
-LINE 162 |   'update:cantidadCO',
-LINE 163 |   'update:precioCO',
-LINE 164 | ])
-LINE 165 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\CabeceraCotizacion.vue
-==============================================================
-```vue
-LINE  1 | <template>
-LINE  2 |   <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
-LINE  3 |     <div class="col-12 flex items-center">
-LINE  4 |       <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2 radius-12">
-LINE  5 |         <q-icon name="request_quote" size="36px" color="primary" />
-LINE  6 |       </div>
-LINE  7 |       <div>
-LINE  8 |         <h1 class="text-h4 text-weight-bolder q-my-none text-primary letter-spacing-neg-05">
-LINE  9 |           {{ titulo }}
-LINE 10 |         </h1>
-LINE 11 |         <div class="text-subtitle1 text-grey-7 q-mt-xs">
-LINE 12 |           {{ subtitulo }}
-LINE 13 |         </div>
-LINE 14 |       </div>
-LINE 15 |     </div>
-LINE 16 |   </div>
-LINE 17 | </template>
-LINE 18 | 
-LINE 19 | <script setup>
-LINE 20 | defineProps({
-LINE 21 |   titulo: { type: String, default: 'Emisión de Cotización' },
-LINE 22 |   subtitulo: {
-LINE 23 |     type: String,
-LINE 24 |     default: 'Registre los detalles de la nueva cotización y añada productos',
-LINE 25 |   },
-LINE 26 | })
-LINE 27 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\ConfiguracionInicial.vue
-==============================================================
-```vue
-LINE  1 | <template>
-LINE  2 |   <q-card-section class="q-pa-lg">
-LINE  3 |     <q-form ref="cotizacionFormRef">
-LINE  4 |       <div class="row q-col-gutter-lg">
-LINE  5 |         <div class="col-12 col-md-4">
-LINE  6 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  7 |             Almacén origen <span class="text-negative">*</span>
-LINE  8 |           </label>
-LINE  9 |           <q-select
-LINE 10 |             :model-value="filtroAlmacenCO"
-LINE 11 |             :options="almacenesOptions"
-LINE 12 |             emit-value
-LINE 13 |             map-options
-LINE 14 |             option-value="idalmacen"
-LINE 15 |             option-label="almacen"
-LINE 16 |             :rules="almacenRules"
-LINE 17 |             @update:model-value="$emit('update:filtroAlmacenCO', $event)"
-LINE 18 |             outlined
-LINE 19 |             dense
-LINE 20 |             bg-color="white"
-LINE 21 |             hide-bottom-space
-LINE 22 |             class="premium-input"
-LINE 23 |           />
-LINE 24 |         </div>
-LINE 25 | 
-LINE 26 |         <div class="col-12 col-md-4">
-LINE 27 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE 28 |             Categoría de precio <span class="text-negative">*</span>
-LINE 29 |           </label>
-LINE 30 |           <q-select
-LINE 31 |             :model-value="filtroCategoriaCO"
-LINE 32 |             :options="categoriasOptions"
-LINE 33 |             emit-value
-LINE 34 |             map-options
-LINE 35 |             option-value="id"
-LINE 36 |             option-label="nombre"
-LINE 37 |             :rules="categoriaRules"
-LINE 38 |             @update:model-value="$emit('update:filtroCategoriaCO', $event)"
-LINE 39 |             outlined
-LINE 40 |             dense
-LINE 41 |             bg-color="white"
-LINE 42 |             hide-bottom-space
-LINE 43 |             class="premium-input"
-LINE 44 |           />
-LINE 45 |         </div>
-LINE 46 | 
-LINE 47 |         <div class="col-12 col-md-4">
-LINE 48 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE 49 |             Punto Venta <span class="text-negative">*</span>
-LINE 50 |           </label>
-LINE 51 |           <q-select
-LINE 52 |             :model-value="puntoVenta"
-LINE 53 |             @update:model-value="$emit('update:puntoVenta', $event)"
-LINE 54 |             :options="puntosVenta"
-LINE 55 |             emit-value
-LINE 56 |             map-options
-LINE 57 |             option-value="value"
-LINE 58 |             option-label="label"
-LINE 59 |             :rules="puntoVentaRules"
-LINE 60 |             outlined
-LINE 61 |             dense
-LINE 62 |             bg-color="white"
-LINE 63 |             hide-bottom-space
-LINE 64 |             class="premium-input"
-LINE 65 |           />
-LINE 66 |         </div>
-LINE 67 |       </div>
-LINE 68 |     </q-form>
-LINE 69 |   </q-card-section>
-LINE 70 | </template>
-LINE 71 | 
-LINE 72 | <script setup>
-LINE 73 | import { almacenRules, categoriaRules, puntoVentaRules } from 'src/validators/cotizacionValidators'
-LINE 74 | 
-LINE 75 | defineProps({
-LINE 76 |   filtroAlmacenCO: [Number, null],
-LINE 77 |   almacenesOptions: Array,
-LINE 78 |   filtroCategoriaCO: [Number, null],
-LINE 79 |   categoriasOptions: Array,
-LINE 80 |   puntoVenta: [Object, null],
-LINE 81 |   puntosVenta: Array,
-LINE 82 | })
-LINE 83 | defineEmits([
-LINE 84 |   'almacen-change',
-LINE 85 |   'categoria-change',
-LINE 86 |   'update:filtroAlmacenCO',
-LINE 87 |   'update:filtroCategoriaCO',
-LINE 88 |   'update:puntoVenta',
-LINE 89 | ])
-LINE 90 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\DatosCliente.vue
-==============================================================
-```vue
-LINE   1 | <template>
-LINE   2 |   <q-card-section class="q-pa-lg">
-LINE   3 |     <q-form ref="formClientes" class="q-mb-md">
-LINE   4 |       <div class="row q-col-gutter-lg q-mb-md">
-LINE   5 |         <div class="col-12 col-md-3">
-LINE   6 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE   7 |             Tipo de Operación <span class="text-negative">*</span>
-LINE   8 |           </label>
-LINE   9 |           <q-select
-LINE  10 |             :model-value="tipoOperacion"
-LINE  11 |             :options="optionOperacion"
-LINE  12 |             map-options
-LINE  13 |             :rules="tipoOperacionRules"
-LINE  14 |             @update:model-value="$emit('update:tipoOperacion', $event)"
-LINE  15 |             outlined
-LINE  16 |             dense
-LINE  17 |             bg-color="white"
-LINE  18 |             hide-bottom-space
-LINE  19 |             class="premium-input"
-LINE  20 |           />
-LINE  21 |         </div>
-LINE  22 | 
-LINE  23 |         <div class="col-12 col-md-3">
-LINE  24 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  25 |             Fecha <span class="text-negative">*</span>
-LINE  26 |           </label>
-LINE  27 |           <q-input
-LINE  28 |             :model-value="fecha"
-LINE  29 |             type="date"
-LINE  30 |             :rules="fechaRules"
-LINE  31 |             @update:model-value="$emit('update:fecha', $event)"
-LINE  32 |             outlined
-LINE  33 |             dense
-LINE  34 |             bg-color="white"
-LINE  35 |             hide-bottom-space
-LINE  36 |             class="premium-input"
-LINE  37 |           />
-LINE  38 |         </div>
-LINE  39 | 
-LINE  40 |         <div class="col-12 col-md-6">
-LINE  41 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  42 |             Cliente <span class="text-negative">*</span>
-LINE  43 |           </label>
-LINE  44 |           <div class="row no-wrap">
-LINE  45 |             <q-select
-LINE  46 |               class="col premium-input"
-LINE  47 |               :model-value="selectedClient"
-LINE  48 |               use-input
-LINE  49 |               hide-selected
-LINE  50 |               fill-input
-LINE  51 |               input-debounce="0"
-LINE  52 |               :options="filteredClients"
-LINE  53 |               @filter="filterClient"
-LINE  54 |               @input-value="setClientInputValue"
-LINE  55 |               @update:model-value="$emit('update:selectedClient', $event)"
-LINE  56 |               option-value="id"
-LINE  57 |               option-label="display"
-LINE  58 |               :rules="clienteRules"
-LINE  59 |               outlined
-LINE  60 |               dense
-LINE  61 |               bg-color="white"
-LINE  62 |               hide-bottom-space
-LINE  63 |             >
-LINE  64 |               <template v-slot:no-option>
-LINE  65 |                 <q-item>
-LINE  66 |                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE  67 |                 </q-item>
-LINE  68 |               </template>
-LINE  69 |             </q-select>
-LINE  70 |             <div class="q-ml-md">
-LINE  71 |               <q-btn
-LINE  72 |                 color="primary"
-LINE  73 |                 unelevated
-LINE  74 |                 class="full-height shadow-2 btn-square-44"
-LINE  75 |                 icon="person_add"
-LINE  76 |                 @click="$emit('registrar-cliente')"
-LINE  77 |               >
-LINE  78 |                 <q-tooltip class="bg-primary text-caption shadow-4">
-LINE  79 |                   Registrar Nuevo Cliente
-LINE  80 |                 </q-tooltip>
-LINE  81 |               </q-btn>
-LINE  82 |             </div>
-LINE  83 |           </div>
-LINE  84 |         </div>
-LINE  85 |       </div>
-LINE  86 | 
-LINE  87 |       <div class="row q-col-gutter-lg">
-LINE  88 |         <div class="col-12 col-md-6">
-LINE  89 |           <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
-LINE  90 |             Sucursal <span class="text-negative">*</span>
-LINE  91 |           </label>
-LINE  92 |           <q-select
-LINE  93 |             :model-value="selectedSucursal"
-LINE  94 |             use-input
-LINE  95 |             hide-selected
-LINE  96 |             fill-input
-LINE  97 |             input-debounce="0"
-LINE  98 |             :options="filteredSucursales"
-LINE  99 |             @filter="filterSucursal"
-LINE 100 |             @input-value="setSucursalInputValue"
-LINE 101 |             @update:model-value="$emit('update:selectedSucursal', $event)"
-LINE 102 |             option-value="id"
-LINE 103 |             option-label="nombre"
-LINE 104 |             :rules="sucursalRules"
-LINE 105 |             outlined
-LINE 106 |             dense
-LINE 107 |             bg-color="white"
-LINE 108 |             hide-bottom-space
-LINE 109 |             class="premium-input"
-LINE 110 |           >
-LINE 111 |             <template v-slot:no-option>
-LINE 112 |               <q-item>
-LINE 113 |                 <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE 114 |               </q-item>
-LINE 115 |             </template>
-LINE 116 |           </q-select>
-LINE 117 |         </div>
-LINE 118 | 
-LINE 119 |         <div class="col-8 col-md-6">
-LINE 120 |           <label for="canalVenta" class="label-cotizacion">Canal de venta*</label>
-LINE 121 |           <q-select
-LINE 122 |             :model-value="canalventa"
-LINE 123 |             @update:model-value="$emit('update:canalventa', $event)"
-LINE 124 |             dense
-LINE 125 |             outlined
-LINE 126 |             :options="salesChannels"
-LINE 127 |             option-label="label"
-LINE 128 |             option-value="value"
-LINE 129 |             :rules="canalVentaRules"
-LINE 130 |           >
-LINE 131 |             <template v-slot:prepend>
-LINE 132 |               <q-icon name="point_of_sale" color="blue" />
-LINE 133 |             </template>
-LINE 134 |           </q-select>
-LINE 135 |         </div>
-LINE 136 |       </div>
-LINE 137 | 
-LINE 138 |       <ModalfirmaPage
-LINE 139 |         :model-value="modalfirmaActivo"
-LINE 140 |         :id-entidad="selectedClient"
-LINE 141 |         tipo-operacion="CLIENTE"
-LINE 142 |         @onSuccess="alTerminarFirma"
-LINE 143 |         @onError="alFallarFirma"
-LINE 144 |         @update:model-value="$emit('update:modalfirmaActivo', $event)"
-LINE 145 |       />
-LINE 146 |     </q-form>
-LINE 147 |   </q-card-section>
-LINE 148 | </template>
-LINE 149 | 
-LINE 150 | <script setup>
-LINE 151 | import ModalfirmaPage from './ModalfirmaPage.vue'
-LINE 152 | import {
-LINE 153 |   tipoOperacionRules,
-LINE 154 |   fechaRules,
-LINE 155 |   sucursalRules,
-LINE 156 |   canalVentaRules,
-LINE 157 | } from 'src/validators/cotizacionValidators'
-LINE 158 | // Props
-LINE 159 | defineProps({
-LINE 160 |   tipoOperacion: Object,
-LINE 161 |   optionOperacion: Array,
-LINE 162 |   fecha: String,
-LINE 163 |   selectedClient: Object,
-LINE 164 |   filteredClients: Array,
-LINE 165 |   selectedSucursal: Object,
-LINE 166 |   filteredSucursales: Array,
-LINE 167 |   canalventa: [Object, null],
-LINE 168 |   salesChannels: Array,
-LINE 169 |   modalfirmaActivo: Boolean,
-LINE 170 |   clienteRules: Array,
-LINE 171 | })
-LINE 172 | 
-LINE 173 | // Emits
-LINE 174 | const emit = defineEmits([
-LINE 175 |   'tipo-operacion-change',
-LINE 176 |   'fecha-change',
-LINE 177 |   'registrar-cliente',
-LINE 178 |   'filter-client',
-LINE 179 |   'set-client-input',
-LINE 180 |   'elegir-cliente',
-LINE 181 |   'filter-sucursal',
-LINE 182 |   'set-sucursal-input',
-LINE 183 |   'elegir-sucursal',
-LINE 184 |   'on-success-firma',
-LINE 185 |   'on-error-firma',
-LINE 186 |   'update:tipoOperacion',
-LINE 187 |   'update:fecha',
-LINE 188 |   'update:selectedClient',
-LINE 189 |   'update:selectedSucursal',
-LINE 190 |   'update:canalventa',
-LINE 191 |   'update:modalfirmaActivo',
-LINE 192 | ])
-LINE 193 | 
-LINE 194 | // Local functions (delegate to parent)
-LINE 195 | function filterClient(val, update) {
-LINE 196 |   emit('filter-client', val, update)
-LINE 197 | }
-LINE 198 | function setClientInputValue(val) {
-LINE 199 |   emit('set-client-input', val)
-LINE 200 | }
-LINE 201 | 
-LINE 202 | function filterSucursal(val, update) {
-LINE 203 |   emit('filter-sucursal', val, update)
-LINE 204 | }
-LINE 205 | function setSucursalInputValue(val) {
-LINE 206 |   emit('set-sucursal-input', val)
-LINE 207 | }
-LINE 208 | 
-LINE 209 | function alTerminarFirma(respuesta) {
-LINE 210 |   emit('on-success-firma', respuesta)
-LINE 211 | }
-LINE 212 | function alFallarFirma(err) {
-LINE 213 |   emit('on-error-firma', err)
-LINE 214 | }
-LINE 215 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\DialogoConfirmacion.vue
-==============================================================
-```vue
-LINE  1 | <template>
-LINE  2 |   <q-dialog
-LINE  3 |     :model-value="mostrar"
-LINE  4 |     @update:model-value="$emit('update:mostrar', $event)"
-LINE  5 |     backdrop-filter="blur(4px)"
-LINE  6 |   >
-LINE  7 |     <q-card class="dialog-card-custom shadow-10">
-LINE  8 |       <q-card-section
-LINE  9 |         class="q-pa-lg text-white flex items-center justify-center column dialog-header-gradient"
-LINE 10 |       >
-LINE 11 |         <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
-LINE 12 |           <q-icon name="check" size="40px" color="positive" />
-LINE 13 |         </div>
-LINE 14 |         <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
-LINE 15 |           ¡Cotización Exitosa!
-LINE 16 |         </div>
-LINE 17 |       </q-card-section>
-LINE 18 | 
-LINE 19 |       <q-card-section class="q-pa-xl text-center bg-white">
-LINE 20 |         <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
-LINE 21 |           El comprobante ha sido generado y guardado correctamente en el sistema.
-LINE 22 |         </div>
-LINE 23 |         <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
-LINE 24 |           ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
-LINE 25 |         </div>
-LINE 26 |       </q-card-section>
-LINE 27 | 
-LINE 28 |       <q-separator />
-LINE 29 |       <q-card-actions align="center" class="q-pa-md bg-grey-1">
-LINE 30 |         <q-btn
-LINE 31 |           flat
-LINE 32 |           label="No, gracias"
-LINE 33 |           color="grey-7"
-LINE 34 |           @click="$emit('cancelar')"
-LINE 35 |           class="q-px-md text-weight-bold radius-8"
-LINE 36 |         />
-LINE 37 |         <q-btn
-LINE 38 |           unelevated
-LINE 39 |           label="Enviar PDF por Correo"
-LINE 40 |           color="positive"
-LINE 41 |           icon="send"
-LINE 42 |           class="q-px-md text-weight-bold shadow-3 q-ml-sm radius-8"
-LINE 43 |           @click="$emit('confirmar')"
-LINE 44 |         />
-LINE 45 |       </q-card-actions>
-LINE 46 |     </q-card>
-LINE 47 |   </q-dialog>
-LINE 48 | </template>
-LINE 49 | 
-LINE 50 | <script setup>
-LINE 51 | defineProps({ mostrar: Boolean })
-LINE 52 | defineEmits(['cancelar', 'confirmar', 'update:mostrar'])
-LINE 53 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\DialogoPDF.vue
-==============================================================
-```vue
-LINE  1 | <template>
-LINE  2 |   <q-dialog
-LINE  3 |     :model-value="mostrar"
-LINE  4 |     @update:model-value="$emit('update:mostrar', $event)"
-LINE  5 |     full-width
-LINE  6 |     full-height
-LINE  7 |     transition-show="scale"
-LINE  8 |     transition-hide="scale"
-LINE  9 |     @hide="$emit('reiniciar')"
-LINE 10 |   >
-LINE 11 |     <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
-LINE 12 |       <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
-LINE 13 |         <div class="text-h6 flex items-center q-px-sm">
-LINE 14 |           <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de PDF
-LINE 15 |         </div>
-LINE 16 |         <q-space />
-LINE 17 |         <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
-LINE 18 |       </q-card-section>
-LINE 19 | 
-LINE 20 |       <q-separator color="grey-9" />
-LINE 21 |       <q-card-section class="q-pa-none bg-grey-3" style="height: calc(100% - 54px)">
-LINE 22 |         <iframe
-LINE 23 |           v-if="pdfData"
-LINE 24 |           :src="pdfData"
-LINE 25 |           style="width: 100%; height: 100%; border: none"
-LINE 26 |         ></iframe>
-LINE 27 |         <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
-LINE 28 |           <q-icon name="check_circle" color="positive" size="2em" />
-LINE 29 |           <p>
-LINE 30 |             Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
-LINE 31 |           </p>
-LINE 32 |           <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link"
-LINE 33 |             >Descargar comprobante</a
-LINE 34 |           >
-LINE 35 |         </div>
-LINE 36 |       </q-card-section>
-LINE 37 |     </q-card>
-LINE 38 |   </q-dialog>
-LINE 39 | </template>
-LINE 40 | 
-LINE 41 | <script setup>
-LINE 42 | defineProps({
-LINE 43 |   mostrar: Boolean,
-LINE 44 |   pdfData: String,
-LINE 45 |   isMobile: Boolean,
-LINE 46 |   mobileFallbackUrl: String,
-LINE 47 | })
-LINE 48 | defineEmits(['reiniciar', 'update:mostrar'])
-LINE 49 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\DialogoPago.vue
-==============================================================
-```vue
-LINE   1 | <template>
-LINE   2 |   <q-dialog :model-value="mostrar" @update:model-value="$emit('update:mostrar', $event)">
-LINE   3 |     <q-card class="responsive-dialog shadow-24 column no-wrap">
-LINE   4 |       <!-- Header -->
-LINE   5 |       <q-card-section
-LINE   6 |         class="bg-primary text-white q-py-md q-px-md flex justify-between items-center bg-primary-gradient"
-LINE   7 |       >
-LINE   8 |         <div class="flex items-center">
-LINE   9 |           <div class="bg-white-20 q-pa-sm rounded-borders q-mr-sm shadow-inner radius-12">
-LINE  10 |             <q-icon name="account_balance_wallet" class="text-white" size="24px" />
-LINE  11 |           </div>
-LINE  12 |           <div>
-LINE  13 |             <div class="text-h6 text-weight-bolder">Método de Pago</div>
-LINE  14 |             <div class="text-caption text-white/80 text-weight-medium gt-xs">
-LINE  15 |               Configure la modalidad y detalles del pago
-LINE  16 |             </div>
-LINE  17 |           </div>
-LINE  18 |         </div>
-LINE  19 |         <q-btn icon="close" v-close-popup flat round dense class="text-white/80" size="md" />
-LINE  20 |       </q-card-section>
-LINE  21 | 
-LINE  22 |       <q-card-section class="col scroll q-pa-lg bg-grey-1 content-section">
-LINE  23 |         <!-- Selector de modalidad -->
-LINE  24 |         <div class="row justify-center q-mb-xl">
-LINE  25 |           <q-btn-toggle
-LINE  26 |             :model-value="carrito.credito"
-LINE  27 |             toggle-color="primary"
-LINE  28 |             toggle-text-color="white"
-LINE  29 |             color="grey-1"
-LINE  30 |             text-color="grey-7"
-LINE  31 |             unelevated
-LINE  32 |             rounded
-LINE  33 |             no-caps
-LINE  34 |             class="custom-premium-toggle border-grey-3 shadow-2"
-LINE  35 |             @update:model-value="$emit('tipo-pago-change', $event)"
-LINE  36 |             :options="[
-LINE  37 |               { value: false, slot: 'efectivo' },
-LINE  38 |               { value: true, slot: 'credito' },
-LINE  39 |             ]"
-LINE  40 |           >
-LINE  41 |             <template v-slot:efectivo>
-LINE  42 |               <div
-LINE  43 |                 class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
-LINE  44 |                 style="padding: 4px 12px"
-LINE  45 |               >
-LINE  46 |                 <q-icon name="payments" size="18px" />
-LINE  47 |                 <span>Efectivo</span>
-LINE  48 |               </div>
-LINE  49 |             </template>
-LINE  50 |             <template v-slot:credito>
-LINE  51 |               <div
-LINE  52 |                 class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
-LINE  53 |                 style="padding: 4px 12px"
-LINE  54 |               >
-LINE  55 |                 <q-icon name="credit_score" size="18px" />
-LINE  56 |                 <span>Crédito</span>
-LINE  57 |               </div>
-LINE  58 |             </template>
-LINE  59 |           </q-btn-toggle>
-LINE  60 |         </div>
-LINE  61 | 
-LINE  62 |         <!-- Contenido dinámico según modalidad -->
-LINE  63 |         <div v-if="!carrito.credito">
-LINE  64 |           <!-- Efectivo: selector único/dividido, etc. -->
-LINE  65 |           <!-- (simplificado) -->
-LINE  66 |         </div>
-LINE  67 |         <div v-else>
-LINE  68 |           <!-- Crédito: cuotas, frecuencia, fecha límite -->
-LINE  69 |           <!-- (simplificado) -->
-LINE  70 |         </div>
-LINE  71 |       </q-card-section>
-LINE  72 | 
-LINE  73 |       <q-separator />
-LINE  74 |       <q-card-actions align="right" class="q-pa-md bg-white shrink-0">
-LINE  75 |         <q-btn
-LINE  76 |           flat
-LINE  77 |           label="Regresar"
-LINE  78 |           color="grey-8"
-LINE  79 |           v-close-popup
-LINE  80 |           class="q-px-md text-weight-bold rounded-pill"
-LINE  81 |         />
-LINE  82 |         <q-btn
-LINE  83 |           unelevated
-LINE  84 |           label="Confirmar Cotización"
-LINE  85 |           color="primary"
-LINE  86 |           icon="task_alt"
-LINE  87 |           class="q-px-lg text-weight-bolder shadow-3 full-width-xs btn-continuar"
-LINE  88 |           @click="$emit('confirmar-pago')"
-LINE  89 |           :disable="carrito.variablePago === 'dividido' && remainingAmount !== 0"
-LINE  90 |         />
-LINE  91 |       </q-card-actions>
-LINE  92 |     </q-card>
-LINE  93 |   </q-dialog>
-LINE  94 | </template>
-LINE  95 | 
-LINE  96 | <script setup>
-LINE  97 | defineProps({
-LINE  98 |   mostrar: Boolean,
-LINE  99 |   carrito: Object,
-LINE 100 |   remainingAmount: Number,
-LINE 101 | })
-LINE 102 | defineEmits(['tipo-pago-change', 'confirmar-pago', 'update:mostrar'])
-LINE 103 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\components\ResumenCarrito.vue
-==============================================================
-```vue
-LINE   1 | <template>
-LINE   2 |   <q-card-section
-LINE   3 |     class="bg-white q-py-sm q-px-lg flex items-center justify-between"
-LINE   4 |     style="border-bottom: 1px solid #e0e0e0"
-LINE   5 |   >
-LINE   6 |     <div class="flex items-center text-primary">
-LINE   7 |       <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
-LINE   8 |       <div class="text-subtitle1 text-weight-bold">Resumen de Cotización</div>
-LINE   9 |     </div>
-LINE  10 |   </q-card-section>
-LINE  11 | 
-LINE  12 |   <q-table
-LINE  13 |     :rows="carrito.listaProductos"
-LINE  14 |     :columns="carritoColumns"
-LINE  15 |     row-key="idproductoalmacen"
-LINE  16 |     flat
-LINE  17 |     hide-bottom
-LINE  18 |     class="custom-table q-pt-md"
-LINE  19 |     table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
-LINE  20 |     :pagination="{ rowsPerPage: 0 }"
-LINE  21 |   >
-LINE  22 |     <template v-slot:body="props">
-LINE  23 |       <q-tr :props="props" :class="props.expand ? 'bg-blue-50' : 'hover-row'">
-LINE  24 |         <!-- Código de expansión para códigos únicos -->
-LINE  25 |         <q-td auto-width>
-LINE  26 |           <q-btn
-LINE  27 |             v-if="props.row.codigosUnicos?.length > 0"
-LINE  28 |             size="sm"
-LINE  29 |             color="primary"
-LINE  30 |             flat
-LINE  31 |             round
-LINE  32 |             @click="props.expand = !props.expand"
-LINE  33 |             :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-LINE  34 |           />
-LINE  35 |         </q-td>
-LINE  36 | 
-LINE  37 |         <q-td key="num" :props="props" class="text-left">
-LINE  38 |           <q-chip color="grey-2" text-color="grey-9" dense square class="radius-6">
-LINE  39 |             <span class="text-weight-bolder">{{ props.row.num }}</span>
-LINE  40 |           </q-chip>
-LINE  41 |         </q-td>
-LINE  42 |         <q-td key="codigo" :props="props" class="text-left">
-LINE  43 |           <q-chip outline color="primary" dense square class="radius-6 font-weight-600">
-LINE  44 |             {{ props.row.codigo }}
-LINE  45 |           </q-chip>
-LINE  46 |         </q-td>
-LINE  47 |         <q-td key="descripcion" :props="props">
-LINE  48 |           <div class="text-weight-bolder text-grey-10 text-subtitle2">
-LINE  49 |             {{ props.row.descripcion }}
-LINE  50 |           </div>
-LINE  51 |           <div
-LINE  52 |             class="flex items-center text-primary cursor-pointer q-mt-xs note-adicional"
-LINE  53 |             v-ripple
-LINE  54 |           >
-LINE  55 |             <q-icon name="edit_note" size="16px" class="q-mr-xs" />
-LINE  56 |             <span class="text-weight-medium">{{
-LINE  57 |               props.row.descripcionAdicional || 'Añadir nota adicional...'
-LINE  58 |             }}</span>
-LINE  59 |             <q-popup-edit
-LINE  60 |               :model-value="props.row.descripcionAdicional"
-LINE  61 |               @update:model-value="
-LINE  62 |                 $emit('update:descripcionAdicional', {
-LINE  63 |                   id: props.row.idproductoalmacen,
-LINE  64 |                   value: $event,
-LINE  65 |                 })
-LINE  66 |               "
-LINE  67 |               v-slot="scope"
-LINE  68 |               buttons
-LINE  69 |               label-set="Guardar"
-LINE  70 |               label-cancel="Cancelar"
-LINE  71 |             >
-LINE  72 |               <q-input
-LINE  73 |                 v-model="scope.value"
-LINE  74 |                 outlined
-LINE  75 |                 dense
-LINE  76 |                 autofocus
-LINE  77 |                 counter
-LINE  78 |                 @keyup.enter="validarDescripcion(scope, props.row)"
-LINE  79 |               />
-LINE  80 |             </q-popup-edit>
-LINE  81 |           </div>
-LINE  82 |         </q-td>
-LINE  83 |         <q-td key="cantidad" :props="props" class="text-right">
-LINE  84 |           <q-badge
-LINE  85 |             color="secondary"
-LINE  86 |             text-color="white"
-LINE  87 |             class="q-px-md q-py-xs text-weight-bolder text-subtitle2 shadow-1 radius-8"
-LINE  88 |           >
-LINE  89 |             {{ props.row.cantidad }}
-LINE  90 |           </q-badge>
-LINE  91 |         </q-td>
-LINE  92 |         <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
-LINE  93 |           {{ decimas(props.row.precio) }}
-LINE  94 |           <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-LINE  95 |             divisa.tipo
-LINE  96 |           }}</span>
-LINE  97 |         </q-td>
-LINE  98 |         <q-td
-LINE  99 |           key="total"
-LINE 100 |           :props="props"
-LINE 101 |           class="text-right text-weight-bolder text-primary text-subtitle1"
-LINE 102 |         >
-LINE 103 |           {{ decimas(props.row.cantidad * props.row.precio) }}
-LINE 104 |           <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-LINE 105 |             divisa.tipo
-LINE 106 |           }}</span>
-LINE 107 |         </q-td>
-LINE 108 |         <q-td key="options" :props="props" class="text-center">
-LINE 109 |           <q-btn
-LINE 110 |             icon="delete_outline"
-LINE 111 |             color="negative"
-LINE 112 |             flat
-LINE 113 |             round
-LINE 114 |             dense
-LINE 115 |             size="sm"
-LINE 116 |             @click="$emit('eliminar-producto', props.row.idproductoalmacen)"
-LINE 117 |             class="hover-shake"
-LINE 118 |           >
-LINE 119 |             <q-tooltip class="bg-negative text-weight-medium shadow-3">Quitar producto</q-tooltip>
-LINE 120 |           </q-btn>
-LINE 121 |         </q-td>
-LINE 122 |       </q-tr>
-LINE 123 | 
-LINE 124 |       <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
-LINE 125 |         <q-td colspan="100%" class="q-pa-lg">
-LINE 126 |           <TableCodigosUnicos
-LINE 127 |             v-if="esProductoUnico"
-LINE 128 |             v-model="props.row.codigosUnicos"
-LINE 129 |             :parent-row="props.row"
-LINE 130 |             :can-delete="true"
-LINE 131 |             :can-edit="true"
-LINE 132 |             :api-mode="false"
-LINE 133 |             @update-parent-quantity="
-LINE 134 |               (nuevaCant) => {
-LINE 135 |                 props.row.cantidad = nuevaCant
-LINE 136 |                 $emit('recalcular-totales')
-LINE 137 |               }
-LINE 138 |             "
-LINE 139 |           />
-LINE 140 |         </q-td>
-LINE 141 |       </q-tr>
-LINE 142 |     </template>
-LINE 143 | 
-LINE 144 |     <template v-slot:bottom-row>
-LINE 145 |       <q-tr class="bg-grey-1">
-LINE 146 |         <q-td colspan="6" class="text-right text-subtitle2 text-grey-8 letter-spacing-05"
-LINE 147 |           >SUBTOTAL:</q-td
-LINE 148 |         >
-LINE 149 |         <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
-LINE 150 |           {{ decimas(carrito.subtotal) }}
-LINE 151 |           <span class="text-caption text-grey-6 text-weight-medium">{{ divisa.tipo }}</span>
-LINE 152 |         </q-td>
-LINE 153 |         <q-td />
-LINE 154 |       </q-tr>
-LINE 155 | 
-LINE 156 |       <q-tr class="bg-grey-1">
-LINE 157 |         <q-td colspan="6" class="text-right text-subtitle2 text-grey-8">DESCUENTO:</q-td>
-LINE 158 |         <q-td class="text-right">
-LINE 159 |           <q-input
-LINE 160 |             :model-value="carrito.descuento"
-LINE 161 |             @update:model-value="$emit('update:descuento', $event)"
-LINE 162 |             type="number"
-LINE 163 |             min="0"
-LINE 164 |             :max="carrito.subtotal"
-LINE 165 |             @change="$emit('aplicar-descuento')"
-LINE 166 |             dense
-LINE 167 |             outlined
-LINE 168 |             bg-color="white"
-LINE 169 |             input-class="text-right text-weight-bolder text-negative"
-LINE 170 |             class="premium-input input-descuento"
-LINE 171 |           >
-LINE 172 |             <template v-slot:append>
-LINE 173 |               <div
-LINE 174 |                 class="bg-negative text-white text-weight-bold text-caption q-px-sm rounded-borders currency-append"
-LINE 175 |               >
-LINE 176 |                 {{ divisa.tipo }}
-LINE 177 |               </div>
-LINE 178 |             </template>
-LINE 179 |           </q-input>
-LINE 180 |         </q-td>
-LINE 181 |         <q-td />
-LINE 182 |       </q-tr>
-LINE 183 | 
-LINE 184 |       <q-tr class="bg-primary text-white bg-primary-gradient-row">
-LINE 185 |         <q-td colspan="6" class="text-right text-h6 text-weight-bolder text-uppercase"
-LINE 186 |           >TOTAL GENERAL:</q-td
-LINE 187 |         >
-LINE 188 |         <q-td class="text-right text-h5 text-weight-bolder text-shadow-light">
-LINE 189 |           {{ decimas(carrito.ventatotal) }}
-LINE 190 |           <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
-LINE 191 |             divisa.tipo
-LINE 192 |           }}</span>
-LINE 193 |         </q-td>
-LINE 194 |         <q-td />
-LINE 195 |       </q-tr>
-LINE 196 |     </template>
-LINE 197 |   </q-table>
-LINE 198 | </template>
-LINE 199 | 
-LINE 200 | <script setup>
-LINE 201 | import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
-LINE 202 | import { decimas, redondear } from 'src/composables/FuncionesG'
-LINE 203 | 
-LINE 204 | defineProps({
-LINE 205 |   carrito: { type: Object, required: true },
-LINE 206 |   divisa: { type: Object, required: true },
-LINE 207 |   esProductoUnico: Boolean,
-LINE 208 | })
-LINE 209 | 
-LINE 210 | defineEmits([
-LINE 211 |   'eliminar-producto',
-LINE 212 |   'recalcular-totales',
-LINE 213 |   'aplicar-descuento',
-LINE 214 |   'update:descuento',
-LINE 215 |   'update:descripcionAdicional',
-LINE 216 | ])
-LINE 217 | const carritoColumns = [
-LINE 218 |   { name: 'exp', label: '', align: 'left' },
-LINE 219 |   { name: 'num', label: 'N°', align: 'left', field: 'num' },
-LINE 220 |   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-LINE 221 |   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
-LINE 222 |   { name: 'cantidad', label: 'Cantidad', align: 'center', field: (row) => decimas(row.cantidad) },
-LINE 223 |   {
-LINE 224 |     name: 'precio',
-LINE 225 |     label: 'Precio unitario',
-LINE 226 |     align: 'center',
-LINE 227 |     field: (row) => decimas(row.precio),
-LINE 228 |   },
-LINE 229 |   {
-LINE 230 |     name: 'total',
-LINE 231 |     label: 'Total',
-LINE 232 |     align: 'center',
-LINE 233 |     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
-LINE 234 |   },
-LINE 235 |   { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
-LINE 236 | ]
-LINE 237 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\useCalculosCotizacion.js
-==============================================================
-```js
-LINE  1 | // src/composables/useCalculosCotizacion.js
-LINE  2 | import { redondear } from 'src/composables/FuncionesG'
-LINE  3 | 
-LINE  4 | /**
-LINE  5 |  * Calcula el subtotal a partir de la lista de productos.
-LINE  6 |  * @param {Array} listaProductos
-LINE  7 |  * @returns {number} Subtotal redondeado.
-LINE  8 |  */
-LINE  9 | export function calcularSubtotal(listaProductos) {
-LINE 10 |   const subtotal = listaProductos.reduce((sub, producto) => {
-LINE 11 |     const precio = parseFloat(producto.precio)
-LINE 12 |     const cantidad = parseFloat(producto.cantidad)
-LINE 13 |     return sub + precio * cantidad
-LINE 14 |   }, 0)
-LINE 15 |   return redondear(subtotal)
-LINE 16 | }
-LINE 17 | 
-LINE 18 | /**
-LINE 19 |  * Calcula el total aplicando el descuento.
-LINE 20 |  * @param {number} subtotal
-LINE 21 |  * @param {number} descuento
-LINE 22 |  * @returns {{ subtotal: number, descuento: number, ventatotal: number }}
-LINE 23 |  */
-LINE 24 | export function calcularTotales(subtotal, descuento) {
-LINE 25 |   const descuentoAjustado = descuento > subtotal ? subtotal : descuento
-LINE 26 |   return {
-LINE 27 |     subtotal: redondear(subtotal),
-LINE 28 |     descuento: redondear(descuentoAjustado),
-LINE 29 |     ventatotal: redondear(subtotal - descuentoAjustado),
-LINE 30 |   }
-LINE 31 | }
-LINE 32 | 
-LINE 33 | /**
-LINE 34 |  * Valida y aplica un descuento sobre el subtotal.
-LINE 35 |  * @param {number} subtotal
-LINE 36 |  * @param {number} descuentoPropuesto
-LINE 37 |  * @returns {number} Descuento válido (entre 0 y subtotal).
-LINE 38 |  */
-LINE 39 | export function validarDescuento(subtotal, descuentoPropuesto) {
-LINE 40 |   if (descuentoPropuesto < 0) return 0
-LINE 41 |   if (descuentoPropuesto > subtotal) return subtotal
-LINE 42 |   return descuentoPropuesto
-LINE 43 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\useCarrito.js
-==============================================================
-```js
-LINE   1 | // src/modules/Cotizacion/composables/useCarrito.js
-LINE   2 | import { reactive, computed, watch } from 'vue'
-LINE   3 | import { redondear } from 'src/composables/FuncionesG'
-LINE   4 | import { useQuasar } from 'quasar'
-LINE   5 | 
-LINE   6 | export function useCarrito(options) {
-LINE   7 |   const $q = useQuasar()
-LINE   8 |   const {
-LINE   9 |     divisa,
-LINE  10 |     idempresa,
-LINE  11 |     tipoOperacion,
-LINE  12 |     permitirStock,
-LINE  13 |     selectedProduct,
-LINE  14 |     cantidadCO,
-LINE  15 |     precioCO,
-LINE  16 |     idproductoalmacenCO,
-LINE  17 |     idstockCO,
-LINE  18 |     idporcentajeCO,
-LINE  19 |     cantidaddisponibleCO,
-LINE  20 |     CodigosUnicosSeleccionados,
-LINE  21 |     listaProductosDisponibles,
-LINE  22 |     resetProductoInputs,
-LINE  23 |   } = options
-LINE  24 | 
-LINE  25 |   // Estado del carrito
-LINE  26 |   const carritoCO = reactive({
-LINE  27 |     ventatotal: 0,
-LINE  28 |     subtotal: 0,
-LINE  29 |     descuento: 0,
-LINE  30 |     idalmacen: 0,
-LINE  31 |     divisa: divisa?.id || 0,
-LINE  32 |     ipv: null,
-LINE  33 |     idusuario: 0,
-LINE  34 |     listaProductos: [],
-LINE  35 |     pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
-LINE  36 |     metodoPago: 0,
-LINE  37 |     variablePago: 'directo',
-LINE  38 |     fecha: '',
-LINE  39 |     credito: false,
-LINE  40 |     idfirma: null,
-LINE  41 |     codigosUnicos: [],
-LINE  42 |     cajabanco: null,
-LINE  43 |     cantidadPagos: 1,
-LINE  44 |     montoPagos: 0,
-LINE  45 |     periodo: 30,
-LINE  46 |     plazoPersonalizado: 0,
-LINE  47 |     fechaLimite: '',
-LINE  48 |   })
-LINE  49 | 
-LINE  50 |   // Computed: monto total de la venta
-LINE  51 |   const totalSaleAmount = computed(() => parseFloat(carritoCO.ventatotal) || 0)
-LINE  52 | 
-LINE  53 |   // Computed: si se puede agregar producto
-LINE  54 |   const canAddProduct = computed(() => {
-LINE  55 |     if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
-LINE  56 |       return true
-LINE  57 |     }
-LINE  58 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
-LINE  59 |       return false
-LINE  60 |     }
-LINE  61 |     if (tipoOperacion.value?.value === 1) {
-LINE  62 |       return cantidadCO.value <= cantidaddisponibleCO.value
-LINE  63 |     }
-LINE  64 |     return true
-LINE  65 |   })
-LINE  66 | 
-LINE  67 |   // ─── Métodos ──────────────────────────────────────────────────────────────
-LINE  68 |   async function anadirProductoACarrito(userId) {
-LINE  69 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
-LINE  70 |       $q.notify({
-LINE  71 |         type: 'info',
-LINE  72 |         message: 'Llene todos los campos para poder cargar productos.',
-LINE  73 |       })
-LINE  74 |       return false
-LINE  75 |     }
-LINE  76 | 
-LINE  77 |     if (Number(tipoOperacion.value?.value) === 1) {
-LINE  78 |       if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
-LINE  79 |         $q.notify({ type: 'warning', message: 'La cantidad excede el stock disponible.' })
-LINE  80 |         return false
-LINE  81 |       }
-LINE  82 |     }
-LINE  83 | 
-LINE  84 |     const nuevoProducto = {
-LINE  85 |       num: carritoCO.listaProductos.length + 1,
-LINE  86 |       idproductoalmacen: idproductoalmacenCO.value,
-LINE  87 |       cantidad: cantidadCO.value,
-LINE  88 |       precio: precioCO.value,
-LINE  89 |       idstock: idstockCO.value,
-LINE  90 |       idporcentaje: idporcentajeCO.value,
-LINE  91 |       candiponible: cantidaddisponibleCO.value,
-LINE  92 |       descripcion: selectedProduct.value.descripcion,
-LINE  93 |       descripcionAdicional: '',
-LINE  94 |       codigo: selectedProduct.value.codigo,
-LINE  95 |       despachado:
-LINE  96 |         Number(selectedProduct.value.stock) == 0 ||
-LINE  97 |         Number(selectedProduct.value.stock) < Number(cantidadCO.value)
-LINE  98 |           ? 2
-LINE  99 |           : 1,
-LINE 100 |       codigosUnicos: [...CodigosUnicosSeleccionados.value],
-LINE 101 |     }
-LINE 102 | 
-LINE 103 |     carritoCO.idusuario = userId
-LINE 104 |     carritoCO.idempresa = idempresa
-LINE 105 |     carritoCO.divisa = divisa?.id || 0
-LINE 106 |     carritoCO.listaProductos.push(nuevoProducto)
-LINE 107 |     carritoCO.codigosUnicos = [...carritoCO.codigosUnicos, ...CodigosUnicosSeleccionados.value]
-LINE 108 | 
-LINE 109 |     calcularTotalesCarrito()
-LINE 110 |     if (listaProductosDisponibles) await listaProductosDisponibles()
-LINE 111 |     resetProductoInputs()
-LINE 112 |     return true
-LINE 113 |   }
-LINE 114 | 
-LINE 115 |   function eliminarProductoCarrito(idProductoAlmacen) {
-LINE 116 |     carritoCO.listaProductos = carritoCO.listaProductos.filter(
-LINE 117 |       (p) => p.idproductoalmacen !== idProductoAlmacen,
-LINE 118 |     )
-LINE 119 |     calcularTotalesCarrito()
-LINE 120 |     if (listaProductosDisponibles) listaProductosDisponibles()
-LINE 121 |   }
-LINE 122 | 
-LINE 123 |   function calcularTotalesCarrito() {
-LINE 124 |     carritoCO.subtotal = carritoCO.listaProductos.reduce((sub, producto) => {
-LINE 125 |       const precio = parseFloat(producto.precio)
-LINE 126 |       const cantidad = parseFloat(producto.cantidad)
-LINE 127 |       return sub + precio * cantidad
-LINE 128 |     }, 0)
-LINE 129 | 
-LINE 130 |     if (carritoCO.subtotal === 0) carritoCO.descuento = 0
-LINE 131 |     carritoCO.ventatotal = carritoCO.subtotal - carritoCO.descuento
-LINE 132 | 
-LINE 133 |     carritoCO.subtotal = redondear(carritoCO.subtotal)
-LINE 134 |     carritoCO.ventatotal = redondear(carritoCO.ventatotal)
-LINE 135 |     carritoCO.descuento = redondear(carritoCO.descuento)
-LINE 136 |   }
-LINE 137 | 
-LINE 138 |   function aplicarDescuento() {
-LINE 139 |     if (carritoCO.descuento > carritoCO.subtotal) {
-LINE 140 |       $q.notify({
-LINE 141 |         type: 'warning',
-LINE 142 |         message: 'El descuento sobrepasa el subtotal.',
-LINE 143 |       })
-LINE 144 |       carritoCO.descuento = carritoCO.subtotal
-LINE 145 |     }
-LINE 146 |     calcularTotalesCarrito()
-LINE 147 |   }
-LINE 148 | 
-LINE 149 |   function resetCarrito() {
-LINE 150 |     carritoCO.ventatotal = 0
-LINE 151 |     carritoCO.subtotal = 0
-LINE 152 |     carritoCO.descuento = 0
-LINE 153 |     carritoCO.listaProductos = []
-LINE 154 |     carritoCO.metodoPago = 0
-LINE 155 |     carritoCO.variablePago = 'directo'
-LINE 156 |     carritoCO.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
-LINE 157 |     carritoCO.credito = false
-LINE 158 |     carritoCO.cantidadPagos = 1
-LINE 159 |     carritoCO.montoPagos = 0
-LINE 160 |     carritoCO.periodo = 30
-LINE 161 |     carritoCO.plazoPersonalizado = 0
-LINE 162 |     carritoCO.fechaLimite = ''
-LINE 163 |     localStorage.removeItem('carritoCO')
-LINE 164 |   }
-LINE 165 | 
-LINE 166 |   const validarDescripcion = (scope, row) => {
-LINE 167 |     const producto = carritoCO.listaProductos.find(
-LINE 168 |       (p) => Number(p.idproductoalmacen) === Number(row.idproductoalmacen),
-LINE 169 |     )
-LINE 170 |     if (producto) {
-LINE 171 |       producto.descripcionAdicional = scope.value
-LINE 172 |       scope.set()
-LINE 173 |     }
-LINE 174 |   }
-LINE 175 | 
-LINE 176 |   // Persistencia en localStorage
-LINE 177 |   watch(
-LINE 178 |     carritoCO,
-LINE 179 |     (newVal) => {
-LINE 180 |       localStorage.setItem('carritoCO', JSON.stringify(newVal))
-LINE 181 |     },
-LINE 182 |     { deep: true },
-LINE 183 |   )
-LINE 184 | 
-LINE 185 |   return {
-LINE 186 |     carritoCO,
-LINE 187 |     totalSaleAmount,
-LINE 188 |     canAddProduct,
-LINE 189 |     anadirProductoACarrito,
-LINE 190 |     eliminarProductoCarrito,
-LINE 191 |     calcularTotalesCarrito,
-LINE 192 |     aplicarDescuento,
-LINE 193 |     resetCarrito,
-LINE 194 |     validarDescripcion,
-LINE 195 |   }
-LINE 196 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\useCliente.js
-==============================================================
-```js
-LINE   1 | // src/modules/Cotizacion/composables/useCliente.js
-LINE   2 | import { ref } from 'vue'
-LINE   3 | import { api } from 'src/boot/axios'
-LINE   4 | import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
-LINE   5 | import { useQuasar } from 'quasar'
-LINE   6 | 
-LINE   7 | export function useCliente(options) {
-LINE   8 |   const $q = useQuasar()
-LINE   9 |   const { soloAlmacen, almacenesOptions, salesChannels } = options
-LINE  10 | 
-LINE  11 |   const clientesOptions = ref([])
-LINE  12 |   const filteredClients = ref([])
-LINE  13 |   const selectedClient = ref(null)
-LINE  14 |   const idclienteCO = ref('')
-LINE  15 | 
-LINE  16 |   const sucursalesOptions = ref([])
-LINE  17 |   const filteredSucursales = ref([])
-LINE  18 |   const selectedSucursal = ref(null)
-LINE  19 |   const idsucursalCOS = ref('')
-LINE  20 | 
-LINE  21 |   const canalventa = ref(null)
-LINE  22 | 
-LINE  23 |   // ─── Cargar clientes ──────────────────────────────────────────────────────
-LINE  24 |   async function cargarClientes() {
-LINE  25 |     const user = await validarUsuario()
-LINE  26 |     const idempresa = user[0]?.empresa?.idempresa
-LINE  27 |     if (!idempresa) return
-LINE  28 | 
-LINE  29 |     try {
-LINE  30 |       const response = await api.get(`listaCliente/${idempresa}`)
-LINE  31 |       let data = response.data
-LINE  32 |       if (data[0] === 'error') {
-LINE  33 |         console.error(data.error)
-LINE  34 |         return
-LINE  35 |       }
-LINE  36 | 
-LINE  37 |       if (soloAlmacen.value) {
-LINE  38 |         const allowedIds = almacenesOptions.value.map((a) => a.idalmacen)
-LINE  39 |         data = data.filter((c) => {
-LINE  40 |           if (!c.almacenes || c.almacenes.length === 0) return true
-LINE  41 |           return c.almacenes.some((al) => allowedIds.includes(al.idalmacen))
-LINE  42 |         })
-LINE  43 |       }
-LINE  44 | 
-LINE  45 |       clientesOptions.value = data.map((c) => ({
-LINE  46 |         ...c,
-LINE  47 |         display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
-LINE  48 |       }))
-LINE  49 |       filteredClients.value = clientesOptions.value
-LINE  50 |     } catch (error) {
-LINE  51 |       console.error('Error cargando clientes:', error)
-LINE  52 |       $q.notify({ type: 'negative', message: 'Error al cargar clientes' })
-LINE  53 |     }
-LINE  54 |   }
-LINE  55 | 
-LINE  56 |   // ─── Seleccionar sucursales ──────────────────────────────────────────────
-LINE  57 |   async function selectSucursal(clientId) {
-LINE  58 |     if (!clientId) {
-LINE  59 |       sucursalesOptions.value = []
-LINE  60 |       selectedSucursal.value = null
-LINE  61 |       idsucursalCOS.value = ''
-LINE  62 |       return
-LINE  63 |     }
-LINE  64 |     try {
-LINE  65 |       const response = await api.get(`listaSucursal/${clientId}`)
-LINE  66 |       const data = response.data
-LINE  67 |       if (data.length === 0) {
-LINE  68 |         $q.notify({ type: 'info', message: 'No hay sucursales para este cliente.' })
-LINE  69 |         sucursalesOptions.value = []
-LINE  70 |         selectedSucursal.value = null
-LINE  71 |         idsucursalCOS.value = ''
-LINE  72 |       } else {
-LINE  73 |         sucursalesOptions.value = data
-LINE  74 |         selectedSucursal.value = data[0]
-LINE  75 |         idsucursalCOS.value = data[0].id
-LINE  76 |       }
-LINE  77 |     } catch (error) {
-LINE  78 |       console.error('Error cargando sucursales:', error)
-LINE  79 |       $q.notify({ type: 'negative', message: 'Error al cargar sucursales' })
-LINE  80 |     }
-LINE  81 |   }
-LINE  82 | 
-LINE  83 |   function selectCanalVenta(canalId) {
-LINE  84 |     canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalId)) || null
-LINE  85 |   }
-LINE  86 | 
-LINE  87 |   function elegirUnCliente(client) {
-LINE  88 |     if (client) {
-LINE  89 |       idclienteCO.value = client.id
-LINE  90 |       selectSucursal(client.id)
-LINE  91 |       selectCanalVenta(client.idcanal)
-LINE  92 |     } else {
-LINE  93 |       idclienteCO.value = ''
-LINE  94 |       selectedSucursal.value = null
-LINE  95 |       idsucursalCOS.value = ''
-LINE  96 |     }
-LINE  97 |   }
-LINE  98 | 
-LINE  99 |   // ─── Filtros para QSelect ────────────────────────────────────────────────
-LINE 100 |   function filterClient(val, update) {
-LINE 101 |     update(() => {
-LINE 102 |       const needle = normalizeText(val).toLowerCase()
-LINE 103 |       filteredClients.value = clientesOptions.value.filter((v) =>
-LINE 104 |         normalizeText(v.display).toLowerCase().includes(needle),
-LINE 105 |       )
-LINE 106 |     })
-LINE 107 |   }
-LINE 108 | 
-LINE 109 |   function setClientInputValue(val) {
-LINE 110 |     if (!clientesOptions.value.some((c) => c.display === val)) {
-LINE 111 |       selectedClient.value = null
-LINE 112 |       idclienteCO.value = ''
-LINE 113 |       selectedSucursal.value = null
-LINE 114 |       idsucursalCOS.value = ''
-LINE 115 |     }
-LINE 116 |   }
-LINE 117 | 
-LINE 118 |   function filterSucursal(val, update) {
-LINE 119 |     update(() => {
-LINE 120 |       const needle = normalizeText(val).toLowerCase()
-LINE 121 |       filteredSucursales.value = sucursalesOptions.value.filter((v) =>
-LINE 122 |         normalizeText(v.nombre).toLowerCase().includes(needle),
-LINE 123 |       )
-LINE 124 |     })
-LINE 125 |   }
-LINE 126 | 
-LINE 127 |   function setSucursalInputValue(val) {
-LINE 128 |     if (!sucursalesOptions.value.some((s) => s.nombre === val)) {
-LINE 129 |       selectedSucursal.value = null
-LINE 130 |       idsucursalCOS.value = ''
-LINE 131 |     }
-LINE 132 |   }
-LINE 133 | 
-LINE 134 |   function elegirUnaSucursal(sucursal) {
-LINE 135 |     if (sucursal) idsucursalCOS.value = sucursal.id
-LINE 136 |     else idsucursalCOS.value = ''
-LINE 137 |   }
-LINE 138 | 
-LINE 139 |   // ─── Registro rápido de cliente (modal) ─────────────────────────────────
-LINE 140 |   const showAddModal = ref(false)
-LINE 141 |   function RegistrarCliente() {
-LINE 142 |     showAddModal.value = !showAddModal.value
-LINE 143 |   }
-LINE 144 | 
-LINE 145 |   async function handleRecordCreated(newRecordData) {
-LINE 146 |     const formData = new FormData()
-LINE 147 |     Object.keys(newRecordData).forEach((key) => {
-LINE 148 |       formData.append(key, newRecordData[key])
-LINE 149 |     })
-LINE 150 |     try {
-LINE 151 |       const response = await api.post('', formData)
-LINE 152 |       if (response.data.estado === 'exito') {
-LINE 153 |         await cargarClientes()
-LINE 154 |         RegistrarCliente()
-LINE 155 |         $q.notify({ type: 'positive', message: 'Cliente guardado correctamente' })
-LINE 156 |       } else {
-LINE 157 |         $q.notify({ type: 'negative', message: response.data.mensaje || 'Error al guardar' })
-LINE 158 |       }
-LINE 159 |     } catch (error) {
-LINE 160 |       console.error(error)
-LINE 161 |       $q.notify({ type: 'negative', message: 'Error en el registro' })
-LINE 162 |     }
-LINE 163 |   }
-LINE 164 | 
-LINE 165 |   return {
-LINE 166 |     clientesOptions,
-LINE 167 |     filteredClients,
-LINE 168 |     selectedClient,
-LINE 169 |     idclienteCO,
-LINE 170 |     sucursalesOptions,
-LINE 171 |     filteredSucursales,
-LINE 172 |     selectedSucursal,
-LINE 173 |     idsucursalCOS,
-LINE 174 |     canalventa,
-LINE 175 |     showAddModal,
-LINE 176 |     cargarClientes,
-LINE 177 |     selectSucursal,
-LINE 178 |     selectCanalVenta,
-LINE 179 |     elegirUnCliente,
-LINE 180 |     filterClient,
-LINE 181 |     setClientInputValue,
-LINE 182 |     filterSucursal,
-LINE 183 |     setSucursalInputValue,
-LINE 184 |     elegirUnaSucursal,
-LINE 185 |     RegistrarCliente,
-LINE 186 |     handleRecordCreated,
-LINE 187 |   }
-LINE 188 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\useCotizacion.js
-==============================================================
-```js
-LINE   1 | // src/modules/Cotizacion/composables/useCotizacion.js
-LINE   2 | import { ref } from 'vue'
-LINE   3 | import { useQuasar } from 'quasar'
-LINE   4 | import { api } from 'src/boot/axios'
-LINE   5 | import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
-LINE   6 | import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
-LINE   7 | import { validarUsuario } from 'src/composables/FuncionesG'
-LINE   8 | 
-LINE   9 | export function useCotizacion(options) {
-LINE  10 |   const $q = useQuasar()
-LINE  11 |   const {
-LINE  12 |     carritoCO,
-LINE  13 |     tipoOperacion,
-LINE  14 |     idclienteCO,
-LINE  15 |     idsucursalCOS,
-LINE  16 |     filtroAlmacenCO,
-LINE  17 |     filtroCategoriaCO,
-LINE  18 |     puntoVenta,
-LINE  19 |     idcajaBancoSeleccionada,
-LINE  20 |     almacenesOptions,
-LINE  21 |     cotizacionFormRef,
-LINE  22 |     formClientes,
-LINE  23 |     resetCarrito,
-LINE  24 |     cargarAlmacenes,
-LINE  25 |     cargarCLientes,
-LINE  26 |     idempresa, // nuevo
-LINE  27 |     onReset,
-LINE  28 |   } = options
-LINE  29 | 
-LINE  30 |   const pdfData = ref(null)
-LINE  31 |   const mostrarModal = ref(false)
-LINE  32 |   const isMobile = ref(window.innerWidth < 768)
-LINE  33 |   const mobileFallbackUrl = ref(null)
-LINE  34 |   const dialog = ref(false)
-LINE  35 |   const position = ref('top')
-LINE  36 |   let resolver = null
-LINE  37 |   const detallesCotizacion = ref([])
-LINE  38 |   const idcliente = ref('')
-LINE  39 | 
-LINE  40 |   // ─── Envío de cotización ──────────────────────────────────────────────────
-LINE  41 |   async function enviarCotizacion() {
-LINE  42 |     const isValidForm = await cotizacionFormRef.value?.validate()
-LINE  43 |     const isValidCliente = await formClientes.value?.validate()
-LINE  44 |     if (!isValidForm || !isValidCliente) {
-LINE  45 |       $q.notify({ type: 'info', message: 'Complete todos los campos requeridos.' })
-LINE  46 |       return false
-LINE  47 |     }
-LINE  48 |     if (carritoCO.listaProductos.length === 0) {
-LINE  49 |       $q.notify({ type: 'info', message: 'Debe añadir al menos un producto.' })
-LINE  50 |       return false
-LINE  51 |     }
-LINE  52 | 
-LINE  53 |     carritoCO.tipoOperacion = tipoOperacion.value?.value
-LINE  54 |     carritoCO.ipv = Number(puntoVenta.value?.value)
-LINE  55 |     carritoCO.idalmacen = filtroAlmacenCO.value
-LINE  56 |     carritoCO.tipopago = carritoCO.credito ? 'credito' : 'contado'
-LINE  57 |     carritoCO.cajabanco = idcajaBancoSeleccionada.value
-LINE  58 |     carritoCO.idcliente = idclienteCO.value
-LINE  59 |     carritoCO.md5_em = idempresa
-LINE  60 |     carritoCO.almacen = almacenesOptions.value
-LINE  61 |       .find((obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value))
-LINE  62 |       ?.almacen.onCancel(() => {
-LINE  63 |         onReset?.()
-LINE  64 |       })
-LINE  65 |     const formData = new FormData()
-LINE  66 |     formData.append('ver', 'registrarCotizacion')
-LINE  67 |     formData.append('filtroALmacen', filtroAlmacenCO.value)
-LINE  68 |     formData.append('filtroCategoria', filtroCategoriaCO.value)
-LINE  69 |     formData.append('idcliente', idclienteCO.value)
-LINE  70 |     formData.append('idsucursal', idsucursalCOS.value)
-LINE  71 |     formData.append('listaProductos', JSON.stringify(carritoCO))
-LINE  72 |     formData.append('tipo_operacion', tipoOperacion.value?.value)
-LINE  73 | 
-LINE  74 |     $q.loading.show({ message: 'Registrando cotización...' })
-LINE  75 |     try {
-LINE  76 |       const response = await api.post('', formData)
-LINE  77 |       const data = response.data
-LINE  78 |       if (data.estado === 'exito') {
-LINE  79 |         resetCarrito()
-LINE  80 |         $q.notify({ type: 'positive', message: 'Cotización realizada exitosamente.' })
-LINE  81 |         cotizacionFormRef.value?.resetValidation()
-LINE  82 |         // Mostrar diálogo para ver comprobante
-LINE  83 |         return new Promise((resolve) => {
-LINE  84 |           $q.dialog({
-LINE  85 |             title: 'Cotización Exitosa',
-LINE  86 |             message: 'Su comprobante está listo. ¿Desea verlo?',
-LINE  87 |             cancel: true,
-LINE  88 |             persistent: true,
-LINE  89 |           })
-LINE  90 |             .onOk(() => {
-LINE  91 |               generarComprobante(data.id)
-LINE  92 |               resolve(true)
-LINE  93 |             })
-LINE  94 |             .onCancel(() => {
-LINE  95 |               resolve(false)
-LINE  96 |             })
-LINE  97 |         })
-LINE  98 |       } else {
-LINE  99 |         $q.notify({ type: 'negative', message: data.mensaje || 'Error al registrar.' })
-LINE 100 |         return false
-LINE 101 |       }
-LINE 102 |     } catch (error) {
-LINE 103 |       console.error(error)
-LINE 104 |       $q.notify({ type: 'negative', message: 'Error de conexión o servidor.' })
-LINE 105 |       return false
-LINE 106 |     } finally {
-LINE 107 |       $q.loading.hide()
-LINE 108 |     }
-LINE 109 |   }
-LINE 110 | 
-LINE 111 |   // ─── Generar comprobante PDF ─────────────────────────────────────────────
-LINE 112 |   async function generarComprobante(id) {
-LINE 113 |     const user = await validarUsuario()
-LINE 114 |     const idempresa = user[0]?.empresa?.idempresa
-LINE 115 |     if (!idempresa) {
-LINE 116 |       $q.notify({ type: 'negative', message: 'Error: empresa no disponible.' })
-LINE 117 |       return
-LINE 118 |     }
-LINE 119 | 
-LINE 120 |     $q.loading.show({ message: 'Generando comprobante...' })
-LINE 121 |     try {
-LINE 122 |       const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
-LINE 123 |       const data = response.data
-LINE 124 |       if (data[0] === 'error') {
-LINE 125 |         console.error(data.error)
-LINE 126 |         $q.notify({ type: 'negative', message: 'Error al cargar detalles.' })
-LINE 127 |         return
-LINE 128 |       }
-LINE 129 | 
-LINE 130 |       const resultado = await generarPdfCotizacion(data)
-LINE 131 |       if (!resultado || !resultado.doc) {
-LINE 132 |         $q.notify({ type: 'negative', message: 'Error al generar PDF.' })
-LINE 133 |         return
-LINE 134 |       }
-LINE 135 | 
-LINE 136 |       // Limpiar blob anterior
-LINE 137 |       if (pdfData.value) URL.revokeObjectURL(pdfData.value)
-LINE 138 | 
-LINE 139 |       if (isMobile.value) {
-LINE 140 |         mobileFallbackUrl.value = resultado.mobileBlobUrl
-LINE 141 |       } else {
-LINE 142 |         const pdfBlob = resultado.doc.output('blob')
-LINE 143 |         pdfData.value = URL.createObjectURL(pdfBlob)
-LINE 144 |         openDialog('right', data[0]?.cliente.idcliente, data)
-LINE 145 |         mostrarModal.value = true
-LINE 146 |       }
-LINE 147 |     } catch (error) {
-LINE 148 |       console.error(error)
-LINE 149 |       $q.notify({ type: 'negative', message: 'Error al generar comprobante.' })
-LINE 150 |     } finally {
-LINE 151 |       $q.loading.hide()
-LINE 152 |     }
-LINE 153 |   }
-LINE 154 | 
-LINE 155 |   // ─── Diálogo de confirmación de envío ────────────────────────────────────
-LINE 156 |   function openDialog(pos, idcot, data) {
-LINE 157 |     position.value = pos
-LINE 158 |     dialog.value = true
-LINE 159 |     idcliente.value = idcot
-LINE 160 |     detallesCotizacion.value = data
-LINE 161 |     return new Promise((resolve) => {
-LINE 162 |       resolver = resolve
-LINE 163 |     })
-LINE 164 |   }
-LINE 165 | 
-LINE 166 |   const confirmar = (idcliente, data) => {
-LINE 167 |     resolver?.(true)
-LINE 168 |     PDFenviarComprobanteCorreo(idcliente, data, $q)
-LINE 169 |     dialog.value = false
-LINE 170 |   }
-LINE 171 | 
-LINE 172 |   const cancelar = () => {
-LINE 173 |     resolver?.(false)
-LINE 174 |     dialog.value = false
-LINE 175 |   }
-LINE 176 | 
-LINE 177 |   // ─── Reset formulario ─────────────────────────────────────────────────────
-LINE 178 |   async function resetFormulario() {
-LINE 179 |     // Resetear campos y cargar datos iniciales
-LINE 180 |     if (cargarAlmacenes) await cargarAlmacenes()
-LINE 181 |     if (cargarCLientes) await cargarCLientes()
-LINE 182 |     // Resetear carrito y otros campos
-LINE 183 |     resetCarrito()
-LINE 184 |     // ... más lógica de reset
-LINE 185 |   }
-LINE 186 | 
-LINE 187 |   // ─── Handlers ─────────────────────────────────────────────────────────────
-LINE 188 |   const handleTipoOperacionChange = () => {
-LINE 189 |     cotizacionFormRef.value?.resetValidation()
-LINE 190 |     resetFormulario()
-LINE 191 |   }
-LINE 192 | 
-LINE 193 |   const cambioFecha = (nuevaFecha) => {
-LINE 194 |     carritoCO.fecha = nuevaFecha
-LINE 195 |     if (carritoCO.credito) {
-LINE 196 |       // calcular fechas
-LINE 197 |     }
-LINE 198 |     cotizacionFormRef.value?.resetValidation()
-LINE 199 |   }
-LINE 200 | 
-LINE 201 |   const cotizacion_proforma = async () => {
-LINE 202 |     if (Number(tipoOperacion.value?.value) === 0) {
-LINE 203 |       await enviarCotizacion()
-LINE 204 |     } else {
-LINE 205 |       // abrir modal de pago
-LINE 206 |     }
-LINE 207 |   }
-LINE 208 | 
-LINE 209 |   return {
-LINE 210 |     pdfData,
-LINE 211 |     mostrarModal,
-LINE 212 |     isMobile,
-LINE 213 |     mobileFallbackUrl,
-LINE 214 |     dialog,
-LINE 215 |     position,
-LINE 216 |     detallesCotizacion,
-LINE 217 |     generarComprobante,
-LINE 218 |     enviarCotizacion,
-LINE 219 |     confirmar,
-LINE 220 |     cancelar,
-LINE 221 |     cotizacion_proforma,
-LINE 222 |     resetFormulario,
-LINE 223 |     handleTipoOperacionChange,
-LINE 224 |     cambioFecha,
-LINE 225 |     openDialog,
-LINE 226 |   }
-LINE 227 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\usePago.js
-==============================================================
-```js
-LINE   1 | // src/modules/Cotizacion/composables/usePago.js
-LINE   2 | import { ref, computed } from 'vue'
-LINE   3 | 
-LINE   4 | export function usePago(carritoCO) {
-LINE   5 |   const metodosPagos = ref([])
-LINE   6 |   const idcajaBancoSeleccionada = ref(null)
-LINE   7 |   const periodOptions = [
-LINE   8 |     { label: 'Personalizado', value: 0 },
-LINE   9 |     { label: '15 días', value: 15 },
-LINE  10 |     { label: '30 días', value: 30 },
-LINE  11 |     { label: '60 días', value: 60 },
-LINE  12 |     { label: '90 días', value: 90 },
-LINE  13 |   ]
-LINE  14 | 
-LINE  15 |   const totalSaleAmount = computed(() => parseFloat(carritoCO.ventatotal) || 0)
-LINE  16 |   const totalPaidAmount = computed(() => {
-LINE  17 |     if (carritoCO.variablePago === 'dividido') {
-LINE  18 |       return carritoCO.pagosDivididos.reduce((sum, p) => sum + parseFloat(p.monto || 0), 0)
-LINE  19 |     }
-LINE  20 |     return 0
-LINE  21 |   })
-LINE  22 |   const remainingAmount = computed(() => totalSaleAmount.value - totalPaidAmount.value)
-LINE  23 | 
-LINE  24 |   // ─── Cálculos de crédito ──────────────────────────────────────────────────
-LINE  25 |   const calculatePayments = () => {
-LINE  26 |     if (carritoCO.credito && carritoCO.cantidadPagos > 0 && totalSaleAmount.value > 0) {
-LINE  27 |       carritoCO.montoPagos = (totalSaleAmount.value / carritoCO.cantidadPagos).toFixed(2)
-LINE  28 |     } else {
-LINE  29 |       carritoCO.montoPagos = 0
-LINE  30 |     }
-LINE  31 |   }
-LINE  32 | 
-LINE  33 |   const calculateDueDate = () => {
-LINE  34 |     if (!carritoCO.credito || !carritoCO.fecha) return
-LINE  35 |     const fecha = new Date(carritoCO.fecha)
-LINE  36 |     let daysToAdd = 0
-LINE  37 |     const selectedPeriod = Number(carritoCO.periodo)
-LINE  38 |     if (selectedPeriod === 0) {
-LINE  39 |       daysToAdd = Number(carritoCO.plazoPersonalizado) || 0
-LINE  40 |     } else if (selectedPeriod > 0) {
-LINE  41 |       daysToAdd = selectedPeriod * carritoCO.cantidadPagos
-LINE  42 |     }
-LINE  43 |     if (daysToAdd > 0) {
-LINE  44 |       fecha.setDate(fecha.getDate() + daysToAdd)
-LINE  45 |       carritoCO.fechaLimite = fecha.toISOString().slice(0, 10)
-LINE  46 |     } else {
-LINE  47 |       carritoCO.fechaLimite = ''
-LINE  48 |     }
-LINE  49 |   }
-LINE  50 | 
-LINE  51 |   // ─── Pago dividido ────────────────────────────────────────────────────────
-LINE  52 |   const calculateRemainingAmount = (index) => {
-LINE  53 |     const payment = carritoCO.pagosDivididos[index]
-LINE  54 |     const monto = parseFloat(payment.monto) || 0
-LINE  55 |     if (monto >= 0 && monto <= totalSaleAmount.value && totalSaleAmount.value > 0) {
-LINE  56 |       payment.porcentaje = ((monto * 100) / totalSaleAmount.value).toFixed(2)
-LINE  57 |     } else {
-LINE  58 |       payment.porcentaje = 0
-LINE  59 |     }
-LINE  60 |   }
-LINE  61 | 
-LINE  62 |   const calculateAmountFromPercentage = (index) => {
-LINE  63 |     const payment = carritoCO.pagosDivididos[index]
-LINE  64 |     const percentage = parseFloat(payment.porcentaje) || 0
-LINE  65 |     if (percentage >= 0 && percentage <= 100 && totalSaleAmount.value > 0) {
-LINE  66 |       payment.monto = (totalSaleAmount.value * (percentage / 100)).toFixed(2)
-LINE  67 |     } else {
-LINE  68 |       payment.monto = 0
-LINE  69 |     }
-LINE  70 |   }
-LINE  71 | 
-LINE  72 |   const addPaymentMethod = () => {
-LINE  73 |     carritoCO.pagosDivididos.push({ metodoPago: null, monto: 0, porcentaje: 0 })
-LINE  74 |   }
-LINE  75 | 
-LINE  76 |   const removePaymentMethod = (index) => {
-LINE  77 |     if (carritoCO.pagosDivididos.length > 1) {
-LINE  78 |       carritoCO.pagosDivididos.splice(index, 1)
-LINE  79 |     }
-LINE  80 |   }
-LINE  81 | 
-LINE  82 |   const handleTipoPagoGeneralChange = (val) => {
-LINE  83 |     if (val) {
-LINE  84 |       calculatePayments()
-LINE  85 |       calculateDueDate()
-LINE  86 |     }
-LINE  87 |   }
-LINE  88 | 
-LINE  89 |   return {
-LINE  90 |     metodosPagos,
-LINE  91 |     idcajaBancoSeleccionada,
-LINE  92 |     periodOptions,
-LINE  93 |     totalSaleAmount,
-LINE  94 |     totalPaidAmount,
-LINE  95 |     remainingAmount,
-LINE  96 |     calculatePayments,
-LINE  97 |     calculateDueDate,
-LINE  98 |     calculateRemainingAmount,
-LINE  99 |     calculateAmountFromPercentage,
-LINE 100 |     addPaymentMethod,
-LINE 101 |     removePaymentMethod,
-LINE 102 |     handleTipoPagoGeneralChange,
-LINE 103 |   }
-LINE 104 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\composables\useProducto.js
-==============================================================
-```js
-LINE   1 | // src/modules/Cotizacion/composables/useProducto.js
-LINE   2 | import { ref, watch } from 'vue'
-LINE   3 | import { api } from 'src/boot/axios'
-LINE   4 | import { normalizeText, validarUsuario } from 'src/composables/FuncionesG'
-LINE   5 | import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
-LINE   6 | 
-LINE   7 | export function useProducto(options) {
-LINE   8 |   // const $q = useQuasar()
-LINE   9 |   const { idempresa, filtroCategoriaCO, carritoCO } = options
-LINE  10 | 
-LINE  11 |   const esProductoUnico = ref(false)
-LINE  12 |   const registrarComoProductoUnico = ref(true)
-LINE  13 |   const CodigosUnicosSeleccionados = ref([])
-LINE  14 |   const { config } = useProductoConfig(idempresa)
-LINE  15 | 
-LINE  16 |   watch(
-LINE  17 |     () => config.value.idempresa,
-LINE  18 |     (val) => {
-LINE  19 |       if (val) esProductoUnico.value = Boolean(config.value.productounico)
-LINE  20 |     },
-LINE  21 |     { deep: true },
-LINE  22 |   )
-LINE  23 | 
-LINE  24 |   const productosDisponibles = ref([])
-LINE  25 |   const filteredProducts = ref([])
-LINE  26 |   const selectedProduct = ref(null)
-LINE  27 |   const cantidaddisponibleCO = ref('')
-LINE  28 |   const cantidadCO = ref(0)
-LINE  29 |   const precioCO = ref(0)
-LINE  30 |   const idstockCO = ref('')
-LINE  31 |   const idporcentajeCO = ref('')
-LINE  32 |   const idproductoalmacenCO = ref('')
-LINE  33 | 
-LINE  34 |   // ─── Cargar productos ─────────────────────────────────────────────────────
-LINE  35 |   async function listaProductosDisponibles() {
-LINE  36 |     const user = await validarUsuario()
-LINE  37 |     const idempresa = user[0]?.empresa?.idempresa
-LINE  38 |     if (!idempresa || !filtroCategoriaCO.value) {
-LINE  39 |       productosDisponibles.value = []
-LINE  40 |       return
-LINE  41 |     }
-LINE  42 | 
-LINE  43 |     try {
-LINE  44 |       const response = await api.get(`listaProductosDisponiblesVenta/${idempresa}`)
-LINE  45 |       const data = response.data
-LINE  46 |       if (data[0] === 'error') {
-LINE  47 |         console.error(data.error)
-LINE  48 |         productosDisponibles.value = []
-LINE  49 |         return
-LINE  50 |       }
-LINE  51 | 
-LINE  52 |       let use = data.datos.filter((u) => Number(u.idporcentaje) === Number(filtroCategoriaCO.value))
-LINE  53 | 
-LINE  54 |       if (carritoCO.listaProductos.length > 0) {
-LINE  55 |         use = use.filter(
-LINE  56 |           (u) => !carritoCO.listaProductos.some((cp) => cp.idproductoalmacen === u.id),
-LINE  57 |         )
-LINE  58 |       }
-LINE  59 | 
-LINE  60 |       productosDisponibles.value = use.map((p) => ({
-LINE  61 |         ...p,
-LINE  62 |         display: `${p.codigo} - ${p.descripcion}`,
-LINE  63 |       }))
-LINE  64 |       filteredProducts.value = productosDisponibles.value
-LINE  65 |     } catch (error) {
-LINE  66 |       console.error('Error cargando productos:', error)
-LINE  67 |       productosDisponibles.value = []
-LINE  68 |     }
-LINE  69 |   }
-LINE  70 | 
-LINE  71 |   // ─── Filtros para QSelect ────────────────────────────────────────────────
-LINE  72 |   function filterProduct(val, update) {
-LINE  73 |     update(() => {
-LINE  74 |       const needle = normalizeText(val).toLowerCase()
-LINE  75 |       filteredProducts.value = productosDisponibles.value.filter((v) =>
-LINE  76 |         normalizeText(v.display).toLowerCase().includes(needle),
-LINE  77 |       )
-LINE  78 |     })
-LINE  79 |   }
-LINE  80 | 
-LINE  81 |   function setProductInputValue(val) {
-LINE  82 |     if (!productosDisponibles.value.some((p) => p.display === val)) {
-LINE  83 |       selectedProduct.value = null
-LINE  84 |     }
-LINE  85 |   }
-LINE  86 | 
-LINE  87 |   function elegirUnProducto(product) {
-LINE  88 |     if (product) {
-LINE  89 |       cantidaddisponibleCO.value = product.stock
-LINE  90 |       precioCO.value = product.precio
-LINE  91 |       idstockCO.value = product.idstock
-LINE  92 |       idporcentajeCO.value = product.idporcentaje
-LINE  93 |       idproductoalmacenCO.value = product.id
-LINE  94 |       cantidadCO.value = 1
-LINE  95 |     } else {
-LINE  96 |       resetProductoInputs()
-LINE  97 |     }
-LINE  98 |   }
-LINE  99 | 
-LINE 100 |   function resetProductoInputs() {
-LINE 101 |     selectedProduct.value = null
-LINE 102 |     cantidaddisponibleCO.value = ''
-LINE 103 |     cantidadCO.value = 1
-LINE 104 |     precioCO.value = 1
-LINE 105 |     idstockCO.value = ''
-LINE 106 |     idporcentajeCO.value = ''
-LINE 107 |     idproductoalmacenCO.value = ''
-LINE 108 |   }
-LINE 109 | 
-LINE 110 |   function guardarCodigosEnVenta(codigos) {
-LINE 111 |     CodigosUnicosSeleccionados.value = codigos
-LINE 112 |     cantidadCO.value = codigos.length
-LINE 113 |   }
-LINE 114 | 
-LINE 115 |   return {
-LINE 116 |     esProductoUnico,
-LINE 117 |     registrarComoProductoUnico,
-LINE 118 |     CodigosUnicosSeleccionados,
-LINE 119 |     productosDisponibles,
-LINE 120 |     filteredProducts,
-LINE 121 |     selectedProduct,
-LINE 122 |     cantidaddisponibleCO,
-LINE 123 |     cantidadCO,
-LINE 124 |     precioCO,
-LINE 125 |     idstockCO,
-LINE 126 |     idporcentajeCO,
-LINE 127 |     idproductoalmacenCO,
-LINE 128 |     listaProductosDisponibles,
-LINE 129 |     filterProduct,
-LINE 130 |     setProductInputValue,
-LINE 131 |     elegirUnProducto,
-LINE 132 |     resetProductoInputs,
-LINE 133 |     guardarCodigosEnVenta,
-LINE 134 |   }
-LINE 135 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\page\CotizacionPage.vue
-==============================================================
-```vue
-LINE   1 | <template>
-LINE   2 |   <q-page class="q-pa-lg bg-fondo page-min-height">
-LINE   3 |     <CabeceraCotizacion />
-LINE   4 | 
-LINE   5 |     <q-card class="my-card q-mb-xl shadow-3 card-cotizacion">
-LINE   6 |       <q-card-section
-LINE   7 |         class="bg-primary text-white q-py-md q-px-lg flex justify-between items-center bg-primary-gradient"
-LINE   8 |       >
-LINE   9 |         <div class="flex items-center">
-LINE  10 |           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
-LINE  11 |           <div class="text-subtitle1 text-weight-bold">Datos del Cliente y Configuración</div>
-LINE  12 |         </div>
-LINE  13 |         <div class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2 radius-20">
-LINE  14 |           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
-LINE  15 |           <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
-LINE  16 |           <q-btn
-LINE  17 |             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
-LINE  18 |             dense
-LINE  19 |             flat
-LINE  20 |             :color="permitirStock ? 'positive' : 'grey'"
-LINE  21 |             size="md"
-LINE  22 |             @click="permitirStockvacio"
-LINE  23 |             class="q-pa-none"
-LINE  24 |           />
-LINE  25 |         </div>
-LINE  26 |       </q-card-section>
-LINE  27 | 
-LINE  28 |       <DatosCliente
-LINE  29 |         :tipo-operacion="tipoOperacion"
-LINE  30 |         :option-operacion="optionOperacion"
-LINE  31 |         :fecha="fecha"
-LINE  32 |         :selected-client="selectedClient"
-LINE  33 |         :filtered-clients="filteredClients"
-LINE  34 |         :selected-sucursal="selectedSucursal"
-LINE  35 |         :filtered-sucursales="filteredSucursales"
-LINE  36 |         :canalventa="canalventa"
-LINE  37 |         :sales-channels="salesChannels"
-LINE  38 |         :modalfirma-activo="modalfirmaActivo"
-LINE  39 |         @tipo-operacion-change="handleTipoOperacionChange"
-LINE  40 |         @fecha-change="cambioFecha"
-LINE  41 |         @registrar-cliente="RegistrarCliente"
-LINE  42 |         @filter-client="filterClient"
-LINE  43 |         @set-client-input="setClientInputValue"
-LINE  44 |         @elegir-cliente="elegirUnCliente"
-LINE  45 |         @filter-sucursal="filterSucursal"
-LINE  46 |         @set-sucursal-input="setSucursalInputValue"
-LINE  47 |         @elegir-sucursal="elegirUnaSucursal"
-LINE  48 |         @on-success-firma="alTerminarFirma"
-LINE  49 |         @on-error-firma="alFallarFirma"
-LINE  50 |       />
-LINE  51 | 
-LINE  52 |       <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
-LINE  53 | 
-LINE  54 |       <ConfiguracionInicial
-LINE  55 |         :filtro-almacen="filtroAlmacenCO"
-LINE  56 |         :almacenes-options="almacenesOptions"
-LINE  57 |         :filtro-categoria="filtroCategoriaCO"
-LINE  58 |         :categorias-options="categoriasOptions"
-LINE  59 |         :punto-venta="puntoVenta"
-LINE  60 |         :puntos-venta="puntosVenta"
-LINE  61 |         @almacen-change="listaCategoria"
-LINE  62 |         @categoria-change="listaProductosDisponibles"
-LINE  63 |       />
-LINE  64 |     </q-card>
-LINE  65 | 
-LINE  66 |     <q-card class="my-card q-mb-xl shadow-3 card-cotizacion">
-LINE  67 |       <q-card-section
-LINE  68 |         class="bg-secondary text-white q-py-md q-px-lg flex items-center bg-secondary-gradient"
-LINE  69 |       >
-LINE  70 |         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
-LINE  71 |         <div class="text-subtitle1 text-weight-bold">Añadir Productos</div>
-LINE  72 |       </q-card-section>
-LINE  73 | 
-LINE  74 |       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
-LINE  75 |         <AgregarProducto
-LINE  76 |           :es-producto-unico="esProductoUnico"
-LINE  77 |           :registrar-como-producto-unico="registrarComoProductoUnico"
-LINE  78 |           :selected-product="selectedProduct"
-LINE  79 |           :filtered-products="filteredProducts"
-LINE  80 |           :cantidad-disponible="cantidaddisponibleCO"
-LINE  81 |           :cantidad="cantidadCO"
-LINE  82 |           :precio="precioCO"
-LINE  83 |           :id-producto-almacen="idproductoalmacenCO"
-LINE  84 |           :can-add-product="canAddProduct"
-LINE  85 |           :divisa-activa="divisaActiva"
-LINE  86 |           :permisos-store="permisosStore"
-LINE  87 |           @filter-product="filterProduct"
-LINE  88 |           @set-product-input="setProductInputValue"
-LINE  89 |           @elegir-producto="elegirUnProducto"
-LINE  90 |           @anadir-producto="anadirProductoACarrito"
-LINE  91 |           @guardar-codigos="guardarCodigosEnVenta"
-LINE  92 |         />
-LINE  93 |       </q-card-section>
-LINE  94 | 
-LINE  95 |       <ResumenCarrito
-LINE  96 |         :carrito="carritoCO"
-LINE  97 |         :divisa="divisaActiva"
-LINE  98 |         :es-producto-unico="esProductoUnico"
-LINE  99 |         @eliminar-producto="eliminarProductoCarrito"
-LINE 100 |         @recalcular-totales="calcularTotalesCarrito"
-LINE 101 |         @aplicar-descuento="aplicarDescuento"
-LINE 102 |       />
-LINE 103 | 
-LINE 104 |       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
-LINE 105 |         <div class="row justify-end items-center q-gutter-x-md">
-LINE 106 |           <q-btn
-LINE 107 |             flat
-LINE 108 |             color="negative"
-LINE 109 |             icon="close"
-LINE 110 |             label="Cancelar"
-LINE 111 |             @click="$emit('cancelarregistro')"
-LINE 112 |             class="q-px-md btn-rounded-100"
-LINE 113 |           />
-LINE 114 |           <q-btn
-LINE 115 |             outline
-LINE 116 |             color="primary"
-LINE 117 |             icon="edit_note"
-LINE 118 |             label="Firma del Cliente"
-LINE 119 |             @click="RegistrarFirma"
-LINE 120 |             class="q-px-lg bg-white btn-firma"
-LINE 121 |           />
-LINE 122 |           <q-btn
-LINE 123 |             label="Continuar"
-LINE 124 |             color="primary"
-LINE 125 |             icon="task_alt"
-LINE 126 |             size="lg"
-LINE 127 |             :disable="carritoCO.listaProductos.length === 0"
-LINE 128 |             @click="cotizacion_proforma"
-LINE 129 |             class="q-px-xl text-weight-bolder btn-continuar"
-LINE 130 |             :class="{ 'btn-continuar--enabled': carritoCO.listaProductos.length > 0 }"
-LINE 131 |           />
-LINE 132 |         </div>
-LINE 133 |       </q-card-section>
-LINE 134 |     </q-card>
-LINE 135 | 
-LINE 136 |     <DialogoPago
-LINE 137 |       :mostrar="modalmetodopago"
-LINE 138 |       :carrito="carritoCO"
-LINE 139 |       :remaining-amount="remainingAmount"
-LINE 140 |       @tipo-pago-change="handleTipoPagoGeneralChange"
-LINE 141 |       @confirmar-pago="enviarDatos"
-LINE 142 |     />
-LINE 143 | 
-LINE 144 |     <DialogoConfirmacion :mostrar="dialog" @cancelar="cancelar" @confirmar="confirmar" />
-LINE 145 | 
-LINE 146 |     <DialogoPDF
-LINE 147 |       :mostrar="mostrarModal"
-LINE 148 |       :pdf-data="pdfData"
-LINE 149 |       :is-mobile="isMobile"
-LINE 150 |       :mobile-fallback-url="mobileFallbackUrl"
-LINE 151 |       @reiniciar="$emit('reiniciar')"
-LINE 152 |     />
-LINE 153 | 
-LINE 154 |     <q-dialog v-model="showAddModal">
-LINE 155 |       <MyRegistrationForm @recordCreated="handleRecordCreated" />
-LINE 156 |     </q-dialog>
-LINE 157 |   </q-page>
-LINE 158 | </template>
-LINE 159 | // src/modules/Cotizacion/page/CotizacionPage.vue (script refactorizado)
-LINE 160 | <script setup>
-LINE 161 | import { ref, onMounted, onBeforeUnmount } from 'vue'
-LINE 162 | import { useQuasar } from 'quasar'
-LINE 163 | import { useCarrito } from '../composables/useCarrito'
-LINE 164 | import { useCliente } from '../composables/useCliente'
-LINE 165 | import { useProducto } from '../composables/useProducto'
-LINE 166 | import { useCotizacion } from '../composables/useCotizacion'
-LINE 167 | import { usePago } from '../composables/usePago'
-LINE 168 | import { useConfiguracion } from '../composables/useConfiguracion'
-LINE 169 | import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-LINE 170 | import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-LINE 171 | import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-LINE 172 | 
-LINE 173 | import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-LINE 174 | 
-LINE 175 | const $q = useQuasar()
-LINE 176 | const idempresa = idempresa_md5()
-LINE 177 | const permisosStore = useOperacionesPermitidas()
-LINE 178 | const fecha = ref(obtenerFechaActualDato())
-LINE 179 | const showAddModal = ref(false)
-LINE 180 | const modalfirmaActivo = ref(false)
-LINE 181 | const dialog = ref(false)
-LINE 182 | 
-LINE 183 | // ─── Configuración (almacenes, categorías, divisas, puntos de venta, etc.) ───
-LINE 184 | const {
-LINE 185 |   almacenesOptions,
-LINE 186 |   categoriasOptions,
-LINE 187 |   puntosVenta,
-LINE 188 |   salesChannels,
-LINE 189 |   divisaActiva,
-LINE 190 | 
-LINE 191 |   cargarConfiguracionInicial,
-LINE 192 |   cargarAlmacenes,
-LINE 193 | 
-LINE 194 |   fetchEstadoActual,
-LINE 195 | } = useConfiguracion()
-LINE 196 | 
-LINE 197 | // ─── Cliente ──────────────────────────────────────────────────────────────────
-LINE 198 | const {
-LINE 199 |   selectedClient,
-LINE 200 |   filteredClients,
-LINE 201 |   selectedSucursal,
-LINE 202 |   filteredSucursales,
-LINE 203 | 
-LINE 204 |   idclienteCO,
-LINE 205 |   idsucursalCOS,
-LINE 206 |   canalventa,
-LINE 207 |   filterClient,
-LINE 208 |   setClientInputValue,
-LINE 209 |   elegirUnCliente,
-LINE 210 |   filterSucursal,
-LINE 211 |   setSucursalInputValue,
-LINE 212 |   elegirUnaSucursal,
-LINE 213 | 
-LINE 214 |   RegistrarCliente,
-LINE 215 |   handleRecordCreated,
-LINE 216 | } = useCliente()
-LINE 217 | 
-LINE 218 | // ─── Producto ─────────────────────────────────────────────────────────────────
-LINE 219 | const {
-LINE 220 |   selectedProduct,
-LINE 221 |   filteredProducts,
-LINE 222 |   cantidaddisponibleCO,
-LINE 223 |   cantidadCO,
-LINE 224 |   precioCO,
-LINE 225 |   idstockCO,
-LINE 226 |   idporcentajeCO,
-LINE 227 |   idproductoalmacenCO,
-LINE 228 |   esProductoUnico,
-LINE 229 |   registrarComoProductoUnico,
-LINE 230 |   CodigosUnicosSeleccionados,
-LINE 231 |   filterProduct,
-LINE 232 |   setProductInputValue,
-LINE 233 |   elegirUnProducto,
-LINE 234 |   resetProductoInputs,
-LINE 235 |   listaProductosDisponibles,
-LINE 236 |   guardarCodigosEnVenta,
-LINE 237 |   // productoConfig
-LINE 238 | } = useProducto()
-LINE 239 | 
-LINE 240 | // ─── Carrito ──────────────────────────────────────────────────────────────────
-LINE 241 | const {
-LINE 242 |   carritoCO,
-LINE 243 |   canAddProduct,
-LINE 244 |   anadirProductoACarrito,
-LINE 245 |   eliminarProductoCarrito,
-LINE 246 |   calcularTotalesCarrito,
-LINE 247 |   aplicarDescuento,
-LINE 248 |   resetCarrito,
-LINE 249 | } = useCarrito({
-LINE 250 |   divisa: divisaActiva,
-LINE 251 |   idempresa,
-LINE 252 |   tipoOperacion,
-LINE 253 |   permitirStock,
-LINE 254 |   filtroAlmacenCO,
-LINE 255 |   selectedProduct,
-LINE 256 |   cantidadCO,
-LINE 257 |   precioCO,
-LINE 258 |   idproductoalmacenCO,
-LINE 259 |   idstockCO,
-LINE 260 |   idporcentajeCO,
-LINE 261 |   cantidaddisponibleCO,
-LINE 262 |   CodigosUnicosSeleccionados,
-LINE 263 |   listaProductosDisponibles,
-LINE 264 |   resetProductoInputs,
-LINE 265 | })
-LINE 266 | 
-LINE 267 | // ─── Métodos de Pago ──────────────────────────────────────────────────────────
-LINE 268 | const {
-LINE 269 |   idcajaBancoSeleccionada,
-LINE 270 | 
-LINE 271 |   remainingAmount,
-LINE 272 | } = usePago(carritoCO, divisaActiva)
-LINE 273 | 
-LINE 274 | // ─── Cotización (envío, comprobante, firma) ────────────────────────────────
-LINE 275 | const {
-LINE 276 |   pdfData,
-LINE 277 |   mostrarModal,
-LINE 278 |   isMobile,
-LINE 279 |   mobileFallbackUrl,
-LINE 280 |   confirmar,
-LINE 281 |   cancelar,
-LINE 282 |   cotizacion_proforma,
-LINE 283 |   alTerminarFirma,
-LINE 284 |   alFallarFirma,
-LINE 285 |   handleTipoOperacionChange,
-LINE 286 |   cambioFecha,
-LINE 287 | } = useCotizacion({
-LINE 288 |   carritoCO,
-LINE 289 |   fecha,
-LINE 290 |   tipoOperacion,
-LINE 291 |   idclienteCO,
-LINE 292 |   idsucursalCOS,
-LINE 293 |   filtroAlmacenCO,
-LINE 294 |   filtroCategoriaCO,
-LINE 295 |   puntoVenta,
-LINE 296 |   idcajaBancoSeleccionada,
-LINE 297 |   selectedClient,
-LINE 298 |   selectedSucursal,
-LINE 299 |   // dependencias
-LINE 300 |   divisaActiva,
-LINE 301 |   almacenesOptions,
-LINE 302 |   cotizacionFormRef,
-LINE 303 |   formClientes,
-LINE 304 |   resetCarrito,
-LINE 305 |   listaProductosDisponibles,
-LINE 306 |   cargarAlmacenes,
-LINE 307 | })
-LINE 308 | 
-LINE 309 | // ─── Otros estados ──────────────────────────────────────────────────────────
-LINE 310 | const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
-LINE 311 | const optionOperacion = ref([
-LINE 312 |   { value: 0, label: 'Cotización Normal' },
-LINE 313 |   { value: 1, label: 'Cotización Preferencial' },
-LINE 314 | ])
-LINE 315 | const puntoVenta = ref(null)
-LINE 316 | const filtroAlmacenCO = ref(null)
-LINE 317 | const filtroCategoriaCO = ref(null)
-LINE 318 | const permitirStock = ref(false)
-LINE 319 | const cotizacionFormRef = ref(null)
-LINE 320 | const formClientes = ref(null)
-LINE 321 | 
-LINE 322 | // ─── Computed ────────────────────────────────────────────────────────────────
-LINE 323 | 
-LINE 324 | // ─── Watchers ─────────────────────────────────────────────────────────────────
-LINE 325 | // Sincronizar fecha con carrito
-LINE 326 | cambioFecha(fecha.value)
-LINE 327 | 
-LINE 328 | // ─── Métodos expuestos (eventos) ────────────────────────────────────────────
-LINE 329 | const permitirStockvacio = () => {
-LINE 330 |   permitirStock.value = !permitirStock.value
-LINE 331 |   if (!permitirStock.value) {
-LINE 332 |     // limpiar carrito si existe
-LINE 333 |     resetCarrito()
-LINE 334 |     emit('reiniciar')
-LINE 335 |   }
-LINE 336 | }
-LINE 337 | 
-LINE 338 | const RegistrarFirma = () => {
-LINE 339 |   if (selectedClient.value) {
-LINE 340 |     modalfirmaActivo.value = true
-LINE 341 |   } else {
-LINE 342 |     $q.notify({ type: 'warning', message: 'Seleccione un cliente antes de firmar.' })
-LINE 343 |   }
-LINE 344 | }
-LINE 345 | 
-LINE 346 | // ─── Emit ────────────────────────────────────────────────────────────────────
-LINE 347 | const emit = defineEmits(['reiniciar', 'cancelarregistro'])
-LINE 348 | 
-LINE 349 | // ─── Ciclo de vida ──────────────────────────────────────────────────────────
-LINE 350 | onMounted(async () => {
-LINE 351 |   isMobile.value = window.innerWidth < 768
-LINE 352 |   await fetchEstadoActual()
-LINE 353 |   await cargarConfiguracionInicial()
-LINE 354 |   await permisosStore.cargarPermisos()
-LINE 355 | 
-LINE 356 |   // Detectar Quick Consult
-LINE 357 |   const quickConsult = localStorage.getItem('quickConsult')
-LINE 358 |   if (quickConsult) {
-LINE 359 |     const data = JSON.parse(quickConsult)
-LINE 360 |     if (data.destination === 'quotation') {
-LINE 361 |       tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
-LINE 362 |       // Restaurar almacén y categoría
-LINE 363 |       if (data.almacen) {
-LINE 364 |         filtroAlmacenCO.value = data.almacen.value
-LINE 365 |       }
-LINE 366 |       if (data.categoria) {
-LINE 367 |         filtroCategoriaCO.value = data.categoria.value
-LINE 368 |       }
-LINE 369 |       // Cargar productos del quick consult
-LINE 370 |       carritoCO.listaProductos = data.listaProductos.map((p, idx) => ({
-LINE 371 |         num: idx + 1,
-LINE 372 |         ...p,
-LINE 373 |         codigosUnicos: p.codigosUnicos || [],
-LINE 374 |       }))
-LINE 375 |       calcularTotalesCarrito()
-LINE 376 |       await listaProductosDisponibles()
-LINE 377 |       localStorage.removeItem('quickConsult')
-LINE 378 |       $q.notify({ type: 'positive', message: 'Productos de Consulta Rápida cargados' })
-LINE 379 |     }
-LINE 380 |   }
-LINE 381 | })
-LINE 382 | 
-LINE 383 | onBeforeUnmount(() => {
-LINE 384 |   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
-LINE 385 | })
-LINE 386 | </script>
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\services\almacenService.js
-==============================================================
-```js
-LINE  1 | import { api, apiCt } from 'src/boot/axios'
+```md
+LINE  1 | # 📦 DeepSeek Code Packager (Modular Architecture)
 LINE  2 | 
-LINE  3 | export const listarAlmacenesResponsable = async (idempresa) => {
-LINE  4 |   const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
-LINE  5 |   return response.data
-LINE  6 | }
-LINE  7 | 
-LINE  8 | export const listarPuntoVentaFacturaCotizacion = async (idusuario) => {
-LINE  9 |   const response = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
-LINE 10 |   return response.data
-LINE 11 | }
-LINE 12 | 
-LINE 13 | export const listarCajaBancos = async (idempresa) => {
-LINE 14 |   const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
-LINE 15 |   return response.data
-LINE 16 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\services\clienteService.js
-==============================================================
-```js
-LINE  1 | import { api } from 'src/boot/axios'
-LINE  2 | 
-LINE  3 | export const listarClientes = async (idempresa) => {
-LINE  4 |   const response = await api.get(`listaCliente/${idempresa}`)
-LINE  5 |   return response.data
-LINE  6 | }
-LINE  7 | 
-LINE  8 | export const listarSucursales = async (clienteId) => {
-LINE  9 |   const response = await api.get(`listaSucursal/${clienteId}`)
-LINE 10 |   return response.data
-LINE 11 | }
-LINE 12 | 
-LINE 13 | export const registrarCliente = async (formData) => {
-LINE 14 |   const response = await api.post('', formData)
-LINE 15 |   return response.data
-LINE 16 | }
-LINE 17 | 
-LINE 18 | export const obtenerConfiguracionClientesAlmacen = async (idempresa) => {
-LINE 19 |   const response = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
-LINE 20 |   return response.data
-LINE 21 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\services\cotizacionService.js
-==============================================================
-```js
-LINE  1 | import { api } from 'src/boot/axios'
-LINE  2 | 
-LINE  3 | export const registrarCotizacion = async (formData) => {
-LINE  4 |   const response = await api.post('', formData)
-LINE  5 |   return response.data
-LINE  6 | }
-LINE  7 | 
-LINE  8 | export const detallesCotizacion = async (id, idempresa) => {
-LINE  9 |   const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
-LINE 10 |   return response.data
-LINE 11 | }
-LINE 12 | 
-LINE 13 | export const listarLeyendaCotizacion = async (idempresa) => {
-LINE 14 |   const response = await api.get(`listaLeyendaCotizacion/${idempresa}`)
-LINE 15 |   return response.data
-LINE 16 | }
-LINE 17 | 
-LINE 18 | export const listarLeyendaFactura = async (idempresa, token, tipoFactura) => {
-LINE 19 |   const response = await api.get(`listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`)
-LINE 20 |   return response.data
-LINE 21 | }
-LINE 22 | 
-LINE 23 | export const listarDivisa = async (idempresa, token, tipoFactura) => {
-LINE 24 |   let endpoint = `listaDivisa/${idempresa}`
-LINE 25 |   if (token && tipoFactura) {
-LINE 26 |     endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
-LINE 27 |   }
-LINE 28 |   const response = await api.get(endpoint)
-LINE 29 |   return response.data
-LINE 30 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\services\pagoService.js
-==============================================================
-```js
-LINE 1 | import { api } from 'src/boot/axios'
-LINE 2 | 
-LINE 3 | export const listarMetodosPagoFactura = async (idempresa, token, tipo) => {
-LINE 4 |   const response = await api.get(`listaMetodopagoFactura/${idempresa}/${token}/${tipo}`)
-LINE 5 |   return response.data
-LINE 6 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\services\productoService.js
-==============================================================
-```js
-LINE  1 | import { api } from 'src/boot/axios'
-LINE  2 | 
-LINE  3 | export const listarCanalVentaActivos = async (idempresa) => {
-LINE  4 |   const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
-LINE  5 |   return response.data
-LINE  6 | }
-LINE  7 | 
-LINE  8 | export const listarCategoriaPrecioVenta = async (idempresa) => {
-LINE  9 |   const response = await api.get(`listarCategoriaPrecioVenta/${idempresa}`)
-LINE 10 |   return response.data
-LINE 11 | }
-LINE 12 | 
-LINE 13 | export const listarProductosDisponiblesVenta = async (idempresa) => {
-LINE 14 |   const response = await api.get(`listaProductosDisponiblesVenta/${idempresa}`)
-LINE 15 |   return response.data
-LINE 16 | }
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\stores\cotizacionStore.js
-==============================================================
-```js
-LINE   1 | // src/stores/cotizacionStore.js
-LINE   2 | import { defineStore } from 'pinia'
-LINE   3 | import { reactive, ref, computed } from 'vue'
-LINE   4 | import { useQuasar } from 'quasar'
-LINE   5 | import {
-LINE   6 |   calcularSubtotal,
-LINE   7 |   calcularTotales,
-LINE   8 |   validarDescuento,
-LINE   9 | } from 'src/composables/useCalculosCotizacion'
-LINE  10 | import { usePago } from 'src/composables/usePago'
-LINE  11 | 
-LINE  12 | export const useCotizacionStore = defineStore('cotizacion', () => {
-LINE  13 |   const $q = useQuasar()
-LINE  14 | 
-LINE  15 |   const carrito = reactive({
-LINE  16 |     ventatotal: 0,
-LINE  17 |     subtotal: 0,
-LINE  18 |     descuento: 0,
-LINE  19 |     idalmacen: 0,
-LINE  20 |     divisa: 0,
-LINE  21 |     ipv: null,
-LINE  22 |     idusuario: 0,
-LINE  23 |     listaProductos: [],
-LINE  24 |     pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
-LINE  25 |     metodoPago: 0,
-LINE  26 |     variablePago: 'directo',
-LINE  27 |     fecha: '',
-LINE  28 |     credito: false,
-LINE  29 |     idfirma: null,
-LINE  30 |     codigosUnicos: [],
-LINE  31 |     cajabanco: null,
-LINE  32 |     cantidadPagos: 1,
-LINE  33 |     montoPagos: 0,
-LINE  34 |     periodo: 30,
-LINE  35 |     plazoPersonalizado: 0,
-LINE  36 |     fechaLimite: '',
-LINE  37 |   })
-LINE  38 | 
-LINE  39 |   // Estado de selección (se mantiene igual que en Phase 6)
-LINE  40 |   const selectedClient = ref(null)
-LINE  41 |   const idclienteCO = ref('')
-LINE  42 |   const selectedSucursal = ref(null)
-LINE  43 |   const idsucursalCOS = ref('')
-LINE  44 |   const filtroAlmacenCO = ref(null)
-LINE  45 |   const filtroCategoriaCO = ref(null)
-LINE  46 |   const puntoVenta = ref(null)
-LINE  47 | 
-LINE  48 |   const selectedProduct = ref(null)
-LINE  49 |   const cantidaddisponibleCO = ref('')
-LINE  50 |   const cantidadCO = ref(0)
-LINE  51 |   const precioCO = ref(0)
-LINE  52 |   const idstockCO = ref('')
-LINE  53 |   const idporcentajeCO = ref('')
-LINE  54 |   const idproductoalmacenCO = ref('')
-LINE  55 |   const CodigosUnicosSeleccionados = ref([])
-LINE  56 |   const tipoOperacion = ref(null)
-LINE  57 | 
-LINE  58 |   // Inicializar el composable de pagos con el carrito reactivo
-LINE  59 |   const pago = usePago(carrito)
-LINE  60 | 
-LINE  61 |   // Getters
-LINE  62 |   const canAddProduct = computed(() => {
-LINE  63 |     if (carrito.permitirStock && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
-LINE  64 |       return true
-LINE  65 |     }
-LINE  66 |     if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
-LINE  67 |       return false
-LINE  68 |     }
-LINE  69 |     if (tipoOperacion.value?.value === 1) {
-LINE  70 |       return cantidadCO.value <= cantidaddisponibleCO.value
-LINE  71 |     }
-LINE  72 |     return true
-LINE  73 |   })
-LINE  74 | 
-LINE  75 |   // Acciones
-LINE  76 |   function calcularTotalesCarrito() {
-LINE  77 |     const subtotal = calcularSubtotal(carrito.listaProductos)
-LINE  78 |     const { ventatotal, descuento } = calcularTotales(subtotal, carrito.descuento)
-LINE  79 |     carrito.subtotal = subtotal
-LINE  80 |     carrito.descuento = descuento
-LINE  81 |     carrito.ventatotal = ventatotal
-LINE  82 |   }
-LINE  83 | 
-LINE  84 |   function aplicarDescuento() {
-LINE  85 |     const descuentoValido = validarDescuento(carrito.subtotal, carrito.descuento)
-LINE  86 |     if (descuentoValido !== carrito.descuento) {
-LINE  87 |       $q.notify({
-LINE  88 |         type: 'warning',
-LINE  89 |         message: 'El descuento sobrepasa el subtotal.',
-LINE  90 |       })
-LINE  91 |       carrito.descuento = descuentoValido
-LINE  92 |     }
-LINE  93 |     calcularTotalesCarrito()
-LINE  94 |   }
-LINE  95 | 
-LINE  96 |   async function anadirProductoACarrito() {
-LINE  97 |     // Lógica ya existente, se mantiene igual
-LINE  98 |   }
-LINE  99 | 
-LINE 100 |   function eliminarProductoCarrito(idProductoAlmacen) {
-LINE 101 |     carrito.listaProductos = carrito.listaProductos.filter(
-LINE 102 |       (p) => p.idproductoalmacen !== idProductoAlmacen,
-LINE 103 |     )
-LINE 104 |     calcularTotalesCarrito()
-LINE 105 |   }
-LINE 106 | 
-LINE 107 |   function resetCarrito() {
-LINE 108 |     carrito.ventatotal = 0
-LINE 109 |     carrito.subtotal = 0
-LINE 110 |     carrito.descuento = 0
-LINE 111 |     carrito.listaProductos = []
-LINE 112 |     carrito.metodoPago = null
-LINE 113 |     carrito.variablePago = 'directo'
-LINE 114 |     carrito.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
-LINE 115 |     carrito.credito = false
-LINE 116 |     carrito.cantidadPagos = 1
-LINE 117 |     carrito.montoPagos = 0
-LINE 118 |     carrito.periodo = 30
-LINE 119 |     carrito.plazoPersonalizado = 0
-LINE 120 |     carrito.fechaLimite = ''
-LINE 121 |   }
-LINE 122 | 
-LINE 123 |   function resetProductoInputs() {
-LINE 124 |     selectedProduct.value = null
-LINE 125 |     cantidaddisponibleCO.value = ''
-LINE 126 |     cantidadCO.value = 1
-LINE 127 |     precioCO.value = 1
-LINE 128 |     idstockCO.value = ''
-LINE 129 |     idporcentajeCO.value = ''
-LINE 130 |     idproductoalmacenCO.value = ''
-LINE 131 |     CodigosUnicosSeleccionados.value = []
-LINE 132 |   }
-LINE 133 | 
-LINE 134 |   return {
-LINE 135 |     // State
-LINE 136 |     carrito,
-LINE 137 |     selectedClient,
-LINE 138 |     idclienteCO,
-LINE 139 |     selectedSucursal,
-LINE 140 |     idsucursalCOS,
-LINE 141 |     filtroAlmacenCO,
-LINE 142 |     filtroCategoriaCO,
-LINE 143 |     puntoVenta,
-LINE 144 |     selectedProduct,
-LINE 145 |     cantidaddisponibleCO,
-LINE 146 |     cantidadCO,
-LINE 147 |     precioCO,
-LINE 148 |     idstockCO,
-LINE 149 |     idporcentajeCO,
-LINE 150 |     idproductoalmacenCO,
-LINE 151 |     CodigosUnicosSeleccionados,
-LINE 152 |     // Getters
-LINE 153 |     canAddProduct,
-LINE 154 |     // Actions
-LINE 155 |     calcularTotalesCarrito,
-LINE 156 |     aplicarDescuento,
-LINE 157 |     anadirProductoACarrito,
-LINE 158 |     eliminarProductoCarrito,
-LINE 159 |     resetCarrito,
-LINE 160 |     resetProductoInputs,
-LINE 161 |     // Pagos
-LINE 162 |     ...pago,
-LINE 163 |   }
-LINE 164 | })
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\validators\commonValidators.js
-==============================================================
-```js
-LINE  1 | // src/validators/commonValidators.js
-LINE  2 | 
-LINE  3 | /**
-LINE  4 |  * Validador de campo requerido.
-LINE  5 |  * @param {string} message - Mensaje de error.
-LINE  6 |  * @returns {Array<Function>} Regla Quasar.
-LINE  7 |  */
-LINE  8 | export const required = (message = 'Campo requerido') => [(val) => !!val || message]
-LINE  9 | 
-LINE 10 | /**
-LINE 11 |  * Validador de número positivo mayor a 0.
-LINE 12 |  * @param {string} message - Mensaje de error.
-LINE 13 |  * @returns {Array<Function>} Regla Quasar.
-LINE 14 |  */
-LINE 15 | export const positive = (message = 'Debe ser mayor a 0') => [(val) => Number(val) > 0 || message]
-LINE 16 | 
-LINE 17 | /**
-LINE 18 |  * Validador de campo requerido y número positivo.
-LINE 19 |  * @param {string} message - Mensaje de error.
-LINE 20 |  * @returns {Array<Function>} Regla Quasar.
-LINE 21 |  */
-LINE 22 | export const requiredPositive = (message = 'Requerido') => [
-LINE 23 |   (val) => (!!val && Number(val) > 0) || message,
-LINE 24 | ]
-```
-
-==============================================================
-FILE: src\modules\Cotizacion\validators\cotizacionValidators.js
-==============================================================
-```js
-LINE  1 | // src/validators/cotizacionValidators.js
-LINE  2 | 
-LINE  3 | import { required, positive, requiredPositive } from './commonValidators'
+LINE  3 | **DeepSeek Code Packager** es una herramienta de escritorio desacoplada y modular diseñada para empaquetar código fuente de proyectos en documentos estructurados `.md` (Markdown) o `.txt` (Texto Plano), optimizada para subir y analizar manualmente en el chat web de **DeepSeek**, **ChatGPT** o **Claude**.
 LINE  4 | 
-LINE  5 | // Reglas generales de cotización
-LINE  6 | export const tipoOperacionRules = required('Campo requerido')
-LINE  7 | export const fechaRules = required('Campo requerido')
-LINE  8 | export const clienteRules = required('Campo requerido')
-LINE  9 | export const sucursalRules = required('Campo requerido')
-LINE 10 | export const canalVentaRules = required('Seleccione un canal')
-LINE 11 | export const almacenRules = required('Campo requerido')
-LINE 12 | export const categoriaRules = required('Campo requerido')
-LINE 13 | export const puntoVentaRules = required('Campo requerido')
-LINE 14 | 
-LINE 15 | // Reglas de producto
-LINE 16 | export const cantidadRules = positive('Debe ser mayor a 0')
-LINE 17 | export const precioRules = positive('Debe ser mayor a 0')
-LINE 18 | 
-LINE 19 | // Reglas de método de pago
-LINE 20 | export const metodoPagoRules = required('Seleccione un método de pago')
-LINE 21 | export const paymentMetodoPagoRules = required('Requerido')
-LINE 22 | export const paymentMontoRules = required('Requerido')
-LINE 23 | export const paymentPorcentajeRules = required('Requerido')
-LINE 24 | 
-LINE 25 | // Reglas de crédito
-LINE 26 | export const cantidadPagosRules = requiredPositive('Requerido')
-LINE 27 | export const plazoPersonalizadoRules = required('Requerido')
+LINE  5 | ---
+LINE  6 | 
+LINE  7 | ## 🏗️ Arquitectura del Proyecto
+LINE  8 | 
+LINE  9 | El proyecto sigue el principio de separación de responsabilidades (*Separation of Concerns*), manteniendo la lógica de escaneo, modelos de datos, lectura de archivos y generación de prompts completamente independientes de la interfaz gráfica.
+LINE 10 | 
+LINE 11 | ```
+LINE 12 | deepseek_debugger/
+LINE 13 | │
+LINE 14 | ├── main.py                         # Punto de entrada principal
+LINE 15 | ├── deepseek_gui.py                 # Wrapper ejecutable de compatibilidad
+LINE 16 | │
+LINE 17 | ├── app/                            # Módulo principal del sistema
+LINE 18 | │   ├── __init__.py
+LINE 19 | │   │
+LINE 20 | │   ├── gui/                        # Capa de Interfaz Gráfica (Tkinter/ttk)
+LINE 21 | │   │   ├── __init__.py
+LINE 22 | │   │   ├── main_window.py          # Ventana principal y control de eventos
+LINE 23 | │   │   ├── file_tree.py            # Componente de árbol con checkboxes
+LINE 24 | │   │   └── dialogs.py              # Envoltorios de diálogos y alertas
+LINE 25 | │   │
+LINE 26 | │   ├── core/                       # Lógica central del sistema
+LINE 27 | │   │   ├── __init__.py
+LINE 28 | │   │   ├── project_scanner.py      # Escaneo recursivo de directorios
+LINE 29 | │   │   ├── file_selector.py        # Gestor de estado de selección (1 carpeta + N archivos)
+LINE 30 | │   │   ├── file_reader.py          # Lectura segura y numeración de líneas
+LINE 31 | │   │   └── project_structure.py    # Generador de estructura en árbol ASCII
+LINE 32 | │   │
+LINE 33 | │   ├── generators/                 # Generadores de documentos
+LINE 34 | │   │   ├── __init__.py
+LINE 35 | │   │   ├── markdown_generator.py   # Formateador en formato Markdown (.md)
+LINE 36 | │   │   ├── text_generator.py       # Formateador en texto plano (.txt)
+LINE 37 | │   │   └── prompt_generator.py     # Orquestador principal de generación
+LINE 38 | │   │
+LINE 39 | │   ├── models/                     # Modelos de datos
+LINE 40 | │   │   ├── __init__.py
+LINE 41 | │   │   └── project.py              # Clases de datos (ProjectSelection, ExportConfig)
+LINE 42 | │   │
+LINE 43 | │   └── utils/                      # Utilidades del sistema
+LINE 44 | │       ├── __init__.py
+LINE 45 | │       ├── file_utils.py           # Lectura/Escritura I/O y portapapeles
+LINE 46 | │       └── path_utils.py           # Resolución de rutas relativas y absolutas
+LINE 47 | │
+LINE 48 | ├── output/                         # Carpeta por defecto para exportaciones
+LINE 49 | ├── requirements.txt
+LINE 50 | ├── ejecutar.bat                    # Script de inicio silencioso en Windows
+LINE 51 | ├── ejecutar_con_consola.bat        # Script de inicio en modo consola/debug
+LINE 52 | └── README.md
+LINE 53 | ```
+LINE 54 | 
+LINE 55 | ---
+LINE 56 | 
+LINE 57 | ## 🚀 Características Principales
+LINE 58 | 
+LINE 59 | 1. **Sin dependencias de API ni llamadas HTTP**: Funciona 100% offline y sin necesidad de claves de API.
+LINE 60 | 2. **Selección Flexible de Archivos**:
+LINE 61 |    - **Máximo 1 Carpeta de Proyecto**: Al seleccionar una nueva carpeta, se reemplaza la anterior.
+LINE 62 |    - **N Archivos Individuales**: Permite sumar cualquier cantidad de archivos sueltos desde distintas ubicaciones.
+LINE 63 |    - Soporta combinaciones: `1 Carpeta + N Archivos`, `Solo 1 Carpeta`, o `Solo N Archivos`.
+LINE 64 | 3. **Exclusiones Dinámicas Configurables**:
+LINE 65 |    - Omite por defecto `.git`, `node_modules`, `__pycache__`, `venv`, `.venv`, `dist`, `build`, `.idea`, `.vscode`.
+LINE 66 |    - Permite editar la lista de directorios excluidos directamente desde la interfaz.
+LINE 67 | 4. **Formateo para LLM Web Chat**:
+LINE 68 |    - Agrega árbol de directorio de la carpeta del proyecto.
+LINE 69 |    - Formatea el código con números de línea (`1 | código...`).
+LINE 70 |    - Permite copiar directamente al portapapeles o guardar el documento generado en la carpeta `output/` o donde desees.
+LINE 71 | 
+LINE 72 | ---
+LINE 73 | 
+LINE 74 | ## 💻 Ejecución
+LINE 75 | 
+LINE 76 | ### Desde Scripts `.bat` (Windows):
+LINE 77 | - Haz doble clic en `ejecutar.bat` (Modo Ventana).
+LINE 78 | - O en `ejecutar_con_consola.bat` (Modo Consola / Debug).
+LINE 79 | 
+LINE 80 | ### Desde la Consola de Comandos (Python):
+LINE 81 | ```bash
+LINE 82 | python main.py
+LINE 83 | ```
+LINE 84 | O usando el wrapper de compatibilidad:
+LINE 85 | ```bash
+LINE 86 | python deepseek_gui.py
+LINE 87 | ```
 ```
 
 ==============================================================
-FILE: src\pages\cotizacion\CotizacionPage.vue
+FILE: app/__init__.py
 ==============================================================
-```vue
-LINE    1 | <template>
-LINE    2 |   <q-page class="q-pa-lg bg-fondo" style="min-height: 100vh">
-LINE    3 |     <!-- Encabezado de la Página -->
-LINE    4 |     <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
-LINE    5 |       <div class="col-12 flex items-center">
-LINE    6 |         <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2" style="border-radius: 12px">
-LINE    7 |           <q-icon name="request_quote" size="36px" color="primary" />
-LINE    8 |         </div>
-LINE    9 |         <div>
-LINE   10 |           <h1
-LINE   11 |             class="text-h4 text-weight-bolder q-my-none text-primary"
-LINE   12 |             style="letter-spacing: -0.5px"
-LINE   13 |           >
-LINE   14 |             Emisión de Cotización
-LINE   15 |           </h1>
-LINE   16 |           <div class="text-subtitle1 text-grey-7 q-mt-xs">
-LINE   17 |             Registre los detalles de la nueva cotización y añada productos
-LINE   18 |           </div>
-LINE   19 |         </div>
-LINE   20 |       </div>
-LINE   21 |     </div>
-LINE   22 | 
-LINE   23 |     <!-- Primera Sección: Datos Generales (Card) -->
-LINE   24 |     <q-card
-LINE   25 |       class="my-card q-mb-xl shadow-3"
-LINE   26 |       style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
-LINE   27 |     >
-LINE   28 |       <q-card-section
-LINE   29 |         class="bg-primary text-white q-py-md q-px-lg flex justify-between items-center"
-LINE   30 |         style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%)"
-LINE   31 |       >
-LINE   32 |         <div class="flex items-center">
-LINE   33 |           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
-LINE   34 |           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-LINE   35 |             Datos del Cliente y Configuración
-LINE   36 |           </div>
-LINE   37 |         </div>
-LINE   38 | 
-LINE   39 |         <!-- Toggle Venta sin Stock incorporado al header para ahorrar espacio y lucir elegante -->
-LINE   40 |         <div
-LINE   41 |           class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2"
-LINE   42 |           style="border-radius: 20px"
-LINE   43 |           id="ventaSinStockCotizacion"
-LINE   44 |         >
-LINE   45 |           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
-LINE   46 |           <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
-LINE   47 |           <q-btn
-LINE   48 |             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
-LINE   49 |             dense
-LINE   50 |             flat
-LINE   51 |             :color="permitirStock ? 'positive' : 'grey'"
-LINE   52 |             size="md"
-LINE   53 |             :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
-LINE   54 |             @click="permitirStockvacio()"
-LINE   55 |             class="q-pa-none"
-LINE   56 |             style="transition: all 0.3s"
-LINE   57 |           />
-LINE   58 |         </div>
-LINE   59 |       </q-card-section>
-LINE   60 | 
-LINE   61 |       <q-card-section class="q-pa-lg">
-LINE   62 |         <!-- Sección: Datos del cliente -->
-LINE   63 |         <q-form ref="formClientes" class="q-mb-md">
-LINE   64 |           <div class="row q-col-gutter-lg q-mb-md">
-LINE   65 |             <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
-LINE   66 |               <label
-LINE   67 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE   68 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE   69 |                 for="tipooperacion"
-LINE   70 |                 >Tipo de Operación <span class="text-negative">*</span></label
-LINE   71 |               >
-LINE   72 |               <q-select
-LINE   73 |                 v-model="tipoOperacion"
-LINE   74 |                 :options="optionOperacion"
-LINE   75 |                 id="tipooperacion"
-LINE   76 |                 map-options
-LINE   77 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE   78 |                 @update:model-value="handleTipoOperacionChange"
-LINE   79 |                 outlined
-LINE   80 |                 dense
-LINE   81 |                 bg-color="white"
-LINE   82 |                 hide-bottom-space
-LINE   83 |                 class="premium-input"
-LINE   84 |               />
-LINE   85 |             </div>
-LINE   86 |             <div class="col-12 col-md-3" id="fechaCotizacion">
-LINE   87 |               <label
-LINE   88 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE   89 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE   90 |                 for="fecha"
-LINE   91 |                 >Fecha <span class="text-negative">*</span></label
-LINE   92 |               >
-LINE   93 |               <q-input
-LINE   94 |                 v-model="fecha"
-LINE   95 |                 id="fecha"
-LINE   96 |                 type="date"
-LINE   97 |                 map-options
-LINE   98 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE   99 |                 @update:model-value="cambioFecha"
-LINE  100 |                 outlined
-LINE  101 |                 dense
-LINE  102 |                 bg-color="white"
-LINE  103 |                 hide-bottom-space
-LINE  104 |                 class="premium-input"
-LINE  105 |               />
-LINE  106 |             </div>
-LINE  107 |             <div class="col-12 col-md-6" id="clienteCotizacion">
-LINE  108 |               <label
-LINE  109 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  110 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  111 |                 for="cliente"
-LINE  112 |                 >Cliente <span class="text-negative">*</span></label
-LINE  113 |               >
-LINE  114 |               <div class="row no-wrap">
-LINE  115 |                 <q-select
-LINE  116 |                   class="col premium-input"
-LINE  117 |                   v-model="selectedClient"
-LINE  118 |                   use-input
-LINE  119 |                   hide-selected
-LINE  120 |                   fill-input
-LINE  121 |                   input-debounce="0"
-LINE  122 |                   id="cliente"
-LINE  123 |                   :options="filteredClients"
-LINE  124 |                   @filter="filterClient"
-LINE  125 |                   @input-value="setClientInputValue"
-LINE  126 |                   @update:model-value="elegirUnCliente"
-LINE  127 |                   option-value="id"
-LINE  128 |                   option-label="display"
-LINE  129 |                   :rules="[(val) => !!val || 'Campo requerido']"
-LINE  130 |                   outlined
-LINE  131 |                   dense
-LINE  132 |                   bg-color="white"
-LINE  133 |                   hide-bottom-space
-LINE  134 |                 >
-LINE  135 |                   <template v-slot:no-option>
-LINE  136 |                     <q-item>
-LINE  137 |                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE  138 |                     </q-item>
-LINE  139 |                   </template>
-LINE  140 |                 </q-select>
-LINE  141 |                 <div class="q-ml-md" id="botonRegistrarCliente">
-LINE  142 |                   <q-btn
-LINE  143 |                     color="primary"
-LINE  144 |                     unelevated
-LINE  145 |                     class="full-height shadow-2"
-LINE  146 |                     style="border-radius: 8px; width: 44px"
-LINE  147 |                     icon="person_add"
-LINE  148 |                     @click="RegistrarCliente"
-LINE  149 |                   >
-LINE  150 |                     <q-tooltip class="bg-primary text-caption shadow-4"
-LINE  151 |                       >Registrar Nuevo Cliente</q-tooltip
-LINE  152 |                     >
-LINE  153 |                   </q-btn>
-LINE  154 |                 </div>
-LINE  155 |               </div>
-LINE  156 |               <input type="hidden" v-model="idclienteCO" name="idcliente" />
-LINE  157 |             </div>
-LINE  158 |           </div>
-LINE  159 |           <div class="row q-col-gutter-lg">
-LINE  160 |             <div class="col-12 col-md-6" id="sucursalCotizacion">
-LINE  161 |               <label
-LINE  162 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  163 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  164 |                 for="sucursal"
-LINE  165 |                 >Sucursal <span class="text-negative">*</span></label
-LINE  166 |               >
-LINE  167 |               <q-select
-LINE  168 |                 v-model="selectedSucursal"
-LINE  169 |                 use-input
-LINE  170 |                 hide-selected
-LINE  171 |                 fill-input
-LINE  172 |                 input-debounce="0"
-LINE  173 |                 id="sucursal"
-LINE  174 |                 :options="filteredSucursales"
-LINE  175 |                 @filter="filterSucursal"
-LINE  176 |                 @input-value="setSucursalInputValue"
-LINE  177 |                 @update:model-value="elegirUnaSucursal"
-LINE  178 |                 option-value="id"
-LINE  179 |                 option-label="nombre"
-LINE  180 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE  181 |                 outlined
-LINE  182 |                 dense
-LINE  183 |                 bg-color="white"
-LINE  184 |                 hide-bottom-space
-LINE  185 |                 class="premium-input"
-LINE  186 |               >
-LINE  187 |                 <template v-slot:no-option>
-LINE  188 |                   <q-item>
-LINE  189 |                     <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE  190 |                   </q-item>
-LINE  191 |                 </template>
-LINE  192 |               </q-select>
-LINE  193 |               <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
-LINE  194 |             </div>
-LINE  195 |             <div class="col-8 col-md-6">
-LINE  196 |               <label for="canalVenta">Canal de venta*</label>
-LINE  197 |               <q-select
-LINE  198 |                 v-model="canalventa"
-LINE  199 |                 id="canalVenta"
-LINE  200 |                 dense
-LINE  201 |                 outlined
-LINE  202 |                 :options="salesChannels"
-LINE  203 |                 option-label="label"
-LINE  204 |                 option-value="value"
-LINE  205 |                 required
-LINE  206 |                 :rules="[(val) => !!val || 'Seleccione un canal']"
-LINE  207 |               >
-LINE  208 |                 <template v-slot:prepend>
-LINE  209 |                   <q-icon name="point_of_sale" color="blue" />
-LINE  210 |                 </template>
-LINE  211 |               </q-select>
-LINE  212 |             </div>
-LINE  213 |           </div>
-LINE  214 | 
-LINE  215 |           <ModalfirmaPage
-LINE  216 |             v-model="modalfirmaActivo"
-LINE  217 |             :id-entidad="selectedClient"
-LINE  218 |             tipo-operacion="CLIENTE"
-LINE  219 |             @onSuccess="alTerminarFirma"
-LINE  220 |             @onError="alFallarFirma"
-LINE  221 |           />
-LINE  222 |         </q-form>
-LINE  223 | 
-LINE  224 |         <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
-LINE  225 | 
-LINE  226 |         <!-- Sección: Configuración inicial -->
-LINE  227 |         <q-form ref="cotizacionFormRef">
-LINE  228 |           <div class="row q-col-gutter-lg">
-LINE  229 |             <div class="col-12 col-md-4" id="almacenCotizacion">
-LINE  230 |               <label
-LINE  231 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  232 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  233 |                 for="almacen"
-LINE  234 |                 >Almacén origen <span class="text-negative">*</span></label
-LINE  235 |               >
-LINE  236 |               <q-select
-LINE  237 |                 v-model="filtroAlmacenCO"
-LINE  238 |                 :options="almacenesOptions"
-LINE  239 |                 id="almacen"
-LINE  240 |                 emit-value
-LINE  241 |                 map-options
-LINE  242 |                 option-value="idalmacen"
-LINE  243 |                 option-label="almacen"
-LINE  244 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE  245 |                 @update:model-value="listaCategoria"
-LINE  246 |                 outlined
-LINE  247 |                 dense
-LINE  248 |                 bg-color="white"
-LINE  249 |                 hide-bottom-space
-LINE  250 |                 class="premium-input"
-LINE  251 |               />
-LINE  252 |             </div>
-LINE  253 |             <div class="col-12 col-md-4" id="categoriaCotizacion">
-LINE  254 |               <label
-LINE  255 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  256 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  257 |                 for="categoria"
-LINE  258 |                 >Categoría de precio <span class="text-negative">*</span></label
-LINE  259 |               >
-LINE  260 |               <q-select
-LINE  261 |                 v-model="filtroCategoriaCO"
-LINE  262 |                 :options="categoriasOptions"
-LINE  263 |                 id="categoria"
-LINE  264 |                 emit-value
-LINE  265 |                 map-options
-LINE  266 |                 option-value="id"
-LINE  267 |                 option-label="nombre"
-LINE  268 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE  269 |                 outlined
-LINE  270 |                 dense
-LINE  271 |                 bg-color="white"
-LINE  272 |                 hide-bottom-space
-LINE  273 |                 class="premium-input"
-LINE  274 |               />
-LINE  275 |             </div>
-LINE  276 |             <div class="col-12 col-md-4" id="puntoVentaCotizacion">
-LINE  277 |               <label
-LINE  278 |                 class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  279 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  280 |                 for="puntoventa"
-LINE  281 |                 >Punto Venta <span class="text-negative">*</span></label
-LINE  282 |               >
-LINE  283 |               <q-select
-LINE  284 |                 v-model="puntoVenta"
-LINE  285 |                 :options="puntosVenta"
-LINE  286 |                 id="puntoventa"
-LINE  287 |                 emit-value
-LINE  288 |                 map-options
-LINE  289 |                 option-value="value"
-LINE  290 |                 option-label="label"
-LINE  291 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE  292 |                 outlined
-LINE  293 |                 dense
-LINE  294 |                 bg-color="white"
-LINE  295 |                 hide-bottom-space
-LINE  296 |                 class="premium-input"
-LINE  297 |               />
-LINE  298 |             </div>
-LINE  299 |           </div>
-LINE  300 |         </q-form>
-LINE  301 |       </q-card-section>
-LINE  302 |     </q-card>
-LINE  303 | 
-LINE  304 |     <!-- Segunda Sección: Añadir Productos -->
-LINE  305 |     <q-card
-LINE  306 |       class="my-card q-mb-xl shadow-3"
-LINE  307 |       style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
-LINE  308 |     >
-LINE  309 |       <q-card-section
-LINE  310 |         class="bg-secondary text-white q-py-md q-px-lg flex items-center"
-LINE  311 |         style="background: linear-gradient(135deg, #26a69a 0%, #00897b 100%)"
-LINE  312 |       >
-LINE  313 |         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
-LINE  314 |         <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-LINE  315 |           Añadir Productos
-LINE  316 |         </div>
-LINE  317 |       </q-card-section>
-LINE  318 | 
-LINE  319 |       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
-LINE  320 |         <div class="row q-col-gutter-lg items-end">
-LINE  321 |           <div class="col-12 col-md-4" id="productoCotizacion">
-LINE  322 |             <div class="flex justify-between items-center q-mb-sm">
-LINE  323 |               <label
-LINE  324 |                 class="text-weight-bold text-grey-9 block"
-LINE  325 |                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  326 |                 for="producto"
-LINE  327 |                 >Producto o Servicio <span class="text-negative">*</span></label
-LINE  328 |               >
-LINE  329 |               <q-checkbox
-LINE  330 |                 v-if="esProductoUnico"
-LINE  331 |                 v-model="registrarComoProductoUnico"
-LINE  332 |                 size="xs"
-LINE  333 |                 label="Producto Único"
-LINE  334 |                 color="secondary"
-LINE  335 |                 class="text-caption text-weight-bold text-secondary q-mb-none"
-LINE  336 |               />
-LINE  337 |             </div>
-LINE  338 |             <q-select
-LINE  339 |               id="producto"
-LINE  340 |               v-model="selectedProduct"
-LINE  341 |               :options="filteredProducts"
-LINE  342 |               option-value="id"
-LINE  343 |               option-label="display"
-LINE  344 |               use-input
-LINE  345 |               hide-selected
-LINE  346 |               fill-input
-LINE  347 |               input-debounce="0"
-LINE  348 |               outlined
-LINE  349 |               dense
-LINE  350 |               bg-color="white"
-LINE  351 |               class="premium-input"
-LINE  352 |               @filter="filterProduct"
-LINE  353 |               @input-value="setProductInputValue"
-LINE  354 |               @update:model-value="elegirUnProducto"
-LINE  355 |             >
-LINE  356 |               <template v-slot:no-option>
-LINE  357 |                 <q-item>
-LINE  358 |                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
-LINE  359 |                 </q-item>
-LINE  360 |               </template>
-LINE  361 |             </q-select>
-LINE  362 |           </div>
-LINE  363 | 
-LINE  364 |           <div class="col-12 col-md-2" id="stockCotizacion">
-LINE  365 |             <label
-LINE  366 |               class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  367 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  368 |               for="stock"
-LINE  369 |               >Stock Actual</label
-LINE  370 |             >
-LINE  371 |             <q-input
-LINE  372 |               id="stock"
-LINE  373 |               v-model="cantidaddisponibleCO"
-LINE  374 |               readonly
-LINE  375 |               outlined
-LINE  376 |               dense
-LINE  377 |               bg-color="grey-2"
-LINE  378 |               hide-bottom-space
-LINE  379 |               class="premium-input text-center"
-LINE  380 |               placeholder="0"
-LINE  381 |             >
-LINE  382 |               <template v-slot:prepend>
-LINE  383 |                 <q-icon name="inventory_2" size="xs" color="grey-7" />
-LINE  384 |               </template>
-LINE  385 |             </q-input>
-LINE  386 |           </div>
-LINE  387 | 
-LINE  388 |           <div class="col-12 col-md-2" id="cantidadCotizacion">
-LINE  389 |             <label
-LINE  390 |               class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  391 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  392 |               for="cantidad"
-LINE  393 |               >Cantidad <span class="text-negative">*</span></label
-LINE  394 |             >
-LINE  395 |             <q-input
-LINE  396 |               id="cantidad"
-LINE  397 |               v-model.number="cantidadCO"
-LINE  398 |               type="number"
-LINE  399 |               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
-LINE  400 |               :readonly="esProductoUnico && registrarComoProductoUnico"
-LINE  401 |               required
-LINE  402 |               outlined
-LINE  403 |               dense
-LINE  404 |               bg-color="white"
-LINE  405 |               hide-bottom-space
-LINE  406 |               class="premium-input text-center"
-LINE  407 |             />
-LINE  408 |           </div>
-LINE  409 | 
-LINE  410 |           <div class="col-12 col-md-3" id="precioCotizacion">
-LINE  411 |             <label
-LINE  412 |               class="text-weight-bold text-grey-9 q-mb-sm block"
-LINE  413 |               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-LINE  414 |               for="precio"
-LINE  415 |               >Precio unitario <span class="text-negative">*</span></label
-LINE  416 |             >
-LINE  417 |             <q-input
-LINE  418 |               id="precio"
-LINE  419 |               v-model.number="precioCO"
-LINE  420 |               type="number"
-LINE  421 |               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
-LINE  422 |               required
-LINE  423 |               outlined
-LINE  424 |               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
-LINE  425 |               dense
-LINE  426 |               bg-color="white"
-LINE  427 |               hide-bottom-space
-LINE  428 |               class="premium-input"
-LINE  429 |             >
-LINE  430 |               <template v-slot:append>
-LINE  431 |                 <div
-LINE  432 |                   class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders"
-LINE  433 |                   style="height: 28px; line-height: 28px"
-LINE  434 |                 >
-LINE  435 |                   {{ divisaActiva.tipo }}
-LINE  436 |                 </div>
-LINE  437 |               </template>
-LINE  438 |             </q-input>
-LINE  439 |           </div>
-LINE  440 | 
-LINE  441 |           <div class="col-12 col-md-1 flex justify-center" id="botonAnadirProductoCotizacion">
-LINE  442 |             <q-btn
-LINE  443 |               icon="add_shopping_cart"
-LINE  444 |               color="secondary"
-LINE  445 |               unelevated
-LINE  446 |               class="full-width shadow-3"
-LINE  447 |               style="border-radius: 12px; height: 40px; transition: all 0.3s"
-LINE  448 |               :disable="!canAddProduct"
-LINE  449 |               @click="anadirProductoACarrito"
-LINE  450 |             >
-LINE  451 |               <q-tooltip
-LINE  452 |                 class="bg-secondary text-subtitle2 shadow-4"
-LINE  453 |                 anchor="top middle"
-LINE  454 |                 self="bottom middle"
-LINE  455 |                 >Añadir al carrito</q-tooltip
-LINE  456 |               >
-LINE  457 |             </q-btn>
-LINE  458 |           </div>
-LINE  459 |         </div>
-LINE  460 |         {{ esProductoUnico }}
-LINE  461 |         <UniqueProductSelector
-LINE  462 |           v-if="esProductoUnico"
-LINE  463 |           :product-id="idproductoalmacenCO"
-LINE  464 |           :is-unique="esProductoUnico && registrarComoProductoUnico"
-LINE  465 |           :cantidad-requerida="cantidadCO"
-LINE  466 |           @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
-LINE  467 |           class="q-mt-md"
-LINE  468 |         />
-LINE  469 |       </q-card-section>
-LINE  470 | 
-LINE  471 |       <!-- Tercera Sección: Resumen de cotización (Table inside the same parent or separate) -->
-LINE  472 |       <q-card-section
-LINE  473 |         class="bg-white q-py-sm q-px-lg flex items-center justify-between"
-LINE  474 |         style="border-bottom: 1px solid #e0e0e0"
-LINE  475 |       >
-LINE  476 |         <div class="flex items-center text-primary">
-LINE  477 |           <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
-LINE  478 |           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-LINE  479 |             Resumen de Cotización
-LINE  480 |           </div>
-LINE  481 |         </div>
-LINE  482 |       </q-card-section>
-LINE  483 | 
-LINE  484 |       <q-table
-LINE  485 |         id="tablaResumenCotizacion"
-LINE  486 |         :rows="carritoCO.listaProductos"
-LINE  487 |         :columns="carritoColumns"
-LINE  488 |         row-key="idproductoalmacen"
-LINE  489 |         flat
-LINE  490 |         hide-bottom
-LINE  491 |         class="custom-table q-pt-md"
-LINE  492 |         table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
-LINE  493 |         :pagination="{ rowsPerPage: 0 }"
-LINE  494 |       >
-LINE  495 |         <template v-slot:body="props">
-LINE  496 |           <q-tr
-LINE  497 |             :props="props"
-LINE  498 |             :class="props.expand ? 'bg-blue-50' : 'hover-row'"
-LINE  499 |             style="transition: background 0.3s"
-LINE  500 |           >
-LINE  501 |             <q-td auto-width>
-LINE  502 |               <q-btn
-LINE  503 |                 v-if="props.row.codigosUnicos?.length > 0"
-LINE  504 |                 size="sm"
-LINE  505 |                 color="primary"
-LINE  506 |                 flat
-LINE  507 |                 round
-LINE  508 |                 @click="props.expand = !props.expand"
-LINE  509 |                 :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-LINE  510 |               />
-LINE  511 |             </q-td>
-LINE  512 | 
-LINE  513 |             <q-td key="num" :props="props" class="text-left">
-LINE  514 |               <q-chip
-LINE  515 |                 color="grey-2"
-LINE  516 |                 text-color="grey-9"
-LINE  517 |                 label-slot
-LINE  518 |                 dense
-LINE  519 |                 square
-LINE  520 |                 style="border-radius: 6px; border: 1px solid #e0e0e0"
-LINE  521 |               >
-LINE  522 |                 <span class="text-weight-bolder">{{ props.row.num }}</span>
-LINE  523 |               </q-chip>
-LINE  524 |             </q-td>
-LINE  525 |             <q-td key="codigo" :props="props" class="text-left">
-LINE  526 |               <q-chip
-LINE  527 |                 outline
-LINE  528 |                 color="primary"
-LINE  529 |                 label-slot
-LINE  530 |                 dense
-LINE  531 |                 square
-LINE  532 |                 style="border-radius: 6px; font-weight: 600"
-LINE  533 |               >
-LINE  534 |                 {{ props.row.codigo }}
-LINE  535 |               </q-chip>
-LINE  536 |             </q-td>
-LINE  537 | 
-LINE  538 |             <q-td key="descripcion" :props="props" style="vertical-align: middle">
-LINE  539 |               <div
-LINE  540 |                 class="text-weight-bolder text-grey-10 text-subtitle2"
-LINE  541 |                 style="font-family: 'Inter', sans-serif"
-LINE  542 |               >
-LINE  543 |                 {{ props.row.descripcion }}
-LINE  544 |               </div>
-LINE  545 | 
-LINE  546 |               <div
-LINE  547 |                 class="flex items-center text-primary cursor-pointer q-mt-xs"
-LINE  548 |                 style="
-LINE  549 |                   font-size: 0.85em;
-LINE  550 |                   padding: 4px 10px;
-LINE  551 |                   background: rgba(25, 118, 210, 0.08);
-LINE  552 |                   border-radius: 6px;
-LINE  553 |                   display: inline-flex;
-LINE  554 |                   border: 1px dashed rgba(25, 118, 210, 0.3);
-LINE  555 |                   transition: all 0.2s;
-LINE  556 |                 "
-LINE  557 |                 v-ripple
-LINE  558 |               >
-LINE  559 |                 <q-icon name="edit_note" size="16px" class="q-mr-xs" />
-LINE  560 |                 <span class="text-weight-medium">{{
-LINE  561 |                   props.row.descripcionAdicional || 'Añadir nota adicional...'
-LINE  562 |                 }}</span>
-LINE  563 | 
-LINE  564 |                 <q-popup-edit
-LINE  565 |                   v-model="props.row.descripcionAdicional"
-LINE  566 |                   v-slot="scope"
-LINE  567 |                   buttons
-LINE  568 |                   label-set="Guardar"
-LINE  569 |                   label-cancel="Cancelar"
-LINE  570 |                 >
-LINE  571 |                   <q-input
-LINE  572 |                     v-model="scope.value"
-LINE  573 |                     outlined
-LINE  574 |                     dense
-LINE  575 |                     autofocus
-LINE  576 |                     counter
-LINE  577 |                     @keyup.enter="validarDescripcion(scope, props.row)"
-LINE  578 |                   />
-LINE  579 |                 </q-popup-edit>
-LINE  580 |               </div>
-LINE  581 |             </q-td>
-LINE  582 | 
-LINE  583 |             <q-td key="cantidad" :props="props" class="text-right">
-LINE  584 |               <q-badge
-LINE  585 |                 color="secondary"
-LINE  586 |                 text-color="white"
-LINE  587 |                 label-slot
-LINE  588 |                 class="q-px-md q-py-xs text-weight-bolder text-subtitle2 shadow-1"
-LINE  589 |                 style="border-radius: 8px"
-LINE  590 |               >
-LINE  591 |                 {{ props.row.cantidad }}
-LINE  592 |               </q-badge>
-LINE  593 |             </q-td>
-LINE  594 | 
-LINE  595 |             <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
-LINE  596 |               {{ decimas(props.row.precio) }}
-LINE  597 |               <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-LINE  598 |                 divisaActiva.tipo
-LINE  599 |               }}</span>
-LINE  600 |             </q-td>
-LINE  601 | 
-LINE  602 |             <q-td
-LINE  603 |               key="total"
-LINE  604 |               :props="props"
-LINE  605 |               class="text-right text-weight-bolder text-primary text-subtitle1"
-LINE  606 |             >
-LINE  607 |               {{ decimas(props.row.cantidad * props.row.precio) }}
-LINE  608 |               <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-LINE  609 |                 divisaActiva.tipo
-LINE  610 |               }}</span>
-LINE  611 |             </q-td>
-LINE  612 | 
-LINE  613 |             <q-td key="options" :props="props" class="text-center">
-LINE  614 |               <q-btn
-LINE  615 |                 icon="delete_outline"
-LINE  616 |                 color="negative"
-LINE  617 |                 flat
-LINE  618 |                 round
-LINE  619 |                 dense
-LINE  620 |                 size="sm"
-LINE  621 |                 @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
-LINE  622 |                 class="hover-shake"
-LINE  623 |               >
-LINE  624 |                 <q-tooltip class="bg-negative text-weight-medium shadow-3"
-LINE  625 |                   >Quitar producto</q-tooltip
-LINE  626 |                 >
-LINE  627 |               </q-btn>
-LINE  628 |             </q-td>
-LINE  629 |           </q-tr>
-LINE  630 | 
-LINE  631 |           <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
-LINE  632 |             <q-td colspan="100%" class="q-pa-lg">
-LINE  633 |               <TableCodigosUnicos
-LINE  634 |                 v-if="esProductoUnico"
-LINE  635 |                 v-model="props.row.codigosUnicos"
-LINE  636 |                 :parent-row="props.row"
-LINE  637 |                 :can-delete="true"
-LINE  638 |                 :can-edit="true"
-LINE  639 |                 :api-mode="false"
-LINE  640 |                 @update-parent-quantity="
-LINE  641 |                   (nuevaCant) => {
-LINE  642 |                     props.row.cantidad = nuevaCant
-LINE  643 |                     calcularTotalesCarrito()
-LINE  644 |                   }
-LINE  645 |                 "
-LINE  646 |               />
-LINE  647 |             </q-td>
-LINE  648 |           </q-tr>
-LINE  649 |         </template>
-LINE  650 | 
-LINE  651 |         <template v-slot:bottom-row>
-LINE  652 |           <q-tr class="bg-grey-1">
-LINE  653 |             <q-td
-LINE  654 |               colspan="6"
-LINE  655 |               class="text-right text-subtitle2 text-grey-8"
-LINE  656 |               style="letter-spacing: 0.5px"
-LINE  657 |               >SUBTOTAL:</q-td
-LINE  658 |             >
-LINE  659 |             <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
-LINE  660 |               {{ decimas(carritoCO.subtotal) }}
-LINE  661 |               <span class="text-caption text-grey-6 text-weight-medium">{{
-LINE  662 |                 divisaActiva.tipo
-LINE  663 |               }}</span>
-LINE  664 |             </q-td>
-LINE  665 |             <q-td />
-LINE  666 |           </q-tr>
-LINE  667 | 
-LINE  668 |           <q-tr class="bg-grey-1" id="descuentoCotizacion">
-LINE  669 |             <q-td
-LINE  670 |               colspan="6"
-LINE  671 |               class="text-right text-subtitle2 text-grey-8"
-LINE  672 |               style="vertical-align: middle; letter-spacing: 0.5px"
-LINE  673 |               >DESCUENTO:</q-td
-LINE  674 |             >
-LINE  675 |             <q-td class="text-right">
-LINE  676 |               <q-input
-LINE  677 |                 v-model.number="carritoCO.descuento"
-LINE  678 |                 type="number"
-LINE  679 |                 min="0"
-LINE  680 |                 :max="carritoCO.subtotal"
-LINE  681 |                 @change="aplicarDescuento"
-LINE  682 |                 dense
-LINE  683 |                 outlined
-LINE  684 |                 bg-color="white"
-LINE  685 |                 input-class="text-right text-weight-bolder text-negative"
-LINE  686 |                 style="max-width: 140px; margin-left: auto"
-LINE  687 |                 class="premium-input"
-LINE  688 |               >
-LINE  689 |                 <template v-slot:append>
-LINE  690 |                   <div
-LINE  691 |                     class="bg-negative text-white text-weight-bold text-caption q-px-sm rounded-borders"
-LINE  692 |                     style="height: 24px; line-height: 24px"
-LINE  693 |                   >
-LINE  694 |                     {{ divisaActiva.tipo }}
-LINE  695 |                   </div>
-LINE  696 |                 </template>
-LINE  697 |               </q-input>
-LINE  698 |             </q-td>
-LINE  699 |             <q-td />
-LINE  700 |           </q-tr>
-LINE  701 | 
-LINE  702 |           <q-tr
-LINE  703 |             class="bg-primary text-white"
-LINE  704 |             style="background: linear-gradient(90deg, #1976d2 0%, #1e88e5 100%)"
-LINE  705 |           >
-LINE  706 |             <q-td
-LINE  707 |               colspan="6"
-LINE  708 |               class="text-right text-h6 text-weight-bolder text-uppercase"
-LINE  709 |               style="letter-spacing: 1px"
-LINE  710 |               >TOTAL GENERAL:</q-td
-LINE  711 |             >
-LINE  712 |             <q-td
-LINE  713 |               class="text-right text-h5 text-weight-bolder"
-LINE  714 |               style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2)"
-LINE  715 |             >
-LINE  716 |               {{ decimas(carritoCO.ventatotal) }}
-LINE  717 |               <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
-LINE  718 |                 divisaActiva.tipo
-LINE  719 |               }}</span>
-LINE  720 |             </q-td>
-LINE  721 |             <q-td />
-LINE  722 |           </q-tr>
-LINE  723 |         </template>
-LINE  724 |       </q-table>
-LINE  725 | 
-LINE  726 |       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
-LINE  727 |         <div class="row justify-end items-center q-gutter-x-md">
-LINE  728 |           <!-- Botón Cancelar -->
-LINE  729 |           <q-btn
-LINE  730 |             flat
-LINE  731 |             color="negative"
-LINE  732 |             icon="close"
-LINE  733 |             label="Cancelar"
-LINE  734 |             @click="$emit('cancelarregistro')"
-LINE  735 |             class="q-px-md"
-LINE  736 |             style="border-radius: 100px; font-weight: 500"
-LINE  737 |           />
-LINE  738 | 
-LINE  739 |           <!-- Botón Firma del Cliente -->
-LINE  740 |           <q-btn
-LINE  741 |             outline
-LINE  742 |             color="primary"
-LINE  743 |             icon="edit_note"
-LINE  744 |             label="Firma del Cliente"
-LINE  745 |             @click="RegistrarFirma"
-LINE  746 |             class="q-px-lg bg-white"
-LINE  747 |             style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
-LINE  748 |           />
-LINE  749 | 
-LINE  750 |           <!-- Botón Registrar Cotización -->
-LINE  751 |           <q-btn
-LINE  752 |             label="Continuar"
-LINE  753 |             color="primary"
-LINE  754 |             icon="task_alt"
-LINE  755 |             size="lg"
-LINE  756 |             :disable="carritoCO.listaProductos.length === 0"
-LINE  757 |             @click="cotizacion_proforma"
-LINE  758 |             class="q-px-xl text-weight-bolder"
-LINE  759 |             :class="{ 'gradient-btn': carritoCO.listaProductos.length > 0 }"
-LINE  760 |             style="border-radius: 40px; transition: all 0.2s ease"
-LINE  761 |             :style="
-LINE  762 |               carritoCO.listaProductos.length === 0
-LINE  763 |                 ? 'border-radius: 40px'
-LINE  764 |                 : 'background: linear-gradient(135deg, #1976d2, #1565c0); box-shadow: 0 4px 12px rgba(25,118,210,0.3); border-radius: 40px'
-LINE  765 |             "
-LINE  766 |           />
-LINE  767 |         </div>
-LINE  768 |       </q-card-section>
-LINE  769 |     </q-card>
-LINE  770 | 
-LINE  771 |     <!-- Diálogo: método de pago -->
-LINE  772 |     <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
-LINE  773 |       <q-card class="responsive-dialog shadow-24 column no-wrap">
-LINE  774 |         <!-- Header del Diálogo -->
-LINE  775 |         <q-card-section
-LINE  776 |           class="bg-primary text-white q-py-md q-px-md q-px-sm-md flex justify-between items-center shrink-0"
-LINE  777 |           style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
-LINE  778 |         >
-LINE  779 |           <div class="flex items-center">
-LINE  780 |             <div
-LINE  781 |               class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner"
-LINE  782 |               style="backdrop-filter: blur(8px); border-radius: 12px"
-LINE  783 |             >
-LINE  784 |               <q-icon name="account_balance_wallet" class="text-white" size="24px" />
-LINE  785 |             </div>
-LINE  786 |             <div>
-LINE  787 |               <div
-LINE  788 |                 class="text-h6 text-weight-bolder"
-LINE  789 |                 style="font-family: 'Inter', sans-serif; line-height: 1.2"
-LINE  790 |               >
-LINE  791 |                 Método de Pago
-LINE  792 |               </div>
-LINE  793 |               <div class="text-caption text-white/80 text-weight-medium gt-xs">
-LINE  794 |                 Configure la modalidad y detalles del pago
-LINE  795 |               </div>
-LINE  796 |             </div>
-LINE  797 |           </div>
-LINE  798 |           <q-btn
-LINE  799 |             icon="close"
-LINE  800 |             v-close-popup
-LINE  801 |             flat
-LINE  802 |             round
-LINE  803 |             dense
-LINE  804 |             class="text-white/80 hover:text-white transition-all"
-LINE  805 |             size="md"
-LINE  806 |           />
-LINE  807 |         </q-card-section>
-LINE  808 | 
-LINE  809 |         <q-card-section class="col scroll q-pa-lg q-pa-sm-md bg-grey-1 content-section">
-LINE  810 |           <!-- Selector de Modalidad Principal -->
-LINE  811 |           <div class="row justify-center q-mb-xl q-mb-md-sm">
-LINE  812 |             <q-btn-toggle
-LINE  813 |               v-model="carritoCO.credito"
-LINE  814 |               toggle-color="primary"
-LINE  815 |               toggle-text-color="white"
-LINE  816 |               color="grey-1"
-LINE  817 |               text-color="grey-7"
-LINE  818 |               unelevated
-LINE  819 |               rounded
-LINE  820 |               no-caps
-LINE  821 |               class="custom-premium-toggle border-grey-3 shadow-2"
-LINE  822 |               @update:model-value="handleTipoPagoGeneralChange"
-LINE  823 |               :options="[
-LINE  824 |                 { value: false, slot: 'efectivo' },
-LINE  825 |                 { value: true, slot: 'credito' },
-LINE  826 |               ]"
-LINE  827 |             >
-LINE  828 |               <!-- Custom Slots for perfect flex control -->
-LINE  829 |               <template v-slot:efectivo>
-LINE  830 |                 <div
-LINE  831 |                   class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
-LINE  832 |                   style="padding: 4px 12px"
-LINE  833 |                 >
-LINE  834 |                   <q-icon name="payments" size="18px" />
-LINE  835 |                   <span>Efectivo</span>
-LINE  836 |                 </div>
-LINE  837 |               </template>
-LINE  838 | 
-LINE  839 |               <template v-slot:credito>
-LINE  840 |                 <div
-LINE  841 |                   class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
-LINE  842 |                   style="padding: 4px 12px"
-LINE  843 |                 >
-LINE  844 |                   <q-icon name="credit_score" size="18px" />
-LINE  845 |                   <span>Crédito</span>
-LINE  846 |                 </div>
-LINE  847 |               </template>
-LINE  848 |             </q-btn-toggle>
-LINE  849 |           </div>
-LINE  850 | 
-LINE  851 |           <!-- SECCIÓN: PAGO EFECTIVO -->
-LINE  852 |           <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
-LINE  853 |             <div class="flex items-center justify-between q-mb-lg">
-LINE  854 |               <div
-LINE  855 |                 class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
-LINE  856 |                 style="border-left: 4px solid #1976d2"
-LINE  857 |               >
-LINE  858 |                 <q-icon name="payments" class="q-mr-sm" />
-LINE  859 |                 MODALIDAD: EFECTIVO
-LINE  860 |               </div>
-LINE  861 | 
-LINE  862 |               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-LINE  863 |                 Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
-LINE  864 |               </div>
-LINE  865 |             </div>
-LINE  866 | 
-LINE  867 |             <!-- Selector de tipo de pago en efectivo -->
-LINE  868 |             <div class="q-gutter-x-xl q-mb-xl row justify-center">
-LINE  869 |               <q-radio
-LINE  870 |                 v-model="carritoCO.variablePago"
-LINE  871 |                 val="directo"
-LINE  872 |                 color="positive"
-LINE  873 |                 label="Pago Único"
-LINE  874 |                 class="text-weight-bolder text-subtitle2"
-LINE  875 |               />
-LINE  876 |               <q-radio
-LINE  877 |                 v-model="carritoCO.variablePago"
-LINE  878 |                 val="dividido"
-LINE  879 |                 color="orange-8"
-LINE  880 |                 label="Pago Dividido"
-LINE  881 |                 class="text-weight-bolder text-subtitle2"
-LINE  882 |               />
-LINE  883 |             </div>
-LINE  884 | 
-LINE  885 |             <!-- Caso: Pago Único -->
-LINE  886 |             <div
-LINE  887 |               v-if="carritoCO.variablePago === 'directo'"
-LINE  888 |               class="row q-col-gutter-lg justify-center q-pt-sm"
-LINE  889 |             >
-LINE  890 |               <div class="col-12 col-md-10">
-LINE  891 |                 <label
-LINE  892 |                   class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
-LINE  893 |                   style="font-size: 12px"
-LINE  894 |                 >
-LINE  895 |                   Método de pago principal <span class="text-negative">*</span>
-LINE  896 |                 </label>
-LINE  897 |                 <q-select
-LINE  898 |                   v-model="carritoCO.metodoPago"
-LINE  899 |                   dense
-LINE  900 |                   outlined
-LINE  901 |                   bg-color="white"
-LINE  902 |                   :options="metodosPagos"
-LINE  903 |                   emit-value
-LINE  904 |                   map-options
-LINE  905 |                   option-label="label"
-LINE  906 |                   option-value="value"
-LINE  907 |                   :rules="[(val) => !!val || 'Seleccione un método de pago']"
-LINE  908 |                   class="premium-input"
-LINE  909 |                   style="border-radius: 8px"
-LINE  910 |                 >
-LINE  911 |                   <template v-slot:prepend>
-LINE  912 |                     <q-icon name="account_balance_wallet" color="primary" />
-LINE  913 |                   </template>
-LINE  914 |                 </q-select>
-LINE  915 |               </div>
-LINE  916 |             </div>
-LINE  917 | 
-LINE  918 |             <!-- Caso: Pago Dividido -->
-LINE  919 |             <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
-LINE  920 |               <div class="text-caption text-grey-7 q-mb-md flex items-center">
-LINE  921 |                 <q-icon name="info" size="xs" class="q-mr-xs" />
-LINE  922 |                 Distribuya el monto total entre diferentes métodos de pago.
-LINE  923 |               </div>
-LINE  924 | 
-LINE  925 |               <div
-LINE  926 |                 v-for="(payment, index) in carritoCO.pagosDivididos"
-LINE  927 |                 :key="index"
-LINE  928 |                 class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
-LINE  929 |               >
-LINE  930 |                 <div class="col-12 col-md-5">
-LINE  931 |                   <label
-LINE  932 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
-LINE  933 |                     >Método de Pago *</label
-LINE  934 |                   >
-LINE  935 |                   <q-select
-LINE  936 |                     v-model="payment.metodoPago"
-LINE  937 |                     dense
-LINE  938 |                     outlined
-LINE  939 |                     bg-color="grey-1"
-LINE  940 |                     :options="metodosPagos"
-LINE  941 |                     emit-value
-LINE  942 |                     map-options
-LINE  943 |                     option-label="label"
-LINE  944 |                     option-value="value"
-LINE  945 |                     :rules="[(val) => !!val || 'Requerido']"
-LINE  946 |                     hide-bottom-space
-LINE  947 |                     class="rounded-borders"
-LINE  948 |                   />
-LINE  949 |                 </div>
-LINE  950 |                 <div class="col-12 col-md-3">
-LINE  951 |                   <label
-LINE  952 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
-LINE  953 |                     >Monto ({{ divisaActiva.tipo }})</label
-LINE  954 |                   >
-LINE  955 |                   <q-input
-LINE  956 |                     v-model="payment.monto"
-LINE  957 |                     type="number"
-LINE  958 |                     dense
-LINE  959 |                     outlined
-LINE  960 |                     bg-color="grey-1"
-LINE  961 |                     @update:model-value="calculateRemainingAmount(index)"
-LINE  962 |                     :rules="[(val) => !!val || 'Requerido']"
-LINE  963 |                     hide-bottom-space
-LINE  964 |                     class="rounded-borders"
-LINE  965 |                   />
-LINE  966 |                 </div>
-LINE  967 |                 <div class="col-12 col-md-3">
-LINE  968 |                   <label
-LINE  969 |                     class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
-LINE  970 |                     >Porcentaje (%)</label
-LINE  971 |                   >
-LINE  972 |                   <q-input
-LINE  973 |                     v-model="payment.porcentaje"
-LINE  974 |                     type="number"
-LINE  975 |                     dense
-LINE  976 |                     outlined
-LINE  977 |                     bg-color="grey-1"
-LINE  978 |                     @update:model-value="calculateAmountFromPercentage(index)"
-LINE  979 |                     :rules="[(val) => !!val || 'Requerido']"
-LINE  980 |                     hide-bottom-space
-LINE  981 |                     class="rounded-borders"
-LINE  982 |                   />
-LINE  983 |                 </div>
-LINE  984 |                 <div class="col-12 col-md-1 flex flex-center" style="padding-top: 24px">
-LINE  985 |                   <q-btn
-LINE  986 |                     v-if="carritoCO.pagosDivididos.length > 1"
-LINE  987 |                     icon="delete_outline"
-LINE  988 |                     color="negative"
-LINE  989 |                     flat
-LINE  990 |                     round
-LINE  991 |                     size="md"
-LINE  992 |                     class="bg-red-1"
-LINE  993 |                     @click="removePaymentMethod(index)"
-LINE  994 |                   />
-LINE  995 |                 </div>
-LINE  996 |               </div>
-LINE  997 | 
-LINE  998 |               <div class="flex justify-end q-mt-md">
-LINE  999 |                 <q-btn
-LINE 1000 |                   label="Añadir Método"
-LINE 1001 |                   icon="add"
-LINE 1002 |                   color="primary"
-LINE 1003 |                   outline
-LINE 1004 |                   class="q-px-lg bg-white shadow-1 text-weight-bold"
-LINE 1005 |                   style="border-radius: 10px"
-LINE 1006 |                   @click="addPaymentMethod"
-LINE 1007 |                 />
-LINE 1008 |               </div>
-LINE 1009 | 
-LINE 1010 |               <!-- Banner de estado del pago dividido -->
-LINE 1011 |               <div
-LINE 1012 |                 v-if="remainingAmount !== 0 || totalPaidAmount !== 0"
-LINE 1013 |                 class="q-mt-xl q-pa-lg rounded-borders shadow-2"
-LINE 1014 |                 :class="
-LINE 1015 |                   remainingAmount === 0 ? 'bg-green-50 border-green' : 'bg-orange-50 border-orange'
-LINE 1016 |                 "
-LINE 1017 |                 style="border-left: 6px solid"
-LINE 1018 |               >
-LINE 1019 |                 <div class="row items-center justify-between">
-LINE 1020 |                   <div class="row q-gutter-x-xl">
-LINE 1021 |                     <div class="column">
-LINE 1022 |                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
-LINE 1023 |                         >Total Pagado</span
-LINE 1024 |                       >
-LINE 1025 |                       <span
-LINE 1026 |                         class="text-h6 text-weight-bolder"
-LINE 1027 |                         :class="remainingAmount === 0 ? 'text-positive' : 'text-orange-9'"
-LINE 1028 |                       >
-LINE 1029 |                         {{ totalPaidAmount.toFixed(2) }} {{ divisaActiva.tipo }}
-LINE 1030 |                       </span>
-LINE 1031 |                     </div>
-LINE 1032 |                     <div class="column">
-LINE 1033 |                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
-LINE 1034 |                         >Monto Pendiente</span
-LINE 1035 |                       >
-LINE 1036 |                       <span
-LINE 1037 |                         class="text-h6 text-weight-bolder"
-LINE 1038 |                         :class="remainingAmount === 0 ? 'text-positive' : 'text-negative'"
-LINE 1039 |                       >
-LINE 1040 |                         {{ remainingAmount.toFixed(2) }} {{ divisaActiva.tipo }}
-LINE 1041 |                       </span>
-LINE 1042 |                     </div>
-LINE 1043 |                   </div>
-LINE 1044 |                   <q-icon
-LINE 1045 |                     :name="remainingAmount === 0 ? 'check_circle' : 'warning'"
-LINE 1046 |                     :color="remainingAmount === 0 ? 'positive' : 'warning'"
-LINE 1047 |                     size="44px"
-LINE 1048 |                   />
-LINE 1049 |                 </div>
-LINE 1050 |               </div>
-LINE 1051 |             </div>
-LINE 1052 | 
-LINE 1053 |             <!-- Selección de Caja/Banco para Efectivo -->
-LINE 1054 |             <div
-LINE 1055 |               class="col-12 q-mt-xl animate__animated animate__fadeInUp"
-LINE 1056 |               v-if="listaCajaBancos.length > 0"
-LINE 1057 |             >
-LINE 1058 |               <q-separator class="q-mb-xl" />
-LINE 1059 | 
-LINE 1060 |               <label
-LINE 1061 |                 class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
-LINE 1062 |                 style="font-size: 12px"
-LINE 1063 |               >
-LINE 1064 |                 Asignar a Caja o Banco <span class="text-negative">*</span>
-LINE 1065 |               </label>
-LINE 1066 | 
-LINE 1067 |               <q-select
-LINE 1068 |                 v-model="idcajaBancoSeleccionada"
-LINE 1069 |                 :options="listaCajaBancos"
-LINE 1070 |                 dense
-LINE 1071 |                 outlined
-LINE 1072 |                 emit-value
-LINE 1073 |                 map-options
-LINE 1074 |                 class="premium-input bg-white"
-LINE 1075 |                 :rules="[(val) => !!val || 'Campo requerido']"
-LINE 1076 |                 style="border-radius: 8px"
-LINE 1077 |               >
-LINE 1078 |                 <template v-slot:prepend>
-LINE 1079 |                   <q-icon name="account_balance" color="positive" />
-LINE 1080 |                 </template>
-LINE 1081 | 
-LINE 1082 |                 <template v-slot:selected-item="scope">
-LINE 1083 |                   <div v-if="scope.opt" class="q-py-xs">
-LINE 1084 |                     <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
-LINE 1085 |                     <span class="q-ml-xs text-grey-8">- {{ scope.opt.nombre }}</span>
-LINE 1086 |                   </div>
-LINE 1087 |                 </template>
-LINE 1088 | 
-LINE 1089 |                 <template v-slot:option="scope">
-LINE 1090 |                   <q-item v-bind="scope.itemProps" class="q-py-md">
-LINE 1091 |                     <q-item-section avatar>
-LINE 1092 |                       <q-icon name="account_balance" color="grey-6" />
-LINE 1093 |                     </q-item-section>
-LINE 1094 |                     <q-item-section>
-LINE 1095 |                       <q-item-label class="text-weight-bolder text-primary">
-LINE 1096 |                         {{ scope.opt.codigo }}
-LINE 1097 |                       </q-item-label>
-LINE 1098 |                       <q-item-label caption class="text-weight-medium">
-LINE 1099 |                         {{ scope.opt.nombre }}
-LINE 1100 |                       </q-item-label>
-LINE 1101 |                     </q-item-section>
-LINE 1102 |                   </q-item>
-LINE 1103 |                 </template>
-LINE 1104 |               </q-select>
-LINE 1105 |             </div>
-LINE 1106 |           </div>
-LINE 1107 | 
-LINE 1108 |           <!-- SECCIÓN: PAGO A CRÉDITO -->
-LINE 1109 |           <div v-else class="animate__animated animate__fadeIn">
-LINE 1110 |             <div class="flex items-center justify-between q-mb-lg">
-LINE 1111 |               <div
-LINE 1112 |                 class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
-LINE 1113 |                 style="border-left: 4px solid #1976d2"
-LINE 1114 |               >
-LINE 1115 |                 <q-icon name="credit_score" class="q-mr-sm" />
-LINE 1116 |                 MODALIDAD: CRÉDITO
-LINE 1117 |               </div>
-LINE 1118 | 
-LINE 1119 |               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-LINE 1120 |                 Monto Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
-LINE 1121 |               </div>
-LINE 1122 |             </div>
-LINE 1123 | 
-LINE 1124 |             <div class="row q-col-gutter-xl q-pt-md">
-LINE 1125 |               <div class="col-12 col-md-6">
-LINE 1126 |                 <label
-LINE 1127 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
-LINE 1128 |                   style="font-size: 11px"
-LINE 1129 |                   >Número de Cuotas *</label
-LINE 1130 |                 >
-LINE 1131 |                 <q-input
-LINE 1132 |                   v-model="carritoCO.cantidadPagos"
-LINE 1133 |                   type="number"
-LINE 1134 |                   min="1"
-LINE 1135 |                   dense
-LINE 1136 |                   outlined
-LINE 1137 |                   bg-color="white"
-LINE 1138 |                   @update:model-value="(calculatePayments(), calculateDueDate())"
-LINE 1139 |                   :rules="[(val) => (!!val && val > 0) || 'Requerido']"
-LINE 1140 |                   class="rounded-borders"
-LINE 1141 |                 >
-LINE 1142 |                   <template v-slot:prepend
-LINE 1143 |                     ><q-icon name="format_list_numbered" color="primary"
-LINE 1144 |                   /></template>
-LINE 1145 |                 </q-input>
-LINE 1146 |               </div>
-LINE 1147 | 
-LINE 1148 |               <div class="col-12 col-md-6">
-LINE 1149 |                 <label
-LINE 1150 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
-LINE 1151 |                   style="font-size: 11px"
-LINE 1152 |                   >Monto por Cuota</label
-LINE 1153 |                 >
-LINE 1154 |                 <q-input
-LINE 1155 |                   v-model="carritoCO.montoPagos"
-LINE 1156 |                   dense
-LINE 1157 |                   outlined
-LINE 1158 |                   readonly
-LINE 1159 |                   class="bg-grey-2"
-LINE 1160 |                   input-class="text-weight-bolder text-primary text-subtitle1"
-LINE 1161 |                 >
-LINE 1162 |                   <template v-slot:prepend><q-icon name="paid" color="grey-6" /></template>
-LINE 1163 |                   <template v-slot:append>
-LINE 1164 |                     <span class="text-subtitle2 text-grey-7">{{ divisaActiva.tipo }}</span>
-LINE 1165 |                   </template>
-LINE 1166 |                 </q-input>
-LINE 1167 |               </div>
-LINE 1168 | 
-LINE 1169 |               <div class="col-12 col-md-6">
-LINE 1170 |                 <label
-LINE 1171 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
-LINE 1172 |                   style="font-size: 11px"
-LINE 1173 |                   >Frecuencia de Pago *</label
-LINE 1174 |                 >
-LINE 1175 |                 <q-select
-LINE 1176 |                   v-model="carritoCO.periodo"
-LINE 1177 |                   dense
-LINE 1178 |                   outlined
-LINE 1179 |                   bg-color="white"
-LINE 1180 |                   :options="periodOptions"
-LINE 1181 |                   emit-value
-LINE 1182 |                   map-options
-LINE 1183 |                   @update:model-value="calculateDueDate"
-LINE 1184 |                   class="rounded-borders"
-LINE 1185 |                 >
-LINE 1186 |                   <template v-slot:prepend><q-icon name="event_repeat" color="primary" /></template>
-LINE 1187 |                 </q-select>
-LINE 1188 |               </div>
-LINE 1189 | 
-LINE 1190 |               <div
-LINE 1191 |                 v-if="carritoCO.periodo === 0"
-LINE 1192 |                 class="col-12 col-md-6 animate__animated animate__zoomIn"
-LINE 1193 |               >
-LINE 1194 |                 <label
-LINE 1195 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
-LINE 1196 |                   style="font-size: 11px"
-LINE 1197 |                   >Plazo Total (Días) *</label
-LINE 1198 |                 >
-LINE 1199 |                 <q-input
-LINE 1200 |                   v-model="carritoCO.plazoPersonalizado"
-LINE 1201 |                   type="number"
-LINE 1202 |                   dense
-LINE 1203 |                   outlined
-LINE 1204 |                   bg-color="white"
-LINE 1205 |                   @update:model-value="calculateDueDate"
-LINE 1206 |                   :rules="[(val) => !!val || 'Requerido']"
-LINE 1207 |                   class="rounded-borders"
-LINE 1208 |                 >
-LINE 1209 |                   <template v-slot:prepend
-LINE 1210 |                     ><q-icon name="edit_calendar" color="primary"
-LINE 1211 |                   /></template>
-LINE 1212 |                 </q-input>
-LINE 1213 |               </div>
-LINE 1214 | 
-LINE 1215 |               <div class="col-12 col-md-6">
-LINE 1216 |                 <label
-LINE 1217 |                   class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
-LINE 1218 |                   style="font-size: 11px"
-LINE 1219 |                   >Fecha de Vencimiento Estimada</label
-LINE 1220 |                 >
-LINE 1221 |                 <q-input
-LINE 1222 |                   v-model="carritoCO.fechaLimite"
-LINE 1223 |                   dense
-LINE 1224 |                   outlined
-LINE 1225 |                   type="date"
-LINE 1226 |                   readonly
-LINE 1227 |                   class="bg-grey-2"
-LINE 1228 |                 >
-LINE 1229 |                   <template v-slot:prepend
-LINE 1230 |                     ><q-icon name="event_available" color="grey-6"
-LINE 1231 |                   /></template>
-LINE 1232 |                 </q-input>
-LINE 1233 |               </div>
-LINE 1234 |             </div>
-LINE 1235 | 
-LINE 1236 |             <div class="q-mt-xl q-pa-md bg-blue-50 rounded-borders border-blue flex items-center">
-LINE 1237 |               <q-icon name="info" color="primary" size="sm" class="q-mr-md" />
-LINE 1238 |               <div class="text-caption text-blue-9 text-weight-medium">
-LINE 1239 |                 La fecha de vencimiento se calcula automáticamente según la frecuencia y el número
-LINE 1240 |                 de cuotas desde la fecha de emisión.
-LINE 1241 |               </div>
-LINE 1242 |             </div>
-LINE 1243 |           </div>
-LINE 1244 |         </q-card-section>
-LINE 1245 | 
-LINE 1246 |         <q-separator />
-LINE 1247 | 
-LINE 1248 |         <!-- Acciones del Diálogo -->
-LINE 1249 |         <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
-LINE 1250 |           <q-btn
-LINE 1251 |             flat
-LINE 1252 |             label="Regresar"
-LINE 1253 |             color="grey-8"
-LINE 1254 |             v-close-popup
-LINE 1255 |             class="q-px-md text-weight-bold rounded-pill"
-LINE 1256 |           />
-LINE 1257 |           <q-btn
-LINE 1258 |             unelevated
-LINE 1259 |             label="Confirmar Cotización"
-LINE 1260 |             color="primary"
-LINE 1261 |             icon="task_alt"
-LINE 1262 |             class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"
-LINE 1263 |             style="
-LINE 1264 |               border-radius: 50px;
-LINE 1265 |               height: 48px;
-LINE 1266 |               background: linear-gradient(45deg, #1976d2, #42a5f5);
-LINE 1267 |             "
-LINE 1268 |             @click="enviarDatos"
-LINE 1269 |             :disable="carritoCO.variablePago === 'dividido' && remainingAmount !== 0"
-LINE 1270 |           />
-LINE 1271 |         </q-card-actions>
-LINE 1272 |       </q-card>
-LINE 1273 |     </q-dialog>
-LINE 1274 |     <!-- Diálogo: Vista previa PDF -->
-LINE 1275 |     <q-dialog
-LINE 1276 |       v-model="mostrarModal"
-LINE 1277 |       full-width
-LINE 1278 |       full-height
-LINE 1279 |       transition-show="scale"
-LINE 1280 |       transition-hide="scale"
-LINE 1281 |       @hide="emit('reiniciar')"
-LINE 1282 |     >
-LINE 1283 |       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
-LINE 1284 |         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
-LINE 1285 |           <div class="text-h6 flex items-center q-px-sm">
-LINE 1286 |             <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de
-LINE 1287 |             PDF
-LINE 1288 |           </div>
-LINE 1289 |           <q-space />
-LINE 1290 |           <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
-LINE 1291 |         </q-card-section>
-LINE 1292 | 
-LINE 1293 |         <q-separator color="grey-9" />
-LINE 1294 | 
-LINE 1295 |         <q-card-section class="q-pa-none bg-grey-3" style="height: calc(100% - 54px)">
-LINE 1296 |           <iframe
-LINE 1297 |             v-if="pdfData"
-LINE 1298 |             :src="pdfData"
-LINE 1299 |             style="width: 100%; height: 100%; border: none"
-LINE 1300 |           ></iframe>
-LINE 1301 |           <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
-LINE 1302 |             <q-icon name="check_circle" color="positive" size="2em" />
-LINE 1303 |             <p>
-LINE 1304 |               Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
-LINE 1305 |             </p>
-LINE 1306 |             <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
-LINE 1307 |               Descargar comprobante
-LINE 1308 |             </a>
-LINE 1309 |           </div>
-LINE 1310 |         </q-card-section>
-LINE 1311 |       </q-card>
-LINE 1312 |     </q-dialog>
-LINE 1313 | 
-LINE 1314 |     <!-- Modal Confirmación Envio -->
-LINE 1315 |     <q-dialog
-LINE 1316 |       v-model="dialog"
-LINE 1317 |       :position="position"
-LINE 1318 |       :id="idcliente"
-LINE 1319 |       :data="detallesCotizacion"
-LINE 1320 |       backdrop-filter="blur(4px)"
-LINE 1321 |     >
-LINE 1322 |       <q-card
-LINE 1323 |         class="dialog-card shadow-10"
-LINE 1324 |         style="border-radius: 16px; overflow: hidden; width: 450px; max-width: 95vw"
-LINE 1325 |       >
-LINE 1326 |         <q-card-section
-LINE 1327 |           class="q-pa-lg text-white flex items-center justify-center column"
-LINE 1328 |           style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%)"
-LINE 1329 |         >
-LINE 1330 |           <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
-LINE 1331 |             <q-icon name="check" size="40px" color="positive" />
-LINE 1332 |           </div>
-LINE 1333 |           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
-LINE 1334 |             ¡Cotización Exitosa!
-LINE 1335 |           </div>
-LINE 1336 |         </q-card-section>
-LINE 1337 | 
-LINE 1338 |         <q-card-section class="q-pa-xl text-center bg-white">
-LINE 1339 |           <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
-LINE 1340 |             El comprobante ha sido generado y guardado correctamente en el sistema.
-LINE 1341 |           </div>
-LINE 1342 |           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
-LINE 1343 |             ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
-LINE 1344 |           </div>
-LINE 1345 |         </q-card-section>
-LINE 1346 | 
-LINE 1347 |         <q-separator />
-LINE 1348 | 
-LINE 1349 |         <q-card-actions align="center" class="q-pa-md bg-grey-1" style="border-top: 1px solid #eee">
-LINE 1350 |           <q-btn
-LINE 1351 |             flat
-LINE 1352 |             label="No, gracias"
-LINE 1353 |             color="grey-7"
-LINE 1354 |             @click="cancelar()"
-LINE 1355 |             class="q-px-md text-weight-bold"
-LINE 1356 |             style="border-radius: 8px"
-LINE 1357 |           />
-LINE 1358 |           <q-btn
-LINE 1359 |             unelevated
-LINE 1360 |             label="Enviar PDF por Correo"
-LINE 1361 |             color="positive"
-LINE 1362 |             icon="send"
-LINE 1363 |             class="q-px-md text-weight-bold shadow-3 q-ml-sm"
-LINE 1364 |             style="border-radius: 8px"
-LINE 1365 |             @click="confirmar(idcliente, detallesCotizacion)"
-LINE 1366 |           />
-LINE 1367 |         </q-card-actions>
-LINE 1368 |       </q-card>
-LINE 1369 |     </q-dialog>
-LINE 1370 | 
-LINE 1371 |     <q-dialog v-model="showAddModal">
-LINE 1372 |       <MyRegistrationForm @recordCreated="handleRecordCreated" />
-LINE 1373 |     </q-dialog>
-LINE 1374 |   </q-page>
-LINE 1375 | </template>
-LINE 1376 | <script setup>
-LINE 1377 | import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-LINE 1378 | import { useQuasar } from 'quasar'
-LINE 1379 | import { api, apiCt } from 'src/boot/axios'
-LINE 1380 | import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
-LINE 1381 | import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
-LINE 1382 | import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-LINE 1383 | import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-LINE 1384 | import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-LINE 1385 | import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
-LINE 1386 | import { objectToFormData } from 'src/composables/FuncionesGenerales'
-LINE 1387 | import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
-LINE 1388 | import ModalfirmaPage from './ModalfirmaPage.vue'
-LINE 1389 | import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
-LINE 1390 | import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
-LINE 1391 | import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
-LINE 1392 | import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-LINE 1393 | 
-LINE 1394 | const permisosStore = useOperacionesPermitidas()
-LINE 1395 | //console.log(permisosStore.tienePermiso('editarprecioventa'))
-LINE 1396 | 
-LINE 1397 | const showAddModal = ref(false)
-LINE 1398 | const esProductoUnico = ref(false)
-LINE 1399 | const registrarComoProductoUnico = ref(true)
-LINE 1400 | const idempresa = idempresa_md5()
-LINE 1401 | const isInitializing = ref(false)
-LINE 1402 | const CodigosUnicosSeleccionados = ref([])
-LINE 1403 | const { config } = useProductoConfig(idempresa)
-LINE 1404 | const listaCajaBancos = ref([])
-LINE 1405 | const idcajaBancoSeleccionada = ref(null)
-LINE 1406 | const soloAlmacen = ref(false)
-LINE 1407 | 
-LINE 1408 | watch(
-LINE 1409 |   () => config.value.idempresa,
-LINE 1410 |   (nuevoValor) => {
-LINE 1411 |     if (nuevoValor) {
-LINE 1412 |       esProductoUnico.value = Boolean(config.value.productounico)
-LINE 1413 |       console.log(esProductoUnico.value)
-LINE 1414 |     }
-LINE 1415 |   },
-LINE 1416 |   { deep: true },
-LINE 1417 | )
-LINE 1418 | 
-LINE 1419 | const guardarCodigosEnVenta = (codigos) => {
-LINE 1420 |   CodigosUnicosSeleccionados.value = codigos
-LINE 1421 |   cantidadCO.value = codigos.length
-LINE 1422 | }
-LINE 1423 | 
-LINE 1424 | const modalfirmaActivo = ref(false)
-LINE 1425 | const token = getToken()
-LINE 1426 | const tipoFactura = getTipoFactura()
-LINE 1427 | const fecha = ref(obtenerFechaActualDato())
-LINE 1428 | const modalmetodopago = ref(false)
-LINE 1429 | const pdfData = ref(null)
-LINE 1430 | const mostrarModal = ref(false)
-LINE 1431 | const $q = useQuasar()
-LINE 1432 | const dialog = ref(false)
-LINE 1433 | const position = ref('top')
-LINE 1434 | const idcliente = ref('')
-LINE 1435 | let resolver = null
-LINE 1436 | const detallesCotizacion = ref([])
-LINE 1437 | // --- Estados reactivos ---
-LINE 1438 | const cotizacionFormRef = ref(null) // Para el q-form
-LINE 1439 | const formClientes = ref(null) // Para el q-form
-LINE 1440 | const idalmacenfiltro = ref(0)
-LINE 1441 | const idporcentajeventa = ref(0)
-LINE 1442 | const divisaActiva = reactive({ id: 0, nombre: '', tipo: '', codigosin: 0 })
-LINE 1443 | const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se usa en este formulario, se mantiene por original
-LINE 1444 | const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
-LINE 1445 | const canalventa = ref(null)
-LINE 1446 | const salesChannels = ref([])
-LINE 1447 | 
-LINE 1448 | const error = ref(null)
-LINE 1449 | const isMobile = ref(false)
-LINE 1450 | const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
-LINE 1451 | 
-LINE 1452 | // Tipo de operación: cotizacion o venta
-LINE 1453 | const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
-LINE 1454 | const optionOperacion = ref([
-LINE 1455 |   { value: 0, label: 'Cotización Normal' },
-LINE 1456 |   { value: 1, label: 'Cotización Preferencial' },
-LINE 1457 | ])
-LINE 1458 | 
-LINE 1459 | const periodOptions = [
-LINE 1460 |   { label: 'Personalizado', value: 0 },
-LINE 1461 |   { label: '15 días', value: 15 },
-LINE 1462 |   { label: '30 días', value: 30 },
-LINE 1463 |   { label: '60 días', value: 60 },
-LINE 1464 |   { label: '90 días', value: 90 },
-LINE 1465 | ]
-LINE 1466 | 
-LINE 1467 | // Datos del formulario
-LINE 1468 | const filtroAlmacenCO = ref(null)
-LINE 1469 | const almacenesOptions = ref([])
-LINE 1470 | 
-LINE 1471 | const filtroCategoriaCO = ref(null)
-LINE 1472 | const categoriasOptions = ref([])
-LINE 1473 | 
-LINE 1474 | const idclienteCO = ref('')
-LINE 1475 | const selectedClient = ref(null) // Objeto del cliente seleccionado
-LINE 1476 | const clientesOptions = ref([])
-LINE 1477 | const filteredClients = ref([])
-LINE 1478 | 
-LINE 1479 | const idsucursalCOS = ref('')
-LINE 1480 | const selectedSucursal = ref(null) // Objeto de la sucursal seleccionada
-LINE 1481 | const sucursalesOptions = ref([])
-LINE 1482 | const filteredSucursales = ref([])
-LINE 1483 | 
-LINE 1484 | const puntosVenta = ref([])
-LINE 1485 | const puntoVenta = ref(null)
-LINE 1486 | 
-LINE 1487 | const selectedProduct = ref(null) // Objeto del producto seleccionado
-LINE 1488 | const cantidaddisponibleCO = ref('')
-LINE 1489 | const cantidadCO = ref(0)
-LINE 1490 | const precioCO = ref(0)
-LINE 1491 | const idstockCO = ref('')
-LINE 1492 | const idporcentajeCO = ref('')
-LINE 1493 | const idproductoalmacenCO = ref('')
-LINE 1494 | const productosDisponibles = ref([])
-LINE 1495 | const filteredProducts = ref([])
-LINE 1496 | const metodosPagos = ref([])
-LINE 1497 | const permitirStock = ref(false)
-LINE 1498 | const carritoCO = reactive({
-LINE 1499 |   ventatotal: 0,
-LINE 1500 |   subtotal: 0,
-LINE 1501 |   descuento: 0,
-LINE 1502 |   idalmacen: 0,
-LINE 1503 |   divisa: divisaActiva.id,
-LINE 1504 |   ipv: puntoVenta.value,
-LINE 1505 |   idusuario: 0,
-LINE 1506 |   listaProductos: [],
-LINE 1507 |   pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
-LINE 1508 |   metodoPago: 0,
-LINE 1509 |   variablePago: 'directo',
-LINE 1510 |   fecha: fecha.value,
-LINE 1511 |   credito: false,
-LINE 1512 |   idfirma: null,
-LINE 1513 |   codigosUnicos: [], // Para productos únicos
-LINE 1514 |   cajabanco: null,
-LINE 1515 |   // Campos de crédito persistentes
-LINE 1516 |   cantidadPagos: 1,
-LINE 1517 |   montoPagos: 0,
-LINE 1518 |   periodo: 30,
-LINE 1519 |   plazoPersonalizado: 0,
-LINE 1520 |   fechaLimite: '',
-LINE 1521 | })
-LINE 1522 | const RegistrarFirma = () => {
-LINE 1523 |   console.log(selectedClient.value)
-LINE 1524 |   if (selectedClient.value != null) {
-LINE 1525 |     modalfirmaActivo.value = true
-LINE 1526 |     console.log(modalfirmaActivo.value)
-LINE 1527 |   } else {
-LINE 1528 |     $q.notify({
-LINE 1529 |       type: 'warning',
-LINE 1530 |       message: 'Por favor, selecciona un cliente antes de continuar.',
-LINE 1531 |       position: 'top',
-LINE 1532 |     })
-LINE 1533 |   }
-LINE 1534 | }
-LINE 1535 | const alTerminarFirma = (respuesta) => {
-LINE 1536 |   console.log('Firma registrada:', respuesta)
-LINE 1537 |   if (respuesta.id_firma) {
-LINE 1538 |     carritoCO.idfirma = respuesta.id_firma
-LINE 1539 |     console.log(carritoCO.idfirma)
-LINE 1540 |   }
-LINE 1541 |   // 2. Cerrar el modal (aunque el hijo ya lo hace, aseguramos el estado)
-LINE 1542 |   modalfirmaActivo.value = false
-LINE 1543 | 
-LINE 1544 |   // 3. Notificación de Quasar (Feedback visual)
-LINE 1545 |   $q.notify({
-LINE 1546 |     type: 'positive',
-LINE 1547 |     message: 'Documento firmado correctamente',
-LINE 1548 |     caption: `ID de Firma: ${respuesta.id_firma || 'N/A'}`,
-LINE 1549 |     position: 'top-right',
-LINE 1550 |   })
-LINE 1551 | }
-LINE 1552 | 
-LINE 1553 | const alFallarFirma = (err) => {
-LINE 1554 |   console.error('El registro falló:', err)
-LINE 1555 | }
-LINE 1556 | const calculatePayments = () => {
-LINE 1557 |   if (carritoCO.credito && carritoCO.cantidadPagos > 0 && totalSaleAmount.value > 0) {
-LINE 1558 |     carritoCO.montoPagos = (totalSaleAmount.value / carritoCO.cantidadPagos).toFixed(2)
-LINE 1559 |   } else {
-LINE 1560 |     carritoCO.montoPagos = 0
-LINE 1561 |   }
-LINE 1562 | }
-LINE 1563 | const calculateDueDate = () => {
-LINE 1564 |   if (!carritoCO.credito || !carritoCO.fecha) return // Corregido
-LINE 1565 | 
-LINE 1566 |   const fecha = new Date(carritoCO.fecha) // Corregido
-LINE 1567 |   let daysToAdd = 0
-LINE 1568 | 
-LINE 1569 |   const selectedPeriod = Number(carritoCO.periodo) // Corregido
-LINE 1570 | 
-LINE 1571 |   if (selectedPeriod === 0) {
-LINE 1572 |     daysToAdd = Number(carritoCO.plazoPersonalizado) || 0 // Corregido (usando carritoCO)
-LINE 1573 |   } else if (selectedPeriod > 0) {
-LINE 1574 |     daysToAdd = selectedPeriod * carritoCO.cantidadPagos // Corregido
-LINE 1575 |   }
-LINE 1576 | 
-LINE 1577 |   if (daysToAdd > 0) {
-LINE 1578 |     fecha.setDate(fecha.getDate() + daysToAdd)
-LINE 1579 |     carritoCO.fechaLimite = fecha.toISOString().slice(0, 10) // Corregido
-LINE 1580 |   } else {
-LINE 1581 |     carritoCO.fechaLimite = '' // Corregido
-LINE 1582 |   }
-LINE 1583 | }
-LINE 1584 | const CONSTANTES = {
-LINE 1585 |   tipopago: 'contado',
-LINE 1586 | }
-LINE 1587 | console.log(CONSTANTES.tipopago)
-LINE 1588 | const emit = defineEmits(['reiniciar', 'cancelarregistro'])
-LINE 1589 | 
-LINE 1590 | // premitir stock
-LINE 1591 | const permitirStockvacio = () => {
-LINE 1592 |   permitirStock.value = !permitirStock.value
-LINE 1593 | 
-LINE 1594 |   if (!permitirStock.value) {
-LINE 1595 |     const datos = JSON.parse(localStorage.getItem('carritoCO')) || {}
-LINE 1596 | 
-LINE 1597 |     console.log(datos)
-LINE 1598 |     const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
-LINE 1599 |     console.log(productos)
-LINE 1600 | 
-LINE 1601 |     const carrito = Array.isArray(carritoCO.value) && carritoCO.value.length > 0
-LINE 1602 |     console.log(carrito)
-LINE 1603 | 
-LINE 1604 |     if (carrito || productos) {
-LINE 1605 |       emit('reiniciar')
-LINE 1606 |     }
-LINE 1607 |   }
-LINE 1608 | }
-LINE 1609 | // Columnas para la tabla del carrito
-LINE 1610 | const carritoColumns = [
-LINE 1611 |   { name: 'exp', label: '', align: 'left' },
-LINE 1612 | 
-LINE 1613 |   { name: 'num', label: 'N°', align: 'left', field: 'num' },
-LINE 1614 |   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-LINE 1615 |   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
-LINE 1616 |   {
-LINE 1617 |     name: 'cantidad',
-LINE 1618 |     label: 'Cantidad',
-LINE 1619 |     align: 'center',
-LINE 1620 |     field: (row) => decimas(row.cantidad),
-LINE 1621 |   },
-LINE 1622 |   {
-LINE 1623 |     name: 'precio',
-LINE 1624 |     label: 'Precio unitario',
-LINE 1625 |     align: 'center',
-LINE 1626 |     field: (row) => decimas(row.precio),
-LINE 1627 |   },
-LINE 1628 |   {
-LINE 1629 |     name: 'total',
-LINE 1630 |     label: 'Total',
-LINE 1631 |     align: 'center',
-LINE 1632 |     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
-LINE 1633 |   },
-LINE 1634 |   { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
-LINE 1635 | ]
-LINE 1636 | 
-LINE 1637 | // Columnas para la tabla del comprobante
-LINE 1638 | 
-LINE 1639 | // --- Computed Properties ---
-LINE 1640 | const canAddProduct = computed(() => {
-LINE 1641 |   if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
-LINE 1642 |     return true
-LINE 1643 |   }
-LINE 1644 |   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
-LINE 1645 |     return false
-LINE 1646 |   }
-LINE 1647 |   console.log('tipo operacion: ' + tipoOperacion.value?.value)
-LINE 1648 |   if (tipoOperacion.value?.value === 1) {
-LINE 1649 |     return cantidadCO.value <= cantidaddisponibleCO.value
-LINE 1650 |   }
-LINE 1651 | 
-LINE 1652 |   return true // Para cotización, no se valida stock venta Proforma La cantidad solicitada excede el stock disponible
-LINE 1653 | })
-LINE 1654 | 
-LINE 1655 | // --- Watchers ---
-LINE 1656 | 
-LINE 1657 | // Sincronizar carrito con localStorage
-LINE 1658 | watch(
-LINE 1659 |   carritoCO,
-LINE 1660 |   (newVal) => {
-LINE 1661 |     localStorage.setItem('carritoCO', JSON.stringify(newVal))
-LINE 1662 |   },
-LINE 1663 |   { deep: true },
-LINE 1664 | )
-LINE 1665 | const handleTipoOperacionChange = () => {
-LINE 1666 |   cotizacionFormRef.value.resetValidation() // Resetear validación
-LINE 1667 | 
-LINE 1668 |   resetFormulario()
-LINE 1669 |   console.log(tipoOperacion.value)
-LINE 1670 | }
-LINE 1671 | const cambioFecha = () => {
-LINE 1672 |   carritoCO.fecha = fecha.value
-LINE 1673 |   if (carritoCO.credito) {
-LINE 1674 |     calculateDueDate()
-LINE 1675 |   }
-LINE 1676 |   cotizacionFormRef.value?.resetValidation()
-LINE 1677 | }
-LINE 1678 | 
-LINE 1679 | // Watcher para el filtro de almacén para recargar categorías
-LINE 1680 | watch(filtroAlmacenCO, (newVal) => {
-LINE 1681 |   idalmacenfiltro.value = newVal
-LINE 1682 |   listaCategoria()
-LINE 1683 | })
-LINE 1684 | 
-LINE 1685 | // Watcher para el filtro de categoría para recargar productos
-LINE 1686 | watch(filtroCategoriaCO, (newVal) => {
-LINE 1687 |   idporcentajeventa.value = newVal
-LINE 1688 |   listaProductosDisponibles()
-LINE 1689 | })
-LINE 1690 | 
-LINE 1691 | // Watcher para resetear campos de producto cuando se selecciona otro producto o se borra el input
-LINE 1692 | watch(selectedProduct, (newVal) => {
-LINE 1693 |   if (!newVal) {
-LINE 1694 |     cantidaddisponibleCO.value = ''
-LINE 1695 |     cantidadCO.value = 1
-LINE 1696 |     precioCO.value = 1
-LINE 1697 |     idstockCO.value = ''
-LINE 1698 |     idporcentajeCO.value = ''
-LINE 1699 |     idproductoalmacenCO.value = ''
-LINE 1700 |   }
-LINE 1701 | })
-LINE 1702 | 
-LINE 1703 | const cotizacion_proforma = async () => {
-LINE 1704 |   console.log(tipoOperacion.value)
-LINE 1705 |   const tipo_cotz = tipoOperacion.value
-LINE 1706 |   if (Number(tipo_cotz.value) == 0) {
-LINE 1707 |     await enviarDatos()
-LINE 1708 |   } else {
-LINE 1709 |     modalmetodopago.value = true
-LINE 1710 |   }
-LINE 1711 | }
-LINE 1712 | 
-LINE 1713 | // ======================== TIpo de pago combinado =================
-LINE 1714 | 
-LINE 1715 | const totalSaleAmount = computed(() => {
-LINE 1716 |   return parseFloat(carritoCO.ventatotal) || 0
-LINE 1717 | })
-LINE 1718 | 
-LINE 1719 | const totalPaidAmount = computed(() => {
-LINE 1720 |   if (carritoCO.variablePago === 'dividido') {
-LINE 1721 |     return carritoCO.pagosDivididos.reduce(
-LINE 1722 |       (sum, payment) => sum + parseFloat(payment.monto || 0),
-LINE 1723 |       0,
-LINE 1724 |     )
-LINE 1725 |   }
-LINE 1726 |   return 0
-LINE 1727 | })
-LINE 1728 | 
-LINE 1729 | const remainingAmount = computed(() => {
-LINE 1730 |   if (carritoCO.variablePago === 'dividido') {
-LINE 1731 |     return totalSaleAmount.value - totalPaidAmount.value
-LINE 1732 |   }
-LINE 1733 |   return 0
-LINE 1734 | })
-LINE 1735 | 
-LINE 1736 | const addPaymentMethod = () => {
-LINE 1737 |   carritoCO.pagosDivididos.push({ metodoPago: null, monto: 0, porcentaje: 0 })
-LINE 1738 | }
-LINE 1739 | 
-LINE 1740 | const cargarCanales = async () => {
-LINE 1741 |   try {
-LINE 1742 |     const respuesta = await validarUsuario()
-LINE 1743 |     const idempresa = respuesta[0]?.empresa?.idempresa
-LINE 1744 |     const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
-LINE 1745 |     salesChannels.value = response.data.map((item) => ({
-LINE 1746 |       label: item.canal,
-LINE 1747 |       value: item.id,
-LINE 1748 |     }))
-LINE 1749 |   } catch (error) {
-LINE 1750 |     console.error('Error cargando canales:', error)
-LINE 1751 |   }
-LINE 1752 | }
-LINE 1753 | 
-LINE 1754 | const removePaymentMethod = (index) => {
-LINE 1755 |   carritoCO.pagosDivididos.splice(index, 1)
-LINE 1756 | }
-LINE 1757 | const calculateAmountFromPercentage = (index) => {
-LINE 1758 |   console.log(index)
-LINE 1759 |   const payment = carritoCO.pagosDivididos[index]
-LINE 1760 |   console.log(payment)
-LINE 1761 |   // Ensure percentage is treated as a number and within valid range
-LINE 1762 |   const percentage = parseFloat(payment.porcentaje) || 0
-LINE 1763 |   if (percentage >= 0 && percentage <= 100 && totalSaleAmount.value > 0) {
-LINE 1764 |     payment.monto = (totalSaleAmount.value * (percentage / 100)).toFixed(2)
-LINE 1765 |   } else {
-LINE 1766 |     payment.monto = 0
-LINE 1767 |   }
-LINE 1768 | }
-LINE 1769 | const calculateRemainingAmount = (index) => {
-LINE 1770 |   console.log(index)
-LINE 1771 |   const payment = carritoCO.pagosDivididos[index]
-LINE 1772 |   console.log(payment)
-LINE 1773 |   const monto = parseFloat(payment.monto) || 0
-LINE 1774 |   if (monto >= 0 && monto <= totalSaleAmount.value && totalSaleAmount.value > 0) {
-LINE 1775 |     payment.porcentaje = ((monto * 100) / totalSaleAmount.value).toFixed(2)
-LINE 1776 |   } else {
-LINE 1777 |     payment.porcentaje = 0
-LINE 1778 |   }
-LINE 1779 | }
-LINE 1780 | // --- Funciones de Lógica de Negocio y Peticiones ---
-LINE 1781 | 
-LINE 1782 | async function getUserData() {
-LINE 1783 |   const contenidousuario = validarUsuario()
-LINE 1784 |   return contenidousuario[0]
-LINE 1785 | }
-LINE 1786 | 
-LINE 1787 | const cargarMetodoPagoFactura = async () => {
-LINE 1788 |   try {
-LINE 1789 |     const respuesta = await validarUsuario()
-LINE 1790 |     const token = respuesta[0]?.factura?.access_token
-LINE 1791 |     const tipo = respuesta[0]?.factura?.tipo
-LINE 1792 |     const idempresa = respuesta[0]?.empresa?.idempresa
-LINE 1793 |     const response = await api.get(`listaMetodopagoFactura/${idempresa}/${token}/${tipo}`)
-LINE 1794 |     const filtrado = response.data.filter((u) => u.estado == 1)
-LINE 1795 |     console.log(response.data)
-LINE 1796 |     metodosPagos.value = filtrado.map((item) => ({
-LINE 1797 |       label: item.nombre,
-LINE 1798 |       value: item.id,
-LINE 1799 |     }))
-LINE 1800 |   } catch (error) {
-LINE 1801 |     console.error('Error cargando canales:', error)
-LINE 1802 |   }
-LINE 1803 | }
-LINE 1804 | async function leyendaActiva() {
-LINE 1805 |   let endpoint = null
-LINE 1806 | 
-LINE 1807 |   if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
-LINE 1808 |     endpoint = `listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`
-LINE 1809 |   } else {
-LINE 1810 |     leyendaFacturaActiva.id = 0
-LINE 1811 |     leyendaFacturaActiva.codigosin = 0
-LINE 1812 |     return
-LINE 1813 |   }
-LINE 1814 | 
-LINE 1815 |   try {
-LINE 1816 |     if (endpoint != null) {
-LINE 1817 |       const response = await api.get(endpoint)
-LINE 1818 |       const resultado = response.data
-LINE 1819 |       console.log(resultado)
-LINE 1820 |       if (resultado[0] === 'error') {
-LINE 1821 |         console.error(resultado.error)
-LINE 1822 |       } else {
-LINE 1823 |         let use = resultado.filter((u) => u.estado === 1)
-LINE 1824 |         if (use.length > 0) {
-LINE 1825 |           leyendaFacturaActiva.id = use[0].id || 0
-LINE 1826 |           leyendaFacturaActiva.codigosin = use[0].leyendasin.codigo || 0
-LINE 1827 |         }
-LINE 1828 |       }
-LINE 1829 |     }
-LINE 1830 |   } catch (error) {
-LINE 1831 |     console.error('Error al cargar leyenda activa:', error)
-LINE 1832 |   }
-LINE 1833 | }
-LINE 1834 | 
-LINE 1835 | async function divisaEmonedaActiva() {
-LINE 1836 |   let endpoint = ``
-LINE 1837 |   if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
-LINE 1838 |     endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
-LINE 1839 |   } else {
-LINE 1840 |     endpoint = `listaDivisa/${idempresa}`
-LINE 1841 |   }
-LINE 1842 | 
-LINE 1843 |   console.log(endpoint)
-LINE 1844 |   try {
-LINE 1845 |     const response = await api.get(endpoint)
-LINE 1846 |     const resultado = response.data
-LINE 1847 |     console.log(resultado)
-LINE 1848 |     if (resultado[0] === 'error') {
-LINE 1849 |       console.error(resultado.error)
-LINE 1850 |     } else {
-LINE 1851 |       let use = resultado.filter((u) => Number(u.estado) === 1)
-LINE 1852 |       if (use.length > 0) {
-LINE 1853 |         divisaActiva.id = use[0].id
-LINE 1854 |         divisaActiva.nombre = use[0].nombre
-LINE 1855 |         divisaActiva.tipo = use[0].tipo || 0
-LINE 1856 |         divisaActiva.codigosin = use[0]?.monedasin?.codigo ?? 0
-LINE 1857 |       }
-LINE 1858 |       console.log(divisaActiva)
-LINE 1859 |     }
-LINE 1860 |   } catch (error) {
-LINE 1861 |     console.error('Error al cargar divisa activa:', error)
-LINE 1862 |   }
-LINE 1863 | }
-LINE 1864 | 
-LINE 1865 | async function listaAlmacenes() {
-LINE 1866 |   const contenidousuario = await getUserData()
-LINE 1867 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 1868 |   const idusuario = contenidousuario?.idusuario
-LINE 1869 |   const endpoint = `listaResponsableAlmacen/${idempresa}`
-LINE 1870 |   try {
-LINE 1871 |     const response = await api.get(endpoint)
-LINE 1872 |     const resultado = response.data
-LINE 1873 |     console.log(resultado)
-LINE 1874 |     if (resultado[0] === 'error') {
-LINE 1875 |       console.error(resultado.error)
-LINE 1876 |     } else {
-LINE 1877 |       almacenesOptions.value = resultado.filter((u) => u.idusuario === idusuario)
-LINE 1878 |       console.log(isInitializing.value)
-LINE 1879 |       if (almacenesOptions.value.length > 0) {
-LINE 1880 |         console.log(isInitializing.value)
-LINE 1881 |         filtroAlmacenCO.value = almacenesOptions.value[0].idalmacen // Seleccionar el primero por defecto
-LINE 1882 |       }
-LINE 1883 |     }
-LINE 1884 |     await listaCLientes()
-LINE 1885 |   } catch (error) {
-LINE 1886 |     console.error('Error al cargar almacenes:', error)
-LINE 1887 |   }
-LINE 1888 | }
-LINE 1889 | watch(filtroAlmacenCO, (newVal) => {
-LINE 1890 |   console.log('filtroAlmacenCO ha cambiado a:', newVal) // <--- AÑADIR ESTO num
-LINE 1891 |   idalmacenfiltro.value = newVal
-LINE 1892 |   listaCategoria()
-LINE 1893 | })
-LINE 1894 | async function listaCategoria() {
-LINE 1895 |   cargarPuntoVentas()
-LINE 1896 |   const contenidousuario = await getUserData()
-LINE 1897 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 1898 |   const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
-LINE 1899 |   try {
-LINE 1900 |     const response = await api.get(endpoint)
-LINE 1901 |     const resultado = response.data
-LINE 1902 |     if (resultado[0] === 'error') {
-LINE 1903 |       console.error(resultado.error)
-LINE 1904 |     } else {
-LINE 1905 |       // Filtrado por el idalmacenfiltro.value que se actualiza desde el watcher
-LINE 1906 |       categoriasOptions.value = resultado.filter((u) => {
-LINE 1907 |         return Number(u.estado) === 1 && Number(u.idalmacen) === Number(idalmacenfiltro.value)
-LINE 1908 |       })
-LINE 1909 |       if (categoriasOptions.value.length > 0) {
-LINE 1910 |         filtroCategoriaCO.value = categoriasOptions.value[0].id // Seleccionar el primero por defecto
-LINE 1911 |       } else {
-LINE 1912 |         filtroCategoriaCO.value = null // Resetear si no hay categorías
-LINE 1913 |       }
-LINE 1914 |     }
-LINE 1915 |   } catch (error) {
-LINE 1916 |     console.error('Error al cargar categorías:', error)
-LINE 1917 |   }
-LINE 1918 | }
-LINE 1919 | const cargarPuntoVentas = async () => {
-LINE 1920 |   try {
-LINE 1921 |     const response = await validarUsuario()
-LINE 1922 |     const idusuario = response[0]?.idusuario
-LINE 1923 | 
-LINE 1924 |     if (idusuario) {
-LINE 1925 |       const { data } = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
-LINE 1926 |       console.log(data)
-LINE 1927 |       const idalmacen = Number(idalmacenfiltro.value)
-LINE 1928 |       console.log()
-LINE 1929 |       if (data.estado == 'error') {
-LINE 1930 |         console.log(data.error)
-LINE 1931 |       } else {
-LINE 1932 |         const filtrados = data.datos.filter((u) => u.idalmacen == idalmacen)
-LINE 1933 |         console.log(filtrados)
-LINE 1934 |         puntosVenta.value = filtrados.map((item) => ({
-LINE 1935 |           label: item.nombre,
-LINE 1936 |           value: item.idpuntoventa,
-LINE 1937 |           Data: item,
-LINE 1938 |         }))
-LINE 1939 |         puntoVenta.value = puntosVenta.value[0]
-LINE 1940 |         console.log(puntosVenta.value)
-LINE 1941 |       }
-LINE 1942 |     }
-LINE 1943 |   } catch (error) {
-LINE 1944 |     console.error(error)
-LINE 1945 |   }
-LINE 1946 | }
-LINE 1947 | async function listaProductosDisponibles() {
-LINE 1948 |   const contenidousuario = await getUserData()
-LINE 1949 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 1950 |   if (!idempresa) {
-LINE 1951 |     $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
-LINE 1952 |     return
-LINE 1953 |   }
-LINE 1954 |   if (!idporcentajeventa.value) {
-LINE 1955 |     productosDisponibles.value = []
-LINE 1956 |     return
-LINE 1957 |   }
-LINE 1958 | 
-LINE 1959 |   const endpoint = `listaProductosDisponiblesVenta/${idempresa}`
-LINE 1960 |   try {
-LINE 1961 |     const response = await api.get(endpoint)
-LINE 1962 |     console.log(response.data)
-LINE 1963 |     const resultado = response.data
-LINE 1964 |     if (resultado[0] === 'error') {
-LINE 1965 |       console.error(resultado.error)
-LINE 1966 |       productosDisponibles.value = []
-LINE 1967 |     } else {
-LINE 1968 |       console.log(idporcentajeventa.value)
-LINE 1969 |       console.log(idporcentajeventa.value)
-LINE 1970 |       let use = resultado.datos.filter(
-LINE 1971 |         (u) => Number(u.idporcentaje) === Number(idporcentajeventa.value),
-LINE 1972 |       )
-LINE 1973 |       console.log(use)
-LINE 1974 |       // Filtrar productos que ya están en el carrito
-LINE 1975 |       if (carritoCO.listaProductos.length > 0) {
-LINE 1976 |         use = use.filter(
-LINE 1977 |           (u) => !carritoCO.listaProductos.some((cp) => cp.idproductoalmacen === u.id),
-LINE 1978 |         )
-LINE 1979 |       }
-LINE 1980 |       console.log(use)
-LINE 1981 |       productosDisponibles.value = use.map((p) => ({
-LINE 1982 |         ...p,
-LINE 1983 |         display: `${p.codigo} - ${p.descripcion}`,
-LINE 1984 |       }))
-LINE 1985 |     }
-LINE 1986 |   } catch (error) {
-LINE 1987 |     console.error('Error al cargar productos disponibles:', error)
-LINE 1988 |     productosDisponibles.value = []
-LINE 1989 |   }
-LINE 1990 | }
-LINE 1991 | 
-LINE 1992 | async function listaCLientes() {
-LINE 1993 |   const contenidousuario = await getUserData()
-LINE 1994 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 1995 |   if (!idempresa) {
-LINE 1996 |     $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
-LINE 1997 |     return
-LINE 1998 |   }
-LINE 1999 |   const endpoint = `listaCliente/${idempresa}`
-LINE 2000 |   try {
-LINE 2001 |     const response = await api.get(endpoint)
-LINE 2002 |     const resultado = response.data
-LINE 2003 |     if (resultado[0] === 'error') {
-LINE 2004 |       console.error(resultado.error)
-LINE 2005 |     } else {
-LINE 2006 |       if (soloAlmacen.value) {
-LINE 2007 |         console.log(soloAlmacen)
-LINE 2008 |         const allowedAlmacenIds = almacenesOptions.value.map((a) => a.idalmacen)
-LINE 2009 | 
-LINE 2010 |         // Filtrar clientes: se muestran si no tienen almacén (globales) o si tienen al menos uno permitido
-LINE 2011 |         const clientesFiltrados = resultado.filter((c) => {
-LINE 2012 |           // Cliente sin almacenes → se muestra siempre
-LINE 2013 |           if (!c.almacenes || c.almacenes.length === 0) return true
-LINE 2014 |           // Cliente con al menos un almacén permitido
-LINE 2015 |           return c.almacenes.some((al) => allowedAlmacenIds.includes(al.idalmacen))
-LINE 2016 |         })
-LINE 2017 | 
-LINE 2018 |         clientesOptions.value = clientesFiltrados.map((c) => ({
-LINE 2019 |           ...c,
-LINE 2020 |           display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
-LINE 2021 |         }))
-LINE 2022 |       } else {
-LINE 2023 |         clientesOptions.value = resultado.map((c) => ({
-LINE 2024 |           ...c,
-LINE 2025 |           display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
-LINE 2026 |         }))
-LINE 2027 |       }
-LINE 2028 |     }
-LINE 2029 |   } catch (error) {
-LINE 2030 |     console.error('Error al cargar clientes:', error)
-LINE 2031 |   }
-LINE 2032 | }
-LINE 2033 | async function selectSucursal(clientId) {
-LINE 2034 |   if (!clientId) {
-LINE 2035 |     sucursalesOptions.value = []
-LINE 2036 |     selectedSucursal.value = null
-LINE 2037 |     idsucursalCOS.value = ''
-LINE 2038 |     return
-LINE 2039 |   }
-LINE 2040 |   try {
-LINE 2041 |     const endpoint = `listaSucursal/${clientId}`
-LINE 2042 |     const response = await api.get(endpoint)
-LINE 2043 |     const data = response.data
-LINE 2044 |     if (data.length === 0) {
-LINE 2045 |       $q.notify({
-LINE 2046 |         type: 'info',
-LINE 2047 |         message: 'No existen sucursales registradas del cliente seleccionado.',
-LINE 2048 |       })
-LINE 2049 |       sucursalesOptions.value = []
-LINE 2050 |       selectedSucursal.value = null
-LINE 2051 |       idsucursalCOS.value = ''
-LINE 2052 |     } else {
-LINE 2053 |       sucursalesOptions.value = data
-LINE 2054 |       // Seleccionar la primera sucursal por defecto
-LINE 2055 |       selectedSucursal.value = data[0]
-LINE 2056 |       idsucursalCOS.value = data[0].id
-LINE 2057 |     }
-LINE 2058 |   } catch (error) {
-LINE 2059 |     console.error('Error al cargar sucursales:', error)
-LINE 2060 |     sucursalesOptions.value = []
-LINE 2061 |     selectedSucursal.value = null
-LINE 2062 |     idsucursalCOS.value = ''
-LINE 2063 |   }
-LINE 2064 | }
-LINE 2065 | 
-LINE 2066 | async function cargarLeyendasCotizacion() {
-LINE 2067 |   const contenidousuario = await getUserData()
-LINE 2068 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 2069 |   if (!idempresa) {
-LINE 2070 |     leyendasCotizacion.value = []
-LINE 2071 |     return
-LINE 2072 |   }
-LINE 2073 |   const endpoint = `listaLeyendaCotizacion/${idempresa}`
-LINE 2074 | 
-LINE 2075 |   try {
-LINE 2076 |     const response = await api.get(endpoint)
-LINE 2077 |     const resultado = response.data
-LINE 2078 |     if (resultado[0] === 'error') {
-LINE 2079 |       console.error(resultado.error)
-LINE 2080 |       leyendasCotizacion.value = []
-LINE 2081 |     } else {
-LINE 2082 |       leyendasCotizacion.value = resultado.filter((u) => u.estado === 1)
-LINE 2083 |     }
-LINE 2084 |   } catch (error) {
-LINE 2085 |     console.error('Error al cargar leyendas de cotización:', error)
-LINE 2086 |     leyendasCotizacion.value = []
-LINE 2087 |   }
-LINE 2088 | }
-LINE 2089 | 
-LINE 2090 | // --- Lógica de filtrado para Quasar Select ---
-LINE 2091 | 
-LINE 2092 | function filterClient(val, update) {
-LINE 2093 |   if (val === '') {
-LINE 2094 |     update(() => {
-LINE 2095 |       filteredClients.value = clientesOptions.value
-LINE 2096 |     })
-LINE 2097 |     return
-LINE 2098 |   }
-LINE 2099 |   update(() => {
-LINE 2100 |     const needle = normalizeText(val).toLowerCase()
-LINE 2101 |     filteredClients.value = clientesOptions.value.filter(
-LINE 2102 |       (v) => normalizeText(v.display).toLowerCase().indexOf(needle) > -1,
-LINE 2103 |     )
-LINE 2104 |   })
-LINE 2105 | }
-LINE 2106 | 
-LINE 2107 | function setClientInputValue(val) {
-LINE 2108 |   // Esta función se dispara cuando el usuario escribe en el input
-LINE 2109 |   // Si el valor no coincide con un cliente seleccionado, resetea la selección
-LINE 2110 |   if (!clientesOptions.value.some((c) => c.display === val)) {
-LINE 2111 |     selectedClient.value = null
-LINE 2112 |     idclienteCO.value = ''
-LINE 2113 |     selectedSucursal.value = null
-LINE 2114 |     idsucursalCOS.value = ''
-LINE 2115 |   }
-LINE 2116 | }
-LINE 2117 | 
-LINE 2118 | function elegirUnCliente(client) {
-LINE 2119 |   //console.log(client)
-LINE 2120 |   if (client) {
-LINE 2121 |     idclienteCO.value = client.id
-LINE 2122 |     selectSucursal(client.id)
-LINE 2123 |     selectCanalVenta(client.idcanal)
-LINE 2124 |   } else {
-LINE 2125 |     idclienteCO.value = ''
-LINE 2126 |     selectedSucursal.value = null
-LINE 2127 |     idsucursalCOS.value = ''
-LINE 2128 |   }
-LINE 2129 | }
-LINE 2130 | function selectCanalVenta(canalid) {
-LINE 2131 |   console.log(canalid)
-LINE 2132 | 
-LINE 2133 |   canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalid)) || null
-LINE 2134 | }
-LINE 2135 | function filterSucursal(val, update) {
-LINE 2136 |   if (val === '') {
-LINE 2137 |     update(() => {
-LINE 2138 |       filteredSucursales.value = sucursalesOptions.value
-LINE 2139 |     })
-LINE 2140 |     return
-LINE 2141 |   }
-LINE 2142 |   update(() => {
-LINE 2143 |     const needle = normalizeText(val).toLowerCase()
-LINE 2144 |     filteredSucursales.value = sucursalesOptions.value.filter(
-LINE 2145 |       (v) => normalizeText(v.nombre).toLowerCase().indexOf(needle) > -1,
-LINE 2146 |     )
-LINE 2147 |   })
-LINE 2148 | }
-LINE 2149 | 
-LINE 2150 | function setSucursalInputValue(val) {
-LINE 2151 |   if (!sucursalesOptions.value.some((s) => s.nombre === val)) {
-LINE 2152 |     selectedSucursal.value = null
-LINE 2153 |     idsucursalCOS.value = ''
-LINE 2154 |   }
-LINE 2155 | }
-LINE 2156 | 
-LINE 2157 | function elegirUnaSucursal(sucursal) {
-LINE 2158 |   if (sucursal) {
-LINE 2159 |     idsucursalCOS.value = sucursal.id
-LINE 2160 |   } else {
-LINE 2161 |     idsucursalCOS.value = ''
-LINE 2162 |   }
-LINE 2163 | }
-LINE 2164 | 
-LINE 2165 | function filterProduct(val, update) {
-LINE 2166 |   if (val === '') {
-LINE 2167 |     update(() => {
-LINE 2168 |       filteredProducts.value = productosDisponibles.value
-LINE 2169 |     })
-LINE 2170 |     return
-LINE 2171 |   }
-LINE 2172 |   update(() => {
-LINE 2173 |     const needle = normalizeText(val).toLowerCase()
-LINE 2174 |     filteredProducts.value = productosDisponibles.value.filter(
-LINE 2175 |       (v) => normalizeText(v.display).toLowerCase().indexOf(needle) > -1,
-LINE 2176 |     )
-LINE 2177 |   })
-LINE 2178 | }
-LINE 2179 | 
-LINE 2180 | function setProductInputValue(val) {
-LINE 2181 |   if (!productosDisponibles.value.some((p) => p.display === val)) {
-LINE 2182 |     selectedProduct.value = null
-LINE 2183 |   }
-LINE 2184 | }
-LINE 2185 | 
-LINE 2186 | function elegirUnProducto(product) {
-LINE 2187 |   if (product) {
-LINE 2188 |     cantidaddisponibleCO.value = product.stock
-LINE 2189 |     precioCO.value = product.precio
-LINE 2190 |     idstockCO.value = product.idstock
-LINE 2191 |     idporcentajeCO.value = product.idporcentaje
-LINE 2192 |     idproductoalmacenCO.value = product.id
-LINE 2193 |     cantidadCO.value = 1 // Set default quantity to 1
-LINE 2194 |   } else {
-LINE 2195 |     cantidaddisponibleCO.value = ''
-LINE 2196 |     precioCO.value = 1
-LINE 2197 |     idstockCO.value = ''
-LINE 2198 |     idporcentajeCO.value = ''
-LINE 2199 |     idproductoalmacenCO.value = ''
-LINE 2200 |     cantidadCO.value = 0
-LINE 2201 |   }
-LINE 2202 | }
-LINE 2203 | 
-LINE 2204 | // --- Lógica del Carrito ---
-LINE 2205 | 
-LINE 2206 | async function anadirProductoACarrito() {
-LINE 2207 |   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
-LINE 2208 |     $q.notify({
-LINE 2209 |       type: 'info',
-LINE 2210 |       message: 'Llene todos los campos para poder cargar productos a la lista.',
-LINE 2211 |       actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2212 |     })
-LINE 2213 |     return
-LINE 2214 |   }
-LINE 2215 | 
-LINE 2216 |   if (Number(tipoOperacion.value?.value) === 1) {
-LINE 2217 |     if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
-LINE 2218 |       $q.notify({
-LINE 2219 |         type: 'warning',
-LINE 2220 |         message: 'La cantidad solicitada excede el stock disponible.',
-LINE 2221 |         actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2222 |       })
-LINE 2223 |       return
-LINE 2224 |     } else {
-LINE 2225 |       if (cantidadCO.value > cantidaddisponibleCO.value && permitirStock.value) {
-LINE 2226 |         $q.notify({
-LINE 2227 |           type: 'warning',
-LINE 2228 |           message: 'La cantidad solicitada excede el stock disponible.',
-LINE 2229 |           actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2230 |         })
-LINE 2231 |       }
-LINE 2232 |     }
-LINE 2233 |   } else {
-LINE 2234 |     if (Number(tipoOperacion.value?.value) === 2 && cantidadCO.value > cantidaddisponibleCO.value) {
-LINE 2235 |       $q.notify({
-LINE 2236 |         type: 'warning',
-LINE 2237 |         message: 'La cantidad solicitada excede el stock disponible.',
-LINE 2238 |         actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2239 |       })
-LINE 2240 |     }
-LINE 2241 |   }
-LINE 2242 | 
-LINE 2243 |   const contenidousuario = await getUserData()
-LINE 2244 |   const idusuario = contenidousuario?.idusuario
-LINE 2245 |   const nuevoProducto = {
-LINE 2246 |     num: carritoCO.listaProductos.length + 1,
-LINE 2247 |     idproductoalmacen: idproductoalmacenCO.value,
-LINE 2248 |     cantidad: cantidadCO.value,
-LINE 2249 |     precio: precioCO.value,
-LINE 2250 |     idstock: idstockCO.value,
-LINE 2251 |     idporcentaje: idporcentajeCO.value,
-LINE 2252 |     candiponible: cantidaddisponibleCO.value,
-LINE 2253 |     descripcion: selectedProduct.value.descripcion,
-LINE 2254 |     descripcionAdicional: '',
-LINE 2255 |     codigo: selectedProduct.value.codigo,
-LINE 2256 |     despachado:
-LINE 2257 |       Number(selectedProduct.value.stock) == 0 ||
-LINE 2258 |       Number(selectedProduct.value.stock) < Number(cantidadCO.value)
-LINE 2259 |         ? 2
-LINE 2260 |         : 1,
-LINE 2261 |     codigosUnicos: [...CodigosUnicosSeleccionados.value],
-LINE 2262 |   }
-LINE 2263 |   carritoCO.idusuario = idusuario
-LINE 2264 |   carritoCO.idempresa = idempresa_md5()
-LINE 2265 |   carritoCO.divisa = divisaActiva.id // Asegúrate de que la divisa activa esté cargada
-LINE 2266 |   carritoCO.listaProductos.push(nuevoProducto)
-LINE 2267 |   carritoCO.codigosUnicos = [...carritoCO.codigosUnicos, ...CodigosUnicosSeleccionados.value]
-LINE 2268 |   calcularTotalesCarrito()
-LINE 2269 |   listaProductosDisponibles() // Recargar la lista de productos disponibles para excluir el añadido
-LINE 2270 |   resetProductoInputs()
-LINE 2271 | }
-LINE 2272 | 
-LINE 2273 | function eliminarProductoCarrito(idProductoAlmacen) {
-LINE 2274 |   carritoCO.listaProductos = carritoCO.listaProductos.filter(
-LINE 2275 |     (p) => p.idproductoalmacen !== idProductoAlmacen,
-LINE 2276 |   )
-LINE 2277 |   calcularTotalesCarrito()
-LINE 2278 |   listaProductosDisponibles() // Recargar la lista de productos disponibles
-LINE 2279 | }
-LINE 2280 | const validarDescripcion = async (scope, row) => {
-LINE 2281 |   console.log(scope.value)
-LINE 2282 | 
-LINE 2283 |   if (carritoCO && carritoCO.listaProductos) {
-LINE 2284 |     carritoCO.listaProductos = carritoCO.listaProductos.map((prod) => {
-LINE 2285 |       // Agregar o editar la descripción adicional
-LINE 2286 |       if (Number(prod.id) == Number(row.idproductoalmacen)) {
-LINE 2287 |         prod.descripcionAdicional = scope.value
-LINE 2288 |       }
-LINE 2289 |       return prod
-LINE 2290 |     })
-LINE 2291 | 
-LINE 2292 |     console.log('Descripción adicional actualizada correctamente ')
-LINE 2293 |   } else {
-LINE 2294 |     console.warn('No se encontró la lista de productos en el localStorage')
-LINE 2295 |   }
-LINE 2296 | 
-LINE 2297 |   scope.set()
-LINE 2298 | }
-LINE 2299 | function calcularTotalesCarrito() {
-LINE 2300 |   carritoCO.subtotal = carritoCO.listaProductos.reduce((sub, producto) => {
-LINE 2301 |     const precio = parseFloat(producto.precio)
-LINE 2302 |     const cantidad = parseFloat(producto.cantidad)
-LINE 2303 |     return sub + precio * cantidad
-LINE 2304 |   }, 0)
-LINE 2305 | 
-LINE 2306 |   if (carritoCO.subtotal === 0) {
-LINE 2307 |     carritoCO.descuento = 0
-LINE 2308 |   }
-LINE 2309 |   carritoCO.ventatotal = carritoCO.subtotal - carritoCO.descuento
-LINE 2310 | 
-LINE 2311 |   // Asegurar dos decimales
-LINE 2312 |   carritoCO.subtotal = redondear(carritoCO.subtotal)
-LINE 2313 |   carritoCO.ventatotal = redondear(carritoCO.ventatotal)
-LINE 2314 |   carritoCO.descuento = redondear(carritoCO.descuento)
-LINE 2315 | }
-LINE 2316 | 
-LINE 2317 | function aplicarDescuento() {
-LINE 2318 |   if (carritoCO.descuento > carritoCO.subtotal) {
-LINE 2319 |     $q.notify({
-LINE 2320 |       type: 'warning',
-LINE 2321 |       message: 'El descuento sobrepasa el subtotal.',
-LINE 2322 |       actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2323 |     })
-LINE 2324 |     carritoCO.descuento = carritoCO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
-LINE 2325 |   }
-LINE 2326 |   calcularTotalesCarrito()
-LINE 2327 | }
-LINE 2328 | 
-LINE 2329 | function resetProductoInputs() {
-LINE 2330 |   selectedProduct.value = null
-LINE 2331 |   cantidaddisponibleCO.value = ''
-LINE 2332 |   cantidadCO.value = 1
-LINE 2333 |   precioCO.value = 1
-LINE 2334 |   idstockCO.value = ''
-LINE 2335 |   idporcentajeCO.value = ''
-LINE 2336 |   idproductoalmacenCO.value = ''
-LINE 2337 | }
-LINE 2338 | 
-LINE 2339 | // --- Envío de Datos ---
-LINE 2340 | 
-LINE 2341 | async function enviarDatos() {
-LINE 2342 |   modalmetodopago.value = false
-LINE 2343 |   const isValid = await cotizacionFormRef.value.validate()
-LINE 2344 |   if (!isValid) {
-LINE 2345 |     $q.notify({
-LINE 2346 |       type: 'info',
-LINE 2347 |       message: 'Por favor, complete todos los campos requeridos.',
-LINE 2348 |       actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2349 |     })
-LINE 2350 |     return
-LINE 2351 |   }
-LINE 2352 |   //localStorage
-LINE 2353 |   const isValidCliente = await formClientes.value.validate()
-LINE 2354 |   if (!isValidCliente) {
-LINE 2355 |     $q.notify({
-LINE 2356 |       type: 'info',
-LINE 2357 |       message: 'Por favor, complete todos los campos requeridos.',
-LINE 2358 |       actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2359 |     })
-LINE 2360 |     return
-LINE 2361 |   }
-LINE 2362 | 
-LINE 2363 |   if (carritoCO.listaProductos.length === 0) {
-LINE 2364 |     $q.notify({
-LINE 2365 |       type: 'info',
-LINE 2366 |       message: 'Debe añadir al menos un producto a la cotización.',
-LINE 2367 |       actions: [{ icon: 'close', color: 'white', round: true }],
-LINE 2368 |     })
-LINE 2369 |     return
-LINE 2370 |   }
-LINE 2371 | 
-LINE 2372 |   carritoCO.tipoOperacion = tipoOperacion.value?.value
-LINE 2373 | 
-LINE 2374 |   // Preparar los datos de pago según la modalidad seleccionada
-LINE 2375 |   if (carritoCO.variablePago === 'directo') {
-LINE 2376 |     carritoCO.pagosDivididos = [
-LINE 2377 |       {
-LINE 2378 |         metodoPago: carritoCO.metodoPago,
-LINE 2379 |         monto: carritoCO.ventatotal,
-LINE 2380 |         porcentaje: 100,
-LINE 2381 |       },
-LINE 2382 |     ]
-LINE 2383 |   }
-LINE 2384 |   // Si es 'dividido', carritoCO.pagosDivididos ya contiene los datos ingresados en el formulario
-LINE 2385 | 
-LINE 2386 |   const pv = puntoVenta.value
-LINE 2387 |   carritoCO.ipv = Number(pv.value)
-LINE 2388 |   carritoCO.idalmacen = filtroAlmacenCO.value
-LINE 2389 |   carritoCO.tipopago = carritoCO.credito ? 'credito' : CONSTANTES.tipopago
-LINE 2390 |   carritoCO.cajabanco = idcajaBancoSeleccionada.value
-LINE 2391 |   carritoCO.idcliente = idclienteCO.value
-LINE 2392 |   carritoCO.md5_em = idempresa
-LINE 2393 |   carritoCO.almacen = almacenesOptions.value.find(
-LINE 2394 |     (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
-LINE 2395 |   ).almacen //filtroAlmacenCO.value
-LINE 2396 |   // console.log(carritoCO.almacen)
-LINE 2397 |   // console.log(carritoCO.cajabanco)
-LINE 2398 |   // console.log(carritoCO.cajabanco)
-LINE 2399 | 
-LINE 2400 |   const datosFormulario = new FormData()
-LINE 2401 |   datosFormulario.append('ver', 'registrarCotizacion')
-LINE 2402 |   datosFormulario.append('filtroALmacen', filtroAlmacenCO.value)
-LINE 2403 |   datosFormulario.append('filtroCategoria', filtroCategoriaCO.value)
-LINE 2404 |   datosFormulario.append('idcliente', idclienteCO.value)
-LINE 2405 |   datosFormulario.append('idsucursal', idsucursalCOS.value)
-LINE 2406 |   datosFormulario.append('listaProductos', JSON.stringify(carritoCO)) // Enviar el objeto completo del carrito
-LINE 2407 |   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
-LINE 2408 | 
-LINE 2409 |   console.log(tipoOperacion.value?.value)
-LINE 2410 |   // console.log(carritoCO)
-LINE 2411 | 
-LINE 2412 |   $q.loading.show({
-LINE 2413 |     message: 'Registrando cotización...',
-LINE 2414 |   })
-LINE 2415 |   try {
-LINE 2416 |     // Asumo que tu backend espera 'listaProductos' como un JSON string.
-LINE 2417 |     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
-LINE 2418 |     //const datosJson = {}
-LINE 2419 |     // datosFormulario.forEach((valor, clave) => {
-LINE 2420 |     //   datosJson[clave] = valor
-LINE 2421 |     // })
-LINE 2422 |     //console.log(JSON.stringify(datosJson, null, 2))
-LINE 2423 |     const response = await api.post(``, datosFormulario)
-LINE 2424 |     const data = response.data
-LINE 2425 |     console.log('Datos recibidos:', response)
-LINE 2426 | 
-LINE 2427 |     if (data.estado === 'exito') {
-LINE 2428 |       resetFormulario()
-LINE 2429 |       $q.notify({
-LINE 2430 |         type: 'positive',
-LINE 2431 |         message: 'Cotización realizada exitosamente.',
-LINE 2432 |       })
-LINE 2433 |       cotizacionFormRef.value.resetValidation() // Resetear validación
-LINE 2434 | 
-LINE 2435 |       $q.dialog({
-LINE 2436 |         title: 'Cotización Exitosa',
-LINE 2437 |         message: 'Su comprobante está listo. ¿Desea verlo?',
-LINE 2438 |         cancel: true,
-LINE 2439 |         persistent: true,
-LINE 2440 |       })
-LINE 2441 |         .onOk(() => {
-LINE 2442 |           generarComprobante(data.id)
-LINE 2443 |         })
-LINE 2444 |         .onCancel(() => {
-LINE 2445 |           emit('reiniciar')
-LINE 2446 |         })
-LINE 2447 |     } else {
-LINE 2448 |       $q.notify({
-LINE 2449 |         type: 'negative',
-LINE 2450 |         message: data.mensaje || 'Error al registrar la cotización.',
-LINE 2451 |       })
-LINE 2452 |     }
-LINE 2453 |   } catch (error) {
-LINE 2454 |     console.error('Error al realizar la solicitud:', error)
-LINE 2455 |     $q.notify({
-LINE 2456 |       type: 'negative',
-LINE 2457 |       message: 'Hubo un error de conexión o en el servidor.',
-LINE 2458 |     })
-LINE 2459 |   } finally {
-LINE 2460 |     $q.loading.hide()
-LINE 2461 |   }
-LINE 2462 | }
-LINE 2463 | 
-LINE 2464 | function resetFormulario() {
-LINE 2465 |   // Limpiar campos del formulario
-LINE 2466 |   filtroAlmacenCO.value = null // Se reestablecerá por la lógica de listaAlmacenes
-LINE 2467 |   filtroCategoriaCO.value = null
-LINE 2468 |   idclienteCO.value = ''
-LINE 2469 |   selectedClient.value = null
-LINE 2470 |   idsucursalCOS.value = ''
-LINE 2471 |   selectedSucursal.value = null
-LINE 2472 |   resetProductoInputs()
-LINE 2473 | 
-LINE 2474 |   // Limpiar carrito
-LINE 2475 |   carritoCO.ventatotal = 0
-LINE 2476 |   carritoCO.subtotal = 0
-LINE 2477 |   carritoCO.descuento = 0
-LINE 2478 |   carritoCO.listaProductos = []
-LINE 2479 |   localStorage.removeItem('carritoCO')
-LINE 2480 |   carritoCO.metodoPago = null
-LINE 2481 |   carritoCO.variablePago = 'directo'
-LINE 2482 |   carritoCO.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
-LINE 2483 |   carritoCO.credito = false
-LINE 2484 |   carritoCO.cantidadPagos = 1
-LINE 2485 |   carritoCO.montoPagos = 0
-LINE 2486 |   carritoCO.periodo = 30
-LINE 2487 |   carritoCO.plazoPersonalizado = 0
-LINE 2488 |   carritoCO.fechaLimite = ''
-LINE 2489 | 
-LINE 2490 |   // Recargar listas dependientes si es necesario
-LINE 2491 |   listaAlmacenes()
-LINE 2492 |   listaCLientes()
-LINE 2493 | }
-LINE 2494 | 
-LINE 2495 | // --- Comprobante ---
-LINE 2496 | // async function enviarCorreo(id) {
-LINE 2497 | //   console.log(id)
-LINE 2498 | // }
-LINE 2499 | function open(pos, idcot, data) {
-LINE 2500 |   position.value = pos
-LINE 2501 |   dialog.value = true
-LINE 2502 |   idcliente.value = idcot
-LINE 2503 |   detallesCotizacion.value = data
-LINE 2504 |   console.log(idcliente.value, detallesCotizacion.value)
-LINE 2505 | 
-LINE 2506 |   return new Promise((resolve) => {
-LINE 2507 |     resolver = resolve
-LINE 2508 |   })
-LINE 2509 | }
-LINE 2510 | async function generarComprobante(id) {
-LINE 2511 |   // Después que el usuario confirma el primer diálogo
-LINE 2512 | 
-LINE 2513 |   const contenidousuario = await getUserData()
-LINE 2514 |   const idempresa = contenidousuario?.empresa?.idempresa
-LINE 2515 |   console.log(idempresa)
-LINE 2516 |   if (!idempresa) {
-LINE 2517 |     $q.notify({
-LINE 2518 |       type: 'negative',
-LINE 2519 |       message: 'Error: No se pudo obtener la empresa para el comprobante.',
-LINE 2520 |     })
-LINE 2521 |     return
-LINE 2522 |   }
-LINE 2523 | 
-LINE 2524 |   $q.loading.show({
-LINE 2525 |     message: 'Generando comprobante...',
-LINE 2526 |   })
-LINE 2527 | 
-LINE 2528 |   try {
-LINE 2529 |     const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
-LINE 2530 |     const data = response.data
-LINE 2531 |     console.log('Comprobante Data:', response)
-LINE 2532 | 
-LINE 2533 |     if (data[0] === 'error') {
-LINE 2534 |       console.error(data.error)
-LINE 2535 |       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
-LINE 2536 |       emit('reiniciar')
-LINE 2537 |     } else {
-LINE 2538 |       //const doc = await generarPdfCotizacion(data)
-LINE 2539 |       //console.log(doc)
-LINE 2540 |       const resultado = await generarPdfCotizacion(data)
-LINE 2541 |       if (!resultado || !resultado.doc) {
-LINE 2542 |         error.value = 'No se pudo generar el PDF.'
-LINE 2543 |         return
-LINE 2544 |       }
-LINE 2545 | 
-LINE 2546 |       // Limpiar blob anterior
-LINE 2547 |       if (pdfData.value) {
-LINE 2548 |         URL.revokeObjectURL(pdfData.value)
-LINE 2549 |         pdfData.value = null
-LINE 2550 |       }
-LINE 2551 | 
-LINE 2552 |       if (isMobile.value) {
-LINE 2553 |         // En móvil, la función ya intentó abrir/descargar.
-LINE 2554 |         // Solo guardamos la URL para el enlace manual.
-LINE 2555 |         mobileFallbackUrl.value = resultado.mobileBlobUrl
-LINE 2556 |       } else {
-LINE 2557 |         // Escritorio: crear blob para el iframe
-LINE 2558 |         const pdfBlob = resultado.doc.output('blob')
-LINE 2559 |         pdfData.value = URL.createObjectURL(pdfBlob)
-LINE 2560 |         open('right', data[0]?.cliente.idcliente, data)
-LINE 2561 |         mostrarModal.value = true
-LINE 2562 |       }
-LINE 2563 |     }
-LINE 2564 |   } catch (error) {
-LINE 2565 |     console.error('Error al generar comprobante:', error)
-LINE 2566 |     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
-LINE 2567 |     emit('reiniciar')
-LINE 2568 |   } finally {
-LINE 2569 |     $q.loading.hide()
-LINE 2570 |   }
-LINE 2571 | }
-LINE 2572 | const confirmar = (idcliente, data) => {
-LINE 2573 |   resolver?.(true)
-LINE 2574 |   //JSON.parse(JSON.stringify(detalleVenta.value))
-LINE 2575 |   const detalle = JSON.parse(JSON.stringify(data))
-LINE 2576 |   console.log('Confirmado', idcliente, detalle)
-LINE 2577 |   PDFenviarComprobanteCorreo(idcliente, detalle, $q)
-LINE 2578 |   dialog.value = false
-LINE 2579 | }
-LINE 2580 | 
-LINE 2581 | const cancelar = () => {
-LINE 2582 |   resolver?.(false)
-LINE 2583 |   dialog.value = false
-LINE 2584 |   console.log('Cancelado')
-LINE 2585 | }
-LINE 2586 | 
-LINE 2587 | // --- registrar Cliente ---
-LINE 2588 | 
-LINE 2589 | const RegistrarCliente = () => {
-LINE 2590 |   showAddModal.value = !showAddModal.value
-LINE 2591 | }
-LINE 2592 | const handleRecordCreated = async (newRecordData) => {
-LINE 2593 |   // newRecordData is already the plain object, not a ref, so no .value here
-LINE 2594 |   const formData = objectToFormData(newRecordData) // Use newRecordData directly
-LINE 2595 | 
-LINE 2596 |   for (let [k, v] of formData.entries()) {
-LINE 2597 |     // Good practice to disable eslint for console.log in production
-LINE 2598 |     console.log(`${k}: ${v}`)
-LINE 2599 |   }
-LINE 2600 | 
-LINE 2601 |   try {
-LINE 2602 |     const response = await api.post(``, formData) // Replace `/your-api-endpoint` with your actual API endpoint
-LINE 2603 | 
-LINE 2604 |     // Access response.data directly, not response.value
-LINE 2605 |     console.log(response.data)
-LINE 2606 | 
-LINE 2607 |     if (response.data.estado === 'exito') {
-LINE 2608 |       listaCLientes()
-LINE 2609 |       RegistrarCliente()
-LINE 2610 |       $q.notify({
-LINE 2611 |         type: 'positive',
-LINE 2612 |         message: response.data.mensaje || 'Cliente guardado correctamente',
-LINE 2613 |       })
-LINE 2614 |       // Optionally, refresh your data or add the new client to your list
-LINE 2615 |       // For example, if you have a method to fetch clients:
-LINE 2616 |       // fetchClients();
-LINE 2617 |     } else {
-LINE 2618 |       $q.notify({
-LINE 2619 |         type: 'negative',
-LINE 2620 |         message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
-LINE 2621 |       })
-LINE 2622 |     }
-LINE 2623 |   } catch (error) {
-LINE 2624 |     console.error('Error submitting form:', error)
-LINE 2625 | 
-LINE 2626 |     $q.notify({
-LINE 2627 |       color: 'negative',
-LINE 2628 |       message:
-LINE 2629 |         'Error al registrar: ' +
-LINE 2630 |         (error.response?.data?.mensaje || error.message || 'Error desconocido'),
-LINE 2631 |       icon: 'error',
-LINE 2632 |     })
-LINE 2633 |   }
-LINE 2634 | }
-LINE 2635 | const fetchEstadoActual = async () => {
-LINE 2636 |   try {
-LINE 2637 |     const { data } = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
-LINE 2638 |     console.log(data)
-LINE 2639 |     // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
-LINE 2640 |     soloAlmacen.value = data.clientesAlmacen ?? data ?? false
-LINE 2641 |   } catch (error) {
-LINE 2642 |     console.log(error)
-LINE 2643 |   }
-LINE 2644 | }
-LINE 2645 | 
-LINE 2646 | watch(
-LINE 2647 |   () => carritoCO.variablePago,
-LINE 2648 |   (nuevoValor) => {
-LINE 2649 |     console.log('Cambiando modalidad de pago:', nuevoValor)
-LINE 2650 |     // No reseteamos automáticamente para permitir al usuario cambiar de opinión sin perder datos
-LINE 2651 |     // Los datos se preparan adecuadamente en enviarDatos()
-LINE 2652 |   },
-LINE 2653 | )
-LINE 2654 | 
-LINE 2655 | const handleTipoPagoGeneralChange = (val) => {
-LINE 2656 |   if (val) {
-LINE 2657 |     // Al activar crédito, recalculamos valores basados en el estado actual
-LINE 2658 |     calculatePayments()
-LINE 2659 |     calculateDueDate()
-LINE 2660 |   }
-LINE 2661 |   // No reseteamos los datos de crédito al cambiar a efectivo para permitir la persistencia entre pestañas
-LINE 2662 | }
-LINE 2663 | async function listarcajasbanco() {
-LINE 2664 |   try {
-LINE 2665 |     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
-LINE 2666 | 
-LINE 2667 |     listaCajaBancos.value = response.data.map((item) => ({
-LINE 2668 |       label: item.codigo + ' ' + item.tipo_cuenta,
-LINE 2669 |       value: item.idcaja_bancos,
-LINE 2670 |       codigo: item.codigo, // Guardamos el código por separado
-LINE 2671 |       nombre: item.tipo_cuenta, // Guardamos el nombre por separado
-LINE 2672 |     }))
-LINE 2673 |     console.log(listaCajaBancos.value)
-LINE 2674 |   } catch (error) {
-LINE 2675 |     console.error('Error al cargar caja bancos:', error)
-LINE 2676 |     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
-LINE 2677 |   }
-LINE 2678 | }
-LINE 2679 | onBeforeUnmount(() => {
-LINE 2680 |   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
-LINE 2681 |   // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
-LINE 2682 | })
-LINE 2683 | // --- Inicialización ---
-LINE 2684 | onMounted(async () => {
-LINE 2685 |   isMobile.value = window.innerWidth < 768
-LINE 2686 | 
-LINE 2687 |   isInitializing.value = true
-LINE 2688 |   try {
-LINE 2689 |     // Cargar datos iniciales
-LINE 2690 |     await fetchEstadoActual()
-LINE 2691 |     await divisaEmonedaActiva()
-LINE 2692 |     await leyendaActiva()
-LINE 2693 |     await listaAlmacenes()
-LINE 2694 | 
-LINE 2695 |     await cargarLeyendasCotizacion()
-LINE 2696 |     await cargarMetodoPagoFactura()
-LINE 2697 |     await permisosStore.cargarPermisos()
-LINE 2698 |     await cargarCanales()
-LINE 2699 |     await listarcajasbanco()
-LINE 2700 | 
-LINE 2701 |     // Detectar si venimos de Quick Consult
-LINE 2702 |     const quickConsult = localStorage.getItem('quickConsult')
-LINE 2703 |     if (quickConsult) {
-LINE 2704 |       const data = JSON.parse(quickConsult)
-LINE 2705 |       console.log('Procesando datos de Quick Consult en CotizacionPage:', data)
-LINE 2706 | 
-LINE 2707 |       if (data.destination === 'quotation') {
-LINE 2708 |         tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
-LINE 2709 |         const user = await getUserData()
-LINE 2710 |         carritoCO.idusuario = user?.idusuario
-LINE 2711 |         carritoCO.idempresa = idempresa
-LINE 2712 |         carritoCO.divisa = divisaActiva.id
-LINE 2713 | 
-LINE 2714 |         // Restaurar almacén y categoría
-LINE 2715 |         if (data.almacen) {
-LINE 2716 |           filtroAlmacenCO.value = data.almacen.value
-LINE 2717 |           idalmacenfiltro.value = data.almacen.value
-LINE 2718 |         }
-LINE 2719 |         if (data.categoria) {
-LINE 2720 |           console.log(data.categoria)
-LINE 2721 |           filtroCategoriaCO.value = data.categoria.value
-LINE 2722 |           idporcentajeventa.value = data.categoria.value
-LINE 2723 |         }
-LINE 2724 | 
-LINE 2725 |         // Cargar categorías del almacén seleccionado
-LINE 2726 |         await listaCategoria()
-LINE 2727 | 
-LINE 2728 |         // Mapear productos al formato de CotizacionPage
-LINE 2729 |         if (data.listaProductos) {
-LINE 2730 |           carritoCO.listaProductos = data.listaProductos.map((p, index) => ({
-LINE 2731 |             num: index + 1,
-LINE 2732 |             idproductoalmacen: p.idproductoalmacen,
-LINE 2733 |             cantidad: p.cantidad,
-LINE 2734 |             precio: p.precio,
-LINE 2735 |             idstock: p.idstock,
-LINE 2736 |             idporcentaje: p.idporcentaje,
-LINE 2737 |             candiponible: p.stock,
-LINE 2738 |             descripcion: p.descripcion,
-LINE 2739 |             descripcionAdicional: p.descripcionAdicional || '',
-LINE 2740 |             codigo: p.codigo,
-LINE 2741 |             despachado: p.despachado,
-LINE 2742 |             codigosUnicos: p.codigosUnicos || [],
-LINE 2743 |           }))
-LINE 2744 |         }
-LINE 2745 | 
-LINE 2746 |         calcularTotalesCarrito()
-LINE 2747 |         await listaProductosDisponibles()
-LINE 2748 | 
-LINE 2749 |         localStorage.removeItem('quickConsult')
-LINE 2750 |         $q.notify({
-LINE 2751 |           type: 'positive',
-LINE 2752 |           message: 'Productos de Consulta Rápida cargados correctamente',
-LINE 2753 |         })
-LINE 2754 |       }
-LINE 2755 |     } else {
-LINE 2756 |       localStorage.removeItem('carritoCO') // Limpiar solo si no venimos de Quick Consult
-LINE 2757 |       await listaProductosDisponibles()
-LINE 2758 |     }
-LINE 2759 |   } catch (error) {
-LINE 2760 |     console.error('Error en inicialización de Cotización:', error)
-LINE 2761 |   } finally {
-LINE 2762 |     setTimeout(() => {
-LINE 2763 |       isInitializing.value = false
-LINE 2764 |     }, 500)
-LINE 2765 |   }
-LINE 2766 | })
-LINE 2767 | </script>
-LINE 2768 | 
-LINE 2769 | <style lang="scss" scoped>
-LINE 2770 | .gradient-btn {
-LINE 2771 |   background: linear-gradient(135deg, #1976d2, #1565c0);
-LINE 2772 |   box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-LINE 2773 | }
-LINE 2774 | .gradient-btn:hover {
-LINE 2775 |   transform: translateY(-1px);
-LINE 2776 |   box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
-LINE 2777 | }
-LINE 2778 | /* Puedes mover tus estilos relacionados con el comprobante y otros aquí */
-LINE 2779 | .invoice {
-LINE 2780 |   font-family: 'Arial', sans-serif;
-LINE 2781 |   font-size: 12px;
-LINE 2782 |   color: #333;
-LINE 2783 | 
-LINE 2784 |   header {
-LINE 2785 |     padding: 10px 0;
-LINE 2786 |     margin-bottom: 20px;
-LINE 2787 |     border-bottom: 1px solid #eee;
-LINE 2788 | 
-LINE 2789 |     .company-details {
-LINE 2790 |       text-align: left;
-LINE 2791 |     }
-LINE 2792 | 
-LINE 2793 |     .name p {
-LINE 2794 |       font-weight: bold;
-LINE 2795 |       margin-bottom: 5px;
-LINE 2796 |     }
-LINE 2797 | 
-LINE 2798 |     .col {
-LINE 2799 |       display: inline-block;
-LINE 2800 |       vertical-align: top;
-LINE 2801 |       width: 32%; /* Adjust as needed */
-LINE 2802 |     }
-LINE 2803 | 
-LINE 2804 |     .col:nth-child(2) {
-LINE 2805 |       text-align: center;
-LINE 2806 |     }
-LINE 2807 | 
-LINE 2808 |     .col:nth-child(3) {
-LINE 2809 |       text-align: right;
-LINE 2810 |     }
-LINE 2811 |   }
-LINE 2812 | 
-LINE 2813 |   main {
-LINE 2814 |     padding-bottom: 50px;
-LINE 2815 | 
-LINE 2816 |     .contacts {
-LINE 2817 |       margin-bottom: 20px;
-LINE 2818 | 
-LINE 2819 |       .invoice-to,
-LINE 2820 |       .invoice-details {
-LINE 2821 |         display: inline-block;
-LINE 2822 |         vertical-align: top;
-LINE 2823 |         width: 49%;
-LINE 2824 |       }
-LINE 2825 | 
-LINE 2826 |       .invoice-to {
-LINE 2827 |         text-align: left;
-LINE 2828 |       }
-LINE 2829 | 
-LINE 2830 |       .invoice-details {
-LINE 2831 |         text-align: right;
-LINE 2832 |       }
-LINE 2833 | 
-LINE 2834 |       .text-gray-light {
-LINE 2835 |         color: #777;
-LINE 2836 |       }
-LINE 2837 | 
-LINE 2838 |       .to {
-LINE 2839 |         font-weight: bold;
-LINE 2840 |       }
-LINE 2841 |     }
-LINE 2842 | 
-LINE 2843 |     .q-table {
-LINE 2844 |       width: 100%;
-LINE 2845 |       border-collapse: collapse;
-LINE 2846 |       thead {
-LINE 2847 |         background-color: #e0e0e0;
-LINE 2848 |         th {
-LINE 2849 |           padding: 8px;
-LINE 2850 |           border: 1px solid #ddd;
-LINE 2851 |           text-align: left;
-LINE 2852 |         }
-LINE 2853 |       }
-LINE 2854 |       tbody {
-LINE 2855 |         td {
-LINE 2856 |           padding: 8px;
-LINE 2857 |           border: 1px solid #ddd;
-LINE 2858 |         }
-LINE 2859 |       }
-LINE 2860 |       tfoot {
-LINE 2861 |         td {
-LINE 2862 |           padding: 8px;
-LINE 2863 |           border: 1px solid #ddd;
-LINE 2864 |           font-weight: bold;
-LINE 2865 |         }
-LINE 2866 |       }
-LINE 2867 |     }
-LINE 2868 | 
-LINE 2869 |     .notices {
-LINE 2870 |       margin-top: 20px;
-LINE 2871 |       font-size: 0.9em;
-LINE 2872 |       color: #555;
-LINE 2873 |     }
-LINE 2874 |   }
-LINE 2875 | }
-LINE 2876 | </style>
-LINE 2877 | 
-LINE 2878 | <style scoped>
-LINE 2879 | .dialog-card {
-LINE 2880 |   width: 400px; /* Un poco más de ancho para mejor legibilidad */
-LINE 2881 |   border-radius: 8px;
-LINE 2882 |   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-LINE 2883 |   overflow: hidden; /* Asegura que el gradiente se vea bien en los bordes */
-LINE 2884 | }
-LINE 2885 | 
-LINE 2886 | .header-gradient {
-LINE 2887 |   background: linear-gradient(to right, #219286, #044e49);
-LINE 2888 | }
-LINE 2889 | 
-LINE 2890 | .text-h6 {
-LINE 2891 |   font-family: 'Roboto', sans-serif;
-LINE 2892 |   letter-spacing: 0.5px;
-LINE 2893 | }
-LINE 2894 | 
-LINE 2895 | .text-body1 {
-LINE 2896 |   font-family: 'Open Sans', sans-serif;
-LINE 2897 |   line-height: 1.6;
-LINE 2898 | }
-LINE 2899 | 
-LINE 2900 | .button-primary {
-LINE 2901 |   background: linear-gradient(to right, #219286, #044e49);
-LINE 2902 |   color: white;
-LINE 2903 |   font-weight: 500;
-LINE 2904 |   letter-spacing: 0.5px;
-LINE 2905 |   padding: 8px 20px;
-LINE 2906 |   border-radius: 6px;
-LINE 2907 | }
-LINE 2908 | 
-LINE 2909 | .q-btn:hover:not(.disabled) {
-LINE 2910 |   opacity: 0.9;
-LINE 2911 |   transition: opacity 0.3s ease;
-LINE 2912 | }
-LINE 2913 | 
-LINE 2914 | /* Color de acento para el icono de confirmación */
-LINE 2915 | .q-icon[name='check_circle'] {
-LINE 2916 |   color: #f2c037; /* Color de acento */
-LINE 2917 | }
-LINE 2918 | 
-LINE 2919 | /* Quitar el q-linear-progress si no es funcional aquí, o darle un propósito */
-LINE 2920 | /* .q-linear-progress { display: none; } */
-LINE 2921 | </style>
-LINE 2922 | 
-LINE 2923 | <style scoped>
-LINE 2924 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-LINE 2925 | 
-LINE 2926 | /* Responsive dialog width */
-LINE 2927 | .responsive-dialog {
-LINE 2928 |   max-height: 90vh;
-LINE 2929 |   width: 95vw;
-LINE 2930 |   max-width: 95vw;
-LINE 2931 |   min-width: unset;
-LINE 2932 |   border-radius: 16px;
-LINE 2933 |   overflow: hidden;
-LINE 2934 | }
-LINE 2935 | 
-LINE 2936 | @media (min-width: 601px) {
-LINE 2937 |   .responsive-dialog {
-LINE 2938 |     width: auto;
-LINE 2939 |     min-width: 550px;
-LINE 2940 |     max-width: 800px;
-LINE 2941 |     max-height: 90vh; /* mantenlo también aquí si quieres */
-LINE 2942 |     border-radius: 20px;
-LINE 2943 |   }
-LINE 2944 | }
-LINE 2945 | 
-LINE 2946 | /* Padding responsive para el contenido */
-LINE 2947 | .content-section {
-LINE 2948 |   padding: 24px;
-LINE 2949 | }
-LINE 2950 | @media (max-width: 600px) {
-LINE 2951 |   .content-section {
-LINE 2952 |     padding: 16px !important;
-LINE 2953 |   }
-LINE 2954 | }
-LINE 2955 | 
-LINE 2956 | /* Toggle más compacto en móviles */
-LINE 2957 | .custom-premium-toggle .q-btn {
-LINE 2958 |   line-height: 1.2 !important;
-LINE 2959 |   min-height: unset;
-LINE 2960 |   padding: 8px 12px;
-LINE 2961 | }
-LINE 2962 | @media (max-width: 600px) {
-LINE 2963 |   .custom-premium-toggle .q-btn {
-LINE 2964 |     min-height: 48px;
-LINE 2965 |     font-size: 14px;
-LINE 2966 |   }
-LINE 2967 | }
-LINE 2968 | 
-LINE 2969 | /* Botón confirmar full width en móviles */
-LINE 2970 | @media (max-width: 600px) {
-LINE 2971 |   .full-width-xs {
-LINE 2972 |     width: 100%;
-LINE 2973 |     margin-top: 8px;
-LINE 2974 |   }
-LINE 2975 | }
-LINE 2976 | 
-LINE 2977 | .premium-input:hover {
-LINE 2978 |   transform: translateY(-1px);
-LINE 2979 |   transition: transform 0.2s ease;
-LINE 2980 | }
-LINE 2981 | 
-LINE 2982 | .hover-row:hover {
-LINE 2983 |   background-color: #f5f9ff !important;
-LINE 2984 | }
-LINE 2985 | 
-LINE 2986 | .hover-shake:hover {
-LINE 2987 |   transform: scale(1.1) rotate(3deg);
-LINE 2988 |   transition: transform 0.2s ease;
-LINE 2989 | }
-LINE 2990 | 
-LINE 2991 | /* Enhancing inputs */
-LINE 2992 | .q-field--outlined .q-field__control {
-LINE 2993 |   border-radius: 8px !important;
-LINE 2994 | }
-LINE 2995 | 
-LINE 2996 | .q-card {
-LINE 2997 |   transition: all 0.3s ease;
-LINE 2998 | }
-LINE 2999 | 
-LINE 3000 | .q-btn {
-LINE 3001 |   text-transform: none;
-LINE 3002 |   letter-spacing: 0.3px;
-LINE 3003 | }
-LINE 3004 | .responsive-dialog {
-LINE 3005 |   display: flex;
-LINE 3006 |   flex-direction: column;
-LINE 3007 | }
-LINE 3008 | 
-LINE 3009 | .premium-input :deep(.q-field__control) {
-LINE 3010 |   border-radius: 8px;
-LINE 3011 |   transition: all 0.3s ease;
-LINE 3012 | }
-LINE 3013 | 
-LINE 3014 | /* Estilo para que la barra de scroll sea más discreta en navegadores webkit */
-LINE 3015 | .scroll::-webkit-scrollbar {
-LINE 3016 |   width: 6px;
-LINE 3017 | }
-LINE 3018 | .scroll::-webkit-scrollbar-thumb {
-LINE 3019 |   background: #ccc;
-LINE 3020 |   border-radius: 10px;
-LINE 3021 | }
-LINE 3022 | .scroll::-webkit-scrollbar-track {
-LINE 3023 |   background: #f1f1f1;
-LINE 3024 | }
-LINE 3025 | /* Add this to your style block (scoped or global depending on your setup) */
-LINE 3026 | .custom-premium-toggle {
-LINE 3027 |   font-family: 'Inter', sans-serif;
-LINE 3028 |   letter-spacing: 0.3px;
-LINE 3029 |   overflow: hidden; /* Ensures the rounded borders clip perfectly */
-LINE 3030 | }
-LINE 3031 | 
-LINE 3032 | /* Force standard line-heights inside the button to prevent font-specific shifting */
-LINE 3033 | .custom-premium-toggle .q-btn {
-LINE 3034 |   line-height: 1 !important;
-LINE 3035 |   min-height: 100px; /* Guarantees matching, explicit heights */
-LINE 3036 | }
-LINE 3037 | </style>
+```py
+LINE 1 | """App package initialization."""
+LINE 2 | __version__ = "2.0.0"
+```
+
+==============================================================
+FILE: app/core/__init__.py
+==============================================================
+```py
+LINE  1 | """Core package initialization."""
+LINE  2 | from app.core.project_scanner import scan_directory
+LINE  3 | from app.core.file_selector import FileSelectorManager
+LINE  4 | from app.core.file_reader import read_and_format_file
+LINE  5 | from app.core.project_structure import build_folder_tree_str
+LINE  6 | from app.core.dependency_detector import DependencyDetector, detect_project_dependencies
+LINE  7 | 
+LINE  8 | __all__ = [
+LINE  9 |     "scan_directory",
+LINE 10 |     "FileSelectorManager",
+LINE 11 |     "read_and_format_file",
+LINE 12 |     "build_folder_tree_str",
+LINE 13 |     "DependencyDetector",
+LINE 14 |     "detect_project_dependencies"
+LINE 15 | ]
+```
+
+==============================================================
+FILE: app/core/dependency_detector.py
+==============================================================
+```py
+LINE  1 | """
+LINE  2 | Modular dependency and reference detector.
+LINE  3 | Scans source code for imports, includes, and requires across multiple languages.
+LINE  4 | Designed so full AST parsers can be easily plugged in per language later.
+LINE  5 | """
+LINE  6 | import os
+LINE  7 | import re
+LINE  8 | from typing import List, Dict
+LINE  9 | 
+LINE 10 | 
+LINE 11 | class DependencyDetector:
+LINE 12 |     def __init__(self):
+LINE 13 |         # Regex patterns for fast, robust import detection
+LINE 14 |         self._py_pattern = re.compile(r'^\s*(?:import\s+[\w\.]+|from\s+[\w\.]+\s+import\s+[\w\*\,]+)', re.MULTILINE)
+LINE 15 |         self._js_pattern = re.compile(
+LINE 16 |             r'^\s*(?:import\s+.*?from\s+[\'"].*?[\'"]|import\s*[\'"].*?[\'"]|const\s+.*?=\s*require\([\'"].*?[\'"]\)|require\([\'"].*?[\'"]\))', 
+LINE 17 |             re.MULTILINE
+LINE 18 |         )
+LINE 19 |         self._php_pattern = re.compile(
+LINE 20 |             r'^\s*(?:require(?:_once)?\s*\(?[\'"].*?[\'"]\)?|include(?:_once)?\s*\(?[\'"].*?[\'"]\)?|use\s+[\w\\]+;)', 
+LINE 21 |             re.MULTILINE | re.IGNORECASE
+LINE 22 |         )
+LINE 23 |         self._cpp_pattern = re.compile(r'^\s*#include\s+[<"].*?[>"]', re.MULTILINE)
+LINE 24 |         self._java_pattern = re.compile(r'^\s*(?:import\s+[\w\.\*]+;|using\s+[\w\.]+;)', re.MULTILINE)
+LINE 25 | 
+LINE 26 |     def detect_file_dependencies(self, rel_path: str, raw_content: str) -> List[str]:
+LINE 27 |         """
+LINE 28 |         Extracts import and dependency statements from source code content.
+LINE 29 |         Returns a clean list of detected dependency strings.
+LINE 30 |         """
+LINE 31 |         if not raw_content or raw_content.startswith("[OMITIDO"):
+LINE 32 |             return []
+LINE 33 | 
+LINE 34 |         ext = os.path.splitext(rel_path)[1].lower()
+LINE 35 |         found = []
+LINE 36 | 
+LINE 37 |         if ext == ".py":
+LINE 38 |             found = self._scan_pattern(self._py_pattern, raw_content)
+LINE 39 |         elif ext in (".js", ".jsx", ".ts", ".tsx", ".vue"):
+LINE 40 |             found = self._scan_pattern(self._js_pattern, raw_content)
+LINE 41 |         elif ext == ".php":
+LINE 42 |             found = self._scan_pattern(self._php_pattern, raw_content)
+LINE 43 |         elif ext in (".c", ".cpp", ".h", ".hpp"):
+LINE 44 |             found = self._scan_pattern(self._cpp_pattern, raw_content)
+LINE 45 |         elif ext in (".java", ".cs"):
+LINE 46 |             found = self._scan_pattern(self._java_pattern, raw_content)
+LINE 47 | 
+LINE 48 |         return found[:15]  # Limit to top 15 dependencies per file to keep context clean
+LINE 49 | 
+LINE 50 |     def _scan_pattern(self, pattern: re.Pattern, content: str) -> List[str]:
+LINE 51 |         matches = pattern.findall(content)
+LINE 52 |         results = []
+LINE 53 |         for m in matches:
+LINE 54 |             cleaned = ' '.join(m.strip().split())
+LINE 55 |             if cleaned and cleaned not in results:
+LINE 56 |                 results.append(cleaned)
+LINE 57 |         return results
+LINE 58 | 
+LINE 59 | 
+LINE 60 | def detect_project_dependencies(files_dict: Dict[str, str]) -> Dict[str, List[str]]:
+LINE 61 |     """
+LINE 62 |     Scans a dictionary mapping file rel_paths -> file contents.
+LINE 63 |     Returns dict of rel_path -> list of detected dependency strings.
+LINE 64 |     """
+LINE 65 |     detector = DependencyDetector()
+LINE 66 |     project_deps = {}
+LINE 67 |     for rel_path, content in files_dict.items():
+LINE 68 |         deps = detector.detect_file_dependencies(rel_path, content)
+LINE 69 |         if deps:
+LINE 70 |             project_deps[rel_path] = deps
+LINE 71 |     return project_deps
+```
+
+==============================================================
+FILE: app/core/file_reader.py
+==============================================================
+```py
+LINE  1 | """File reading and code line numbering formatting core module."""
+LINE  2 | import os
+LINE  3 | from app.utils.file_utils import safe_read_file
+LINE  4 | 
+LINE  5 | 
+LINE  6 | def format_line_numbers(content: str, add_line_numbers: bool = True) -> str:
+LINE  7 |     """Adds formatted LINE X | line numbers to code string."""
+LINE  8 |     if not add_line_numbers:
+LINE  9 |         return content
+LINE 10 |     lines = content.splitlines()
+LINE 11 |     width = max(len(str(len(lines))), 1)
+LINE 12 |     numbered = [f"LINE {i+1:{width}d} | {line}" for i, line in enumerate(lines)]
+LINE 13 |     return '\n'.join(numbered)
+LINE 14 | 
+LINE 15 | 
+LINE 16 | def read_and_format_file(abs_path: str, add_line_numbers: bool = True, max_file_size_mb: float = 1.0) -> str:
+LINE 17 |     """Reads file content safely with size limit protection and formats line numbers."""
+LINE 18 |     if not os.path.isfile(abs_path):
+LINE 19 |         return f"[Archivo no encontrado: {abs_path}]"
+LINE 20 |     
+LINE 21 |     max_bytes = int(max_file_size_mb * 1024 * 1024)
+LINE 22 |     raw_content = safe_read_file(abs_path, max_bytes=max_bytes)
+LINE 23 |     return format_line_numbers(raw_content, add_line_numbers)
+```
+
+==============================================================
+FILE: app/core/file_selector.py
+==============================================================
+```py
+LINE  1 | """State manager for 1 folder + N individual files selections."""
+LINE  2 | from typing import List, Set, Optional
+LINE  3 | from app.models.project import ProjectSelection
+LINE  4 | 
+LINE  5 | 
+LINE  6 | class FileSelectorManager:
+LINE  7 |     def __init__(self):
+LINE  8 |         self.selection = ProjectSelection()
+LINE  9 | 
+LINE 10 |     def set_folder(self, folder_path: str) -> None:
+LINE 11 |         self.selection.set_folder(folder_path)
+LINE 12 | 
+LINE 13 |     def remove_folder(self) -> None:
+LINE 14 |         self.selection.remove_folder()
+LINE 15 | 
+LINE 16 |     def set_checked_folder_files(self, rel_paths: List[str]) -> None:
+LINE 17 |         self.selection.checked_folder_files = set(rel_paths)
+LINE 18 | 
+LINE 19 |     def add_individual_files(self, paths: List[str]) -> int:
+LINE 20 |         return self.selection.add_individual_files(paths)
+LINE 21 | 
+LINE 22 |     def remove_individual_file(self, path: str) -> None:
+LINE 23 |         self.selection.remove_individual_file(path)
+LINE 24 | 
+LINE 25 |     def clear_individual_files(self) -> None:
+LINE 26 |         self.selection.clear_individual_files()
+LINE 27 | 
+LINE 28 |     def set_exclusions_from_string(self, exclusions_str: str) -> None:
+LINE 29 |         parsed = {d.strip() for d in exclusions_str.split(',') if d.strip()}
+LINE 30 |         self.selection.excluded_dirs = parsed
+LINE 31 | 
+LINE 32 |     def get_selection(self) -> ProjectSelection:
+LINE 33 |         return self.selection
+```
+
+==============================================================
+FILE: app/core/project_scanner.py
+==============================================================
+```py
+LINE  1 | """Project scanner module for scanning directory structures."""
+LINE  2 | import os
+LINE  3 | from typing import Set, Dict, Any, List
+LINE  4 | from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
+LINE  5 | 
+LINE  6 | 
+LINE  7 | def is_file_allowed(filename: str, allowed_extensions: Set[str], filter_by_ext: bool = True) -> bool:
+LINE  8 |     """Checks if file is allowed (not binary media and matching allowed extensions)."""
+LINE  9 |     ext = os.path.splitext(filename)[1].lower()
+LINE 10 |     if ext in KNOWN_BINARY_EXTENSIONS:
+LINE 11 |         return False
+LINE 12 |     if filter_by_ext and allowed_extensions:
+LINE 13 |         return ext in allowed_extensions
+LINE 14 |     return True
+LINE 15 | 
+LINE 16 | 
+LINE 17 | def scan_directory(folder_path: str, excluded_dirs: Set[str], allowed_extensions: Set[str] = None) -> List[str]:
+LINE 18 |     """
+LINE 19 |     Recursively scans folder_path ignoring excluded_dirs and non-allowed file extensions.
+LINE 20 |     Returns sorted list of relative file paths.
+LINE 21 |     """
+LINE 22 |     if not folder_path or not os.path.isdir(folder_path):
+LINE 23 |         return []
+LINE 24 | 
+LINE 25 |     valid_files = []
+LINE 26 |     for dirpath, dirnames, filenames in os.walk(folder_path):
+LINE 27 |         dirnames[:] = [d for d in dirnames if d not in excluded_dirs]
+LINE 28 |         rel_dir = os.path.relpath(dirpath, folder_path)
+LINE 29 |         
+LINE 30 |         for f in filenames:
+LINE 31 |             if is_file_allowed(f, allowed_extensions):
+LINE 32 |                 rel_file = f if rel_dir == '.' else os.path.join(rel_dir, f)
+LINE 33 |                 valid_files.append(rel_file)
+LINE 34 | 
+LINE 35 |     return sorted(valid_files)
+```
+
+==============================================================
+FILE: app/core/project_structure.py
+==============================================================
+```py
+LINE  1 | """Generates textual tree representation of a folder structure using box-drawing characters."""
+LINE  2 | import os
+LINE  3 | from typing import Set, List, Dict, Any
+LINE  4 | 
+LINE  5 | 
+LINE  6 | def build_folder_tree_str(folder_path: str, checked_rel_paths: List[str], excluded_dirs: Set[str]) -> str:
+LINE  7 |     """Generates ASCII/Unicode tree text representation (├──, └──, │) of checked files."""
+LINE  8 |     if not folder_path or not os.path.isdir(folder_path):
+LINE  9 |         return ""
+LINE 10 | 
+LINE 11 |     root_name = os.path.basename(folder_path) or folder_path
+LINE 12 |     
+LINE 13 |     # Build nested dict hierarchy of checked files
+LINE 14 |     hierarchy: Dict[str, Any] = {}
+LINE 15 |     for rel_path in sorted(checked_rel_paths):
+LINE 16 |         parts = rel_path.split(os.sep)
+LINE 17 |         curr = hierarchy
+LINE 18 |         for part in parts[:-1]:
+LINE 19 |             curr = curr.setdefault(part, {})
+LINE 20 |         curr[parts[-1]] = None  # File leaf
+LINE 21 | 
+LINE 22 |     def render_node(node_dict: Dict[str, Any], prefix: str = "") -> List[str]:
+LINE 23 |         lines = []
+LINE 24 |         keys = list(node_dict.keys())
+LINE 25 |         for idx, key in enumerate(keys):
+LINE 26 |             is_last = (idx == len(keys) - 1)
+LINE 27 |             connector = "└── " if is_last else "├── "
+LINE 28 |             val = node_dict[key]
+LINE 29 |             if val is None:
+LINE 30 |                 # File
+LINE 31 |                 lines.append(f"{prefix}{connector}{key}")
+LINE 32 |             else:
+LINE 33 |                 # Directory
+LINE 34 |                 lines.append(f"{prefix}{connector}{key}/")
+LINE 35 |                 new_prefix = prefix + ("    " if is_last else "│   ")
+LINE 36 |                 lines.extend(render_node(val, new_prefix))
+LINE 37 |         return lines
+LINE 38 | 
+LINE 39 |     tree_lines = [f"{root_name}/"]
+LINE 40 |     tree_lines.extend(render_node(hierarchy))
+LINE 41 |     return "\n".join(tree_lines)
+```
+
+==============================================================
+FILE: app/generators/__init__.py
+==============================================================
+```py
+LINE  1 | """Generators package initialization."""
+LINE  2 | from app.generators.markdown_generator import generate_markdown_bundle
+LINE  3 | from app.generators.text_generator import generate_text_bundle
+LINE  4 | from app.generators.prompt_generator import PromptGenerator
+LINE  5 | from app.generators.standalone_prompt_generator import generate_standalone_prompt
+LINE  6 | 
+LINE  7 | __all__ = [
+LINE  8 |     "generate_markdown_bundle", 
+LINE  9 |     "generate_text_bundle", 
+LINE 10 |     "PromptGenerator", 
+LINE 11 |     "generate_standalone_prompt"
+LINE 12 | ]
+```
+
+==============================================================
+FILE: app/generators/markdown_generator.py
+==============================================================
+```py
+LINE   1 | """Markdown prompt bundle generator with Smart Context (File Extensions Breakdown & Dependencies)."""
+LINE   2 | import os
+LINE   3 | from collections import Counter
+LINE   4 | from datetime import datetime
+LINE   5 | from typing import Tuple, List, Dict
+LINE   6 | from app.models.project import ProjectSelection, ExportConfig
+LINE   7 | from app.core.file_reader import read_and_format_file
+LINE   8 | from app.core.project_structure import build_folder_tree_str
+LINE   9 | from app.core.dependency_detector import DependencyDetector
+LINE  10 | from app.utils.file_utils import is_binary_file, get_file_size, safe_read_file
+LINE  11 | 
+LINE  12 | 
+LINE  13 | def generate_markdown_bundle(
+LINE  14 |     selection: ProjectSelection, 
+LINE  15 |     problem_desc: str, 
+LINE  16 |     config: ExportConfig
+LINE  17 | ) -> Tuple[str, int, int, int, int]:
+LINE  18 |     """
+LINE  19 |     Generates Markdown document with Smart Context:
+LINE  20 |     1. REPORTED PROBLEM
+LINE  21 |     2. PROJECT CONTEXT (Metadata, Extension Frequency Summary, Dependencies, Limits Warnings, Tree)
+LINE  22 |     3. ATTACHMENTS (Selected Files with LINE X | formatting)
+LINE  23 | 
+LINE  24 |     Returns: (full_text, included_count, excluded_count, oversized_count, total_lines)
+LINE  25 |     """
+LINE  26 |     folder_path = selection.folder_path
+LINE  27 |     project_name = os.path.basename(folder_path) if folder_path else "Proyecto"
+LINE  28 |     base_path = os.path.abspath(folder_path) if folder_path else "N/A"
+LINE  29 |     gen_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+LINE  30 | 
+LINE  31 |     file_blocks = []
+LINE  32 |     omitted_warnings: List[Dict[str, str]] = []
+LINE  33 |     extension_counts: Counter = Counter()
+LINE  34 |     file_dependencies: Dict[str, List[str]] = {}
+LINE  35 | 
+LINE  36 |     included_count = 0
+LINE  37 |     excluded_count = 0
+LINE  38 |     oversized_count = 0
+LINE  39 |     total_lines = 0
+LINE  40 | 
+LINE  41 |     cumulative_bytes = 0
+LINE  42 |     max_file_bytes = int(config.max_file_size_mb * 1024 * 1024)
+LINE  43 |     max_total_bytes = int(config.max_total_size_mb * 1024 * 1024)
+LINE  44 |     detector = DependencyDetector()
+LINE  45 | 
+LINE  46 |     def process_file(full_path: str, display_name: str):
+LINE  47 |         nonlocal included_count, excluded_count, oversized_count, total_lines, cumulative_bytes
+LINE  48 | 
+LINE  49 |         ext = os.path.splitext(display_name)[1].lower() or "[sin extensión]"
+LINE  50 | 
+LINE  51 |         # 1. Binary check
+LINE  52 |         if is_binary_file(full_path):
+LINE  53 |             excluded_count += 1
+LINE  54 |             return
+LINE  55 | 
+LINE  56 |         size_bytes = get_file_size(full_path)
+LINE  57 | 
+LINE  58 |         # 2. Check MAX_FILES limit
+LINE  59 |         if included_count >= config.max_files:
+LINE  60 |             oversized_count += 1
+LINE  61 |             omitted_warnings.append({
+LINE  62 |                 "file": display_name,
+LINE  63 |                 "reason": f"Exceeds MAX_FILES limit of {config.max_files} files."
+LINE  64 |             })
+LINE  65 |             return
+LINE  66 | 
+LINE  67 |         # 3. Check MAX_FILE_SIZE limit
+LINE  68 |         if size_bytes > max_file_bytes:
+LINE  69 |             oversized_count += 1
+LINE  70 |             omitted_warnings.append({
+LINE  71 |                 "file": display_name,
+LINE  72 |                 "reason": f"Exceeds the allowed limit of {config.max_file_size_mb:g} MB."
+LINE  73 |             })
+LINE  74 |             return
+LINE  75 | 
+LINE  76 |         # 4. Check MAX_TOTAL_SIZE limit
+LINE  77 |         if cumulative_bytes + size_bytes > max_total_bytes:
+LINE  78 |             oversized_count += 1
+LINE  79 |             omitted_warnings.append({
+LINE  80 |                 "file": display_name,
+LINE  81 |                 "reason": f"Exceeds MAX_TOTAL_SIZE limit of {config.max_total_size_mb:g} MB (Cumulative size reached)."
+LINE  82 |             })
+LINE  83 |             return
+LINE  84 | 
+LINE  85 |         # Read content safely
+LINE  86 |         raw_text = safe_read_file(full_path, max_bytes=max_file_bytes)
+LINE  87 |         deps = detector.detect_file_dependencies(display_name, raw_text)
+LINE  88 |         if deps:
+LINE  89 |             file_dependencies[display_name] = deps
+LINE  90 | 
+LINE  91 |         formatted_code = read_and_format_file(
+LINE  92 |             full_path, 
+LINE  93 |             add_line_numbers=config.add_line_numbers,
+LINE  94 |             max_file_size_mb=config.max_file_size_mb
+LINE  95 |         )
+LINE  96 |         lines_in_file = formatted_code.count('\n') + (1 if formatted_code else 0)
+LINE  97 |         total_lines += lines_in_file
+LINE  98 |         cumulative_bytes += size_bytes
+LINE  99 |         extension_counts[ext] += 1
+LINE 100 | 
+LINE 101 |         code_ext = ext.lstrip('.')
+LINE 102 |         block = [
+LINE 103 |             "==============================================================",
+LINE 104 |             f"FILE: {display_name}",
+LINE 105 |             "==============================================================",
+LINE 106 |             f"```{code_ext}",
+LINE 107 |             formatted_code,
+LINE 108 |             "```"
+LINE 109 |         ]
+LINE 110 |         file_blocks.append("\n".join(block))
+LINE 111 |         included_count += 1
+LINE 112 | 
+LINE 113 |     # 1. Folder files
+LINE 114 |     if folder_path and os.path.isdir(folder_path):
+LINE 115 |         for rel_f in sorted(selection.checked_folder_files):
+LINE 116 |             full_path = os.path.join(folder_path, rel_f)
+LINE 117 |             if os.path.isfile(full_path):
+LINE 118 |                 process_file(full_path, rel_f)
+LINE 119 | 
+LINE 120 |     # 2. Individual files
+LINE 121 |     for abs_f in selection.individual_files:
+LINE 122 |         if os.path.isfile(abs_f):
+LINE 123 |             if folder_path and abs_f.startswith(folder_path):
+LINE 124 |                 display_name = os.path.relpath(abs_f, folder_path)
+LINE 125 |             else:
+LINE 126 |                 display_name = os.path.basename(abs_f)
+LINE 127 |             process_file(abs_f, display_name)
+LINE 128 | 
+LINE 129 |     doc = []
+LINE 130 | 
+LINE 131 |     # 1. REPORTED PROBLEM
+LINE 132 |     doc.append("==============================================================")
+LINE 133 |     doc.append("REPORTED PROBLEM / PROBLEMA REPORTADO")
+LINE 134 |     doc.append("==============================================================")
+LINE 135 |     if problem_desc.strip():
+LINE 136 |         doc.append(problem_desc.strip())
+LINE 137 |     else:
+LINE 138 |         doc.append("[No se especificó una descripción del problema]")
+LINE 139 |     doc.append("\n")
+LINE 140 | 
+LINE 141 |     # 2. PROJECT CONTEXT & SMART SUMMARY
+LINE 142 |     doc.append("==============================================================")
+LINE 143 |     doc.append("PROJECT CONTEXT / CONTEXTO DEL PROYECTO")
+LINE 144 |     doc.append("==============================================================")
+LINE 145 |     doc.append(f"• Nombre del Proyecto: {project_name}")
+LINE 146 |     doc.append(f"• Ruta Base: {base_path}")
+LINE 147 |     doc.append(f"• Fecha de Generación: {gen_date}\n")
+LINE 148 | 
+LINE 149 |     # PROJECT SUMMARY
+LINE 150 |     doc.append("--------------------------------------------------------------")
+LINE 151 |     doc.append("PROJECT SUMMARY")
+LINE 152 |     doc.append("--------------------------------------------------------------")
+LINE 153 |     doc.append(f"Selected files: {included_count}")
+LINE 154 |     doc.append("File extensions:")
+LINE 155 |     if extension_counts:
+LINE 156 |         for ext_name, count in extension_counts.most_common():
+LINE 157 |             doc.append(f"  {ext_name}: {count}")
+LINE 158 |     else:
+LINE 159 |         doc.append("  (Ningún archivo procesado)")
+LINE 160 |     doc.append(f"\nTotal lines:\n{total_lines:,}\n")
+LINE 161 | 
+LINE 162 |     # DEPENDENCIES AND REFERENCES
+LINE 163 |     if file_dependencies:
+LINE 164 |         doc.append("--------------------------------------------------------------")
+LINE 165 |         doc.append("DEPENDENCIES AND REFERENCES")
+LINE 166 |         doc.append("--------------------------------------------------------------")
+LINE 167 |         for f_name, deps in file_dependencies.items():
+LINE 168 |             doc.append(f"• {f_name}:")
+LINE 169 |             for dep in deps:
+LINE 170 |                 doc.append(f"  - {dep}")
+LINE 171 |         doc.append("")
+LINE 172 | 
+LINE 173 |     # Limits Warning Block
+LINE 174 |     if omitted_warnings:
+LINE 175 |         doc.append("--------------------------------------------------------------")
+LINE 176 |         doc.append("⚠️ ARCHIVOS OMITIDOS POR LÍMITES DE TAMAÑO / OMITTED FILES WARNINGS")
+LINE 177 |         doc.append("--------------------------------------------------------------")
+LINE 178 |         for warn in omitted_warnings:
+LINE 179 |             doc.append(f"File omitted:\n{warn['file']}\nReason:\n{warn['reason']}\n")
+LINE 180 | 
+LINE 181 |     # Mandatory System Response Format Instructions for DeepSeek
+LINE 182 |     if config.include_system_instructions:
+LINE 183 |         doc.append("--------------------------------------------------------------")
+LINE 184 |         doc.append("INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK / RESPONSE FORMAT RULES")
+LINE 185 |         doc.append("--------------------------------------------------------------")
+LINE 186 |         doc.append("Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown:")
+LINE 187 |         doc.append("""
+LINE 188 | # DIAGNOSIS
+LINE 189 | ## Problem
+LINE 190 | [Descripción técnica del problema]
+LINE 191 | ## Root Cause
+LINE 192 | [Causa raíz técnica]
+LINE 193 | 
+LINE 194 | # FILES TO MODIFY
+LINE 195 | ## 1. ruta/relativa/archivo.ext
+LINE 196 | Approximate line: [número]
+LINE 197 | ### Problem
+LINE 198 | [Problema en este archivo]
+LINE 199 | ### Solution
+LINE 200 | [Solución propuesta]
+LINE 201 | ### Current Code
+LINE 202 | ```
+LINE 203 | [código actual]
+LINE 204 | ```
+LINE 205 | ### Corrected Code
+LINE 206 | ```
+LINE 207 | [código corregido]
+LINE 208 | ```
+LINE 209 | 
+LINE 210 | # NEW FILES
+LINE 211 | [Nuevos archivos requeridos o: No se requieren nuevos archivos.]
+LINE 212 | 
+LINE 213 | # ARCHITECTURAL CHANGES
+LINE 214 | [Cambios en estructura o: No se requieren cambios arquitectónicos.]
+LINE 215 | 
+LINE 216 | # RISKS OR SIDE EFFECTS
+LINE 217 | [Riesgos identificados o: Sin riesgos identificados.]
+LINE 218 | 
+LINE 219 | # IMPLEMENTATION PLAN
+LINE 220 | 1. [Primer paso]
+LINE 221 | 2. [Segundo paso]
+LINE 222 | 3. [Tercer paso]
+LINE 223 | """)
+LINE 224 |         doc.append("REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba. Especifica siempre archivo, línea aproximada, código actual y código corregido.")
+LINE 225 | 
+LINE 226 |     if config.include_tree and folder_path and os.path.isdir(folder_path):
+LINE 227 |         tree_str = build_folder_tree_str(folder_path, list(selection.checked_folder_files), selection.excluded_dirs)
+LINE 228 |         doc.append("\nEstructura de Directorios:")
+LINE 229 |         doc.append(f"```\n{tree_str}\n```")
+LINE 230 |     
+LINE 231 |     doc.append("\n")
+LINE 232 | 
+LINE 233 |     # 3. ATTACHMENTS
+LINE 234 |     doc.append("==============================================================")
+LINE 235 |     doc.append("ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE")
+LINE 236 |     doc.append("==============================================================\n")
+LINE 237 |     doc.append("\n\n".join(file_blocks))
+LINE 238 | 
+LINE 239 |     full_text = "\n".join(doc)
+LINE 240 |     return full_text, included_count, excluded_count, oversized_count, total_lines
+```
+
+==============================================================
+FILE: app/generators/prompt_generator.py
+==============================================================
+```py
+LINE  1 | """Prompt generator orchestrator."""
+LINE  2 | from typing import Tuple
+LINE  3 | from app.models.project import ProjectSelection, ExportConfig
+LINE  4 | from app.generators.markdown_generator import generate_markdown_bundle
+LINE  5 | from app.generators.text_generator import generate_text_bundle
+LINE  6 | 
+LINE  7 | 
+LINE  8 | class PromptGenerator:
+LINE  9 |     def __init__(self, config: ExportConfig = None):
+LINE 10 |         self.config = config or ExportConfig()
+LINE 11 | 
+LINE 12 |     def generate(self, selection: ProjectSelection, problem_desc: str) -> Tuple[str, int, int, int, int]:
+LINE 13 |         """
+LINE 14 |         Generates document bundle.
+LINE 15 |         Returns: (full_text, included_count, excluded_count, oversized_count, total_lines)
+LINE 16 |         """
+LINE 17 |         if self.config.output_format == "text":
+LINE 18 |             return generate_text_bundle(selection, problem_desc, self.config)
+LINE 19 |         return generate_markdown_bundle(selection, problem_desc, self.config)
+```
+
+==============================================================
+FILE: app/generators/standalone_prompt_generator.py
+==============================================================
+```py
+LINE   1 | """Generates standalone professional prompt deepseek_prompt.md with structured DeepSeek response template."""
+LINE   2 | 
+LINE   3 | 
+LINE   4 | def generate_standalone_prompt(problem_desc: str = "") -> str:
+LINE   5 |     """
+LINE   6 |     Generates a professional copy-paste prompt instructing DeepSeek:
+LINE   7 |     1. How to analyze the attached project context files.
+LINE   8 |     2. What exact structured markdown response format to return.
+LINE   9 |     """
+LINE  10 |     problem_text = problem_desc.strip() if problem_desc.strip() else "[Describe aquí el problema que está ocurriendo]"
+LINE  11 | 
+LINE  12 |     prompt = f"""# PROMPT PROFESIONAL PARA DEEPSEEK WEB CHAT
+LINE  13 | 
+LINE  14 | > **Instrucción para el usuario:** Copia este texto y pégalo directamente en el chat de DeepSeek junto con los archivos adjuntos (`deepseek_project_context.md` o `deepseek_project_context.txt`).
+LINE  15 | 
+LINE  16 | ==============================================================
+LINE  17 | REPORTED PROBLEM / PROBLEMA REPORTADO
+LINE  18 | ==============================================================
+LINE  19 | {problem_text}
+LINE  20 | 
+LINE  21 | ==============================================================
+LINE  22 | PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO
+LINE  23 | ==============================================================
+LINE  24 | Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional.
+LINE  25 | 
+LINE  26 | ---
+LINE  27 | 
+LINE  28 | ### 📋 INSTRUCCIONES DE ANÁLISIS (REGLAS OBLIGATORIAS)
+LINE  29 | 
+LINE  30 | Realiza un análisis exhaustivo respetando estrictamente los siguientes principios:
+LINE  31 | 
+LINE  32 | #### 1. Análisis Arquitectónico y Dependencias
+LINE  33 | 1. **Analiza la arquitectura del proyecto primero** antes de proponer cualquier cambio.
+LINE  34 | 2. **Analiza las dependencias entre archivos**: cómo interactúan clases, funciones, componentes e importaciones.
+LINE  35 | 3. **No asumas que un archivo funciona de forma aislada**: evalúa el impacto en otros componentes.
+LINE  36 | 
+LINE  37 | #### 2. Causa Raíz y Solución Escalable
+LINE  38 | 4. **Identifica la causa raíz del problema**: no apliques parches temporales ni soluciones superficiales.
+LINE  39 | 5. **Evita soluciones temporales**: propón soluciones escalables, limpias y mantenibles.
+LINE  40 | 6. **Preserva la funcionalidad existente**: no elimines funcionalidades ni cambies comportamientos sin justificación técnica explícita.
+LINE  41 | 
+LINE  42 | #### 3. Especificidad de las Modificaciones
+LINE  43 | 7. **Especifica exactamente qué archivos deben modificarse**, incluyendo la ruta relativa.
+LINE  44 | 8. **Indica el número de línea aproximado** para cada modificación.
+LINE  45 | 9. **Explica cada modificación** con su justificación técnica.
+LINE  46 | 10. **Muestra el código corregido** listo para copiar y pegar.
+LINE  47 | 11. **Detecta posibles efectos secundarios** de cada cambio propuesto.
+LINE  48 | 12. **Indica si se deben crear nuevos archivos** (con ruta y propósito).
+LINE  49 | 13. **Indica si la estructura del proyecto debe modificarse**.
+LINE  50 | 
+LINE  51 | ---
+LINE  52 | 
+LINE  53 | ### 📐 FORMATO DE RESPUESTA OBLIGATORIO
+LINE  54 | 
+LINE  55 | Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
+LINE  56 | 
+LINE  57 | ---
+LINE  58 | 
+LINE  59 | # DIAGNOSIS
+LINE  60 | 
+LINE  61 | ## Problem
+LINE  62 | [Descripción clara y técnica del problema detectado en el código]
+LINE  63 | 
+LINE  64 | ## Root Cause
+LINE  65 | [Explicación técnica de la causa raíz. ¿Por qué ocurre? ¿Qué lo genera?]
+LINE  66 | 
+LINE  67 | ---
+LINE  68 | 
+LINE  69 | # FILES TO MODIFY
+LINE  70 | 
+LINE  71 | ## 1. [ruta/relativa/archivo.ext]
+LINE  72 | Approximate line: [número aproximado de línea]
+LINE  73 | 
+LINE  74 | ### Problem
+LINE  75 | [Descripción precisa del problema en este archivo]
+LINE  76 | 
+LINE  77 | ### Solution
+LINE  78 | [Descripción detallada de la modificación propuesta]
+LINE  79 | 
+LINE  80 | ### Current Code
+LINE  81 | ```
+LINE  82 | [bloque de código actual que debe reemplazarse]
+LINE  83 | ```
+LINE  84 | 
+LINE  85 | ### Corrected Code
+LINE  86 | ```
+LINE  87 | [bloque de código corregido listo para sustituir]
+LINE  88 | ```
+LINE  89 | 
+LINE  90 | ---
+LINE  91 | [Repite la sección anterior para cada archivo que deba modificarse]
+LINE  92 | 
+LINE  93 | ---
+LINE  94 | 
+LINE  95 | # NEW FILES
+LINE  96 | [Si se requieren nuevos archivos, lístallos aquí con su ruta relativa, propósito y contenido de ejemplo.
+LINE  97 | Si no se requieren nuevos archivos, escribe: No se requieren nuevos archivos.]
+LINE  98 | 
+LINE  99 | ---
+LINE 100 | 
+LINE 101 | # ARCHITECTURAL CHANGES
+LINE 102 | [Describe si la estructura de carpetas, módulos o dependencias del proyecto debe modificarse.
+LINE 103 | Si no se requieren cambios arquitectónicos, escribe: No se requieren cambios arquitectónicos.]
+LINE 104 | 
+LINE 105 | ---
+LINE 106 | 
+LINE 107 | # RISKS OR SIDE EFFECTS
+LINE 108 | [Lista de posibles riesgos, efectos secundarios o regresiones que podrían ocurrir al aplicar los cambios propuestos.
+LINE 109 | Si no hay riesgos identificados, escribe: Sin riesgos identificados.]
+LINE 110 | 
+LINE 111 | ---
+LINE 112 | 
+LINE 113 | # IMPLEMENTATION PLAN
+LINE 114 | [Lista ordenada y numerada de pasos concretos para implementar los cambios de forma segura:]
+LINE 115 | 
+LINE 116 | 1. [Primer paso]
+LINE 117 | 2. [Segundo paso]
+LINE 118 | 3. [Tercer paso]
+LINE 119 | 4. [Cuarto paso]
+LINE 120 | [...continúa según sea necesario]
+LINE 121 | 
+LINE 122 | ---
+LINE 123 | 
+LINE 124 | ==============================================================
+LINE 125 | ATTACHMENTS / ARCHIVOS ADJUNTOS
+LINE 126 | ==============================================================
+LINE 127 | Por favor revisa el archivo de contexto adjunto (`deepseek_project_context.md` / `deepseek_project_context.txt`) que contiene:
+LINE 128 | - **Project Summary**: desglose de archivos seleccionados por extensión y total de líneas.
+LINE 129 | - **Dependencies and References**: importaciones y dependencias detectadas automáticamente por archivo.
+LINE 130 | - **Estructura del Proyecto**: diagrama en árbol jerárquico de carpetas y archivos.
+LINE 131 | - **Código Fuente**: contenido de los archivos seleccionados con sus **rutas relativas** y **números de línea originales** (`LINE X | ...`).
+LINE 132 | 
+LINE 133 | Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba.
+LINE 134 | """
+LINE 135 |     return prompt
+```
+
+==============================================================
+FILE: app/generators/text_generator.py
+==============================================================
+```py
+LINE   1 | """Plain text prompt bundle generator with Smart Context (File Extensions Breakdown & Dependencies)."""
+LINE   2 | import os
+LINE   3 | from collections import Counter
+LINE   4 | from datetime import datetime
+LINE   5 | from typing import Tuple, List, Dict
+LINE   6 | from app.models.project import ProjectSelection, ExportConfig
+LINE   7 | from app.core.file_reader import read_and_format_file
+LINE   8 | from app.core.project_structure import build_folder_tree_str
+LINE   9 | from app.core.dependency_detector import DependencyDetector
+LINE  10 | from app.utils.file_utils import is_binary_file, get_file_size, safe_read_file
+LINE  11 | 
+LINE  12 | 
+LINE  13 | def generate_text_bundle(
+LINE  14 |     selection: ProjectSelection, 
+LINE  15 |     problem_desc: str, 
+LINE  16 |     config: ExportConfig
+LINE  17 | ) -> Tuple[str, int, int, int, int]:
+LINE  18 |     """
+LINE  19 |     Generates plain text document with Smart Context:
+LINE  20 |     1. REPORTED PROBLEM
+LINE  21 |     2. PROJECT CONTEXT (Metadata, Extension Frequency Summary, Dependencies, Limits Warnings, Tree)
+LINE  22 |     3. ATTACHMENTS (Selected Files with LINE X | formatting)
+LINE  23 | 
+LINE  24 |     Returns: (full_text, included_count, excluded_count, oversized_count, total_lines)
+LINE  25 |     """
+LINE  26 |     folder_path = selection.folder_path
+LINE  27 |     project_name = os.path.basename(folder_path) if folder_path else "Proyecto"
+LINE  28 |     base_path = os.path.abspath(folder_path) if folder_path else "N/A"
+LINE  29 |     gen_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+LINE  30 | 
+LINE  31 |     file_blocks = []
+LINE  32 |     omitted_warnings: List[Dict[str, str]] = []
+LINE  33 |     extension_counts: Counter = Counter()
+LINE  34 |     file_dependencies: Dict[str, List[str]] = {}
+LINE  35 | 
+LINE  36 |     included_count = 0
+LINE  37 |     excluded_count = 0
+LINE  38 |     oversized_count = 0
+LINE  39 |     total_lines = 0
+LINE  40 | 
+LINE  41 |     cumulative_bytes = 0
+LINE  42 |     max_file_bytes = int(config.max_file_size_mb * 1024 * 1024)
+LINE  43 |     max_total_bytes = int(config.max_total_size_mb * 1024 * 1024)
+LINE  44 |     detector = DependencyDetector()
+LINE  45 | 
+LINE  46 |     def process_file(full_path: str, display_name: str):
+LINE  47 |         nonlocal included_count, excluded_count, oversized_count, total_lines, cumulative_bytes
+LINE  48 | 
+LINE  49 |         ext = os.path.splitext(display_name)[1].lower() or "[sin extensión]"
+LINE  50 | 
+LINE  51 |         if is_binary_file(full_path):
+LINE  52 |             excluded_count += 1
+LINE  53 |             return
+LINE  54 | 
+LINE  55 |         size_bytes = get_file_size(full_path)
+LINE  56 | 
+LINE  57 |         if included_count >= config.max_files:
+LINE  58 |             oversized_count += 1
+LINE  59 |             omitted_warnings.append({
+LINE  60 |                 "file": display_name,
+LINE  61 |                 "reason": f"Exceeds MAX_FILES limit of {config.max_files} files."
+LINE  62 |             })
+LINE  63 |             return
+LINE  64 | 
+LINE  65 |         if size_bytes > max_file_bytes:
+LINE  66 |             oversized_count += 1
+LINE  67 |             omitted_warnings.append({
+LINE  68 |                 "file": display_name,
+LINE  69 |                 "reason": f"Exceeds the allowed limit of {config.max_file_size_mb:g} MB."
+LINE  70 |             })
+LINE  71 |             return
+LINE  72 | 
+LINE  73 |         if cumulative_bytes + size_bytes > max_total_bytes:
+LINE  74 |             oversized_count += 1
+LINE  75 |             omitted_warnings.append({
+LINE  76 |                 "file": display_name,
+LINE  77 |                 "reason": f"Exceeds MAX_TOTAL_SIZE limit of {config.max_total_size_mb:g} MB (Cumulative size reached)."
+LINE  78 |             })
+LINE  79 |             return
+LINE  80 | 
+LINE  81 |         raw_text = safe_read_file(full_path, max_bytes=max_file_bytes)
+LINE  82 |         deps = detector.detect_file_dependencies(display_name, raw_text)
+LINE  83 |         if deps:
+LINE  84 |             file_dependencies[display_name] = deps
+LINE  85 | 
+LINE  86 |         formatted_code = read_and_format_file(
+LINE  87 |             full_path, 
+LINE  88 |             add_line_numbers=config.add_line_numbers,
+LINE  89 |             max_file_size_mb=config.max_file_size_mb
+LINE  90 |         )
+LINE  91 |         lines_in_file = formatted_code.count('\n') + (1 if formatted_code else 0)
+LINE  92 |         total_lines += lines_in_file
+LINE  93 |         cumulative_bytes += size_bytes
+LINE  94 |         extension_counts[ext] += 1
+LINE  95 |         
+LINE  96 |         block = [
+LINE  97 |             "==============================================================",
+LINE  98 |             f"FILE: {display_name}",
+LINE  99 |             "==============================================================",
+LINE 100 |             formatted_code
+LINE 101 |         ]
+LINE 102 |         file_blocks.append("\n".join(block))
+LINE 103 |         included_count += 1
+LINE 104 | 
+LINE 105 |     # 1. Folder files
+LINE 106 |     if folder_path and os.path.isdir(folder_path):
+LINE 107 |         for rel_f in sorted(selection.checked_folder_files):
+LINE 108 |             full_path = os.path.join(folder_path, rel_f)
+LINE 109 |             if os.path.isfile(full_path):
+LINE 110 |                 process_file(full_path, rel_f)
+LINE 111 | 
+LINE 112 |     # 2. Individual files
+LINE 113 |     for abs_f in selection.individual_files:
+LINE 114 |         if os.path.isfile(abs_f):
+LINE 115 |             if folder_path and abs_f.startswith(folder_path):
+LINE 116 |                 display_name = os.path.relpath(abs_f, folder_path)
+LINE 117 |             else:
+LINE 118 |                 display_name = os.path.basename(abs_f)
+LINE 119 |             process_file(abs_f, display_name)
+LINE 120 | 
+LINE 121 |     doc = []
+LINE 122 | 
+LINE 123 |     # 1. REPORTED PROBLEM
+LINE 124 |     doc.append("==============================================================")
+LINE 125 |     doc.append("REPORTED PROBLEM / PROBLEMA REPORTADO")
+LINE 126 |     doc.append("==============================================================")
+LINE 127 |     if problem_desc.strip():
+LINE 128 |         doc.append(problem_desc.strip())
+LINE 129 |     else:
+LINE 130 |         doc.append("[No se especificó una descripción del problema]")
+LINE 131 |     doc.append("\n")
+LINE 132 | 
+LINE 133 |     # 2. PROJECT CONTEXT & SMART SUMMARY
+LINE 134 |     doc.append("==============================================================")
+LINE 135 |     doc.append("PROJECT CONTEXT / CONTEXTO DEL PROYECTO")
+LINE 136 |     doc.append("==============================================================")
+LINE 137 |     doc.append(f"• Nombre del Proyecto: {project_name}")
+LINE 138 |     doc.append(f"• Ruta Base: {base_path}")
+LINE 139 |     doc.append(f"• Fecha de Generación: {gen_date}\n")
+LINE 140 | 
+LINE 141 |     # PROJECT SUMMARY
+LINE 142 |     doc.append("--------------------------------------------------------------")
+LINE 143 |     doc.append("PROJECT SUMMARY")
+LINE 144 |     doc.append("--------------------------------------------------------------")
+LINE 145 |     doc.append(f"Selected files: {included_count}")
+LINE 146 |     doc.append("File extensions:")
+LINE 147 |     if extension_counts:
+LINE 148 |         for ext_name, count in extension_counts.most_common():
+LINE 149 |             doc.append(f"  {ext_name}: {count}")
+LINE 150 |     else:
+LINE 151 |         doc.append("  (Ningún archivo procesado)")
+LINE 152 |     doc.append(f"\nTotal lines:\n{total_lines:,}\n")
+LINE 153 | 
+LINE 154 |     # DEPENDENCIES AND REFERENCES
+LINE 155 |     if file_dependencies:
+LINE 156 |         doc.append("--------------------------------------------------------------")
+LINE 157 |         doc.append("DEPENDENCIES AND REFERENCES")
+LINE 158 |         doc.append("--------------------------------------------------------------")
+LINE 159 |         for f_name, deps in file_dependencies.items():
+LINE 160 |             doc.append(f"• {f_name}:")
+LINE 161 |             for dep in deps:
+LINE 162 |                 doc.append(f"  - {dep}")
+LINE 163 |         doc.append("")
+LINE 164 | 
+LINE 165 |     if omitted_warnings:
+LINE 166 |         doc.append("--------------------------------------------------------------")
+LINE 167 |         doc.append("⚠️ ARCHIVOS OMITIDOS POR LÍMITES DE TAMAÑO / OMITTED FILES WARNINGS")
+LINE 168 |         doc.append("--------------------------------------------------------------")
+LINE 169 |         for warn in omitted_warnings:
+LINE 170 |             doc.append(f"File omitted:\n{warn['file']}\nReason:\n{warn['reason']}\n")
+LINE 171 | 
+LINE 172 |     if config.include_system_instructions:
+LINE 173 |         doc.append("--------------------------------------------------------------")
+LINE 174 |         doc.append("INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK / RESPONSE FORMAT RULES")
+LINE 175 |         doc.append("--------------------------------------------------------------")
+LINE 176 |         doc.append("Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown:")
+LINE 177 |         doc.append("""
+LINE 178 | # DIAGNOSIS
+LINE 179 | ## Problem
+LINE 180 | [Descripción técnica del problema]
+LINE 181 | ## Root Cause
+LINE 182 | [Causa raíz técnica]
+LINE 183 | 
+LINE 184 | # FILES TO MODIFY
+LINE 185 | ## 1. ruta/relativa/archivo.ext
+LINE 186 | Approximate line: [número]
+LINE 187 | ### Problem
+LINE 188 | [Problema en este archivo]
+LINE 189 | ### Solution
+LINE 190 | [Solución propuesta]
+LINE 191 | ### Current Code
+LINE 192 | [código actual]
+LINE 193 | ### Corrected Code
+LINE 194 | [código corregido]
+LINE 195 | 
+LINE 196 | # NEW FILES
+LINE 197 | [Nuevos archivos requeridos o: No se requieren nuevos archivos.]
+LINE 198 | 
+LINE 199 | # ARCHITECTURAL CHANGES
+LINE 200 | [Cambios en estructura o: No se requieren cambios arquitectónicos.]
+LINE 201 | 
+LINE 202 | # RISKS OR SIDE EFFECTS
+LINE 203 | [Riesgos identificados o: Sin riesgos identificados.]
+LINE 204 | 
+LINE 205 | # IMPLEMENTATION PLAN
+LINE 206 | 1. [Primer paso]
+LINE 207 | 2. [Segundo paso]
+LINE 208 | 3. [Tercer paso]
+LINE 209 | """)
+LINE 210 |         doc.append("REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba. Especifica siempre archivo, línea aproximada, código actual y código corregido.")
+LINE 211 | 
+LINE 212 |     if config.include_tree and folder_path and os.path.isdir(folder_path):
+LINE 213 |         tree_str = build_folder_tree_str(folder_path, list(selection.checked_folder_files), selection.excluded_dirs)
+LINE 214 |         doc.append("\nEstructura de Directorios:")
+LINE 215 |         doc.append(f"{tree_str}")
+LINE 216 |     
+LINE 217 |     doc.append("\n")
+LINE 218 | 
+LINE 219 |     # 3. ATTACHMENTS
+LINE 220 |     doc.append("==============================================================")
+LINE 221 |     doc.append("ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE")
+LINE 222 |     doc.append("==============================================================\n")
+LINE 223 |     doc.append("\n\n".join(file_blocks))
+LINE 224 | 
+LINE 225 |     full_text = "\n".join(doc)
+LINE 226 |     return full_text, included_count, excluded_count, oversized_count, total_lines
+```
+
+==============================================================
+FILE: app/gui/__init__.py
+==============================================================
+```py
+LINE 1 | """GUI package initialization."""
+LINE 2 | from app.gui.file_tree import CheckboxTreeview
+LINE 3 | from app.gui.main_window import MainWindow
+LINE 4 | 
+LINE 5 | __all__ = ["CheckboxTreeview", "MainWindow"]
+```
+
+==============================================================
+FILE: app/gui/dialogs.py
+==============================================================
+```py
+LINE  1 | """Dialog helpers and alert wrappers."""
+LINE  2 | from tkinter import messagebox, filedialog
+LINE  3 | from typing import Optional, List
+LINE  4 | 
+LINE  5 | 
+LINE  6 | def show_info(title: str, message: str) -> None:
+LINE  7 |     messagebox.showinfo(title, message)
+LINE  8 | 
+LINE  9 | 
+LINE 10 | def show_warning(title: str, message: str) -> None:
+LINE 11 |     messagebox.showwarning(title, message)
+LINE 12 | 
+LINE 13 | 
+LINE 14 | def show_error(title: str, message: str) -> None:
+LINE 15 |     messagebox.showerror(title, message)
+LINE 16 | 
+LINE 17 | 
+LINE 18 | def ask_folder(title: str = "Seleccionar Carpeta") -> Optional[str]:
+LINE 19 |     return filedialog.askdirectory(title=title)
+LINE 20 | 
+LINE 21 | 
+LINE 22 | def ask_files(title: str = "Seleccionar Archivos") -> List[str]:
+LINE 23 |     files = filedialog.askopenfilenames(title=title)
+LINE 24 |     return list(files) if files else []
+LINE 25 | 
+LINE 26 | 
+LINE 27 | def ask_save_file(title: str = "Guardar Archivo", default_ext: str = ".md") -> Optional[str]:
+LINE 28 |     return filedialog.asksaveasfilename(
+LINE 29 |         title=title,
+LINE 30 |         defaultextension=default_ext,
+LINE 31 |         filetypes=[("Markdown Document", "*.md"), ("Text Document", "*.txt"), ("Todos los Archivos", "*.*")]
+LINE 32 |     )
+```
+
+==============================================================
+FILE: app/gui/file_tree.py
+==============================================================
+```py
+LINE  1 | """CheckboxTreeview component for selecting folder files."""
+LINE  2 | import tkinter as tk
+LINE  3 | from tkinter import ttk
+LINE  4 | from typing import Set, List
+LINE  5 | 
+LINE  6 | 
+LINE  7 | class CheckboxTreeview(ttk.Treeview):
+LINE  8 |     def __init__(self, master, **kwargs):
+LINE  9 |         super().__init__(master, columns=("check", "name"), show="tree headings", **kwargs)
+LINE 10 |         self.heading("#0", text="", anchor="w")
+LINE 11 |         self.heading("check", text="☑", anchor="center", command=self.toggle_all_header)
+LINE 12 |         self.heading("name", text="Archivo / Carpeta", anchor="w")
+LINE 13 |         self.column("#0", width=35, stretch=False)
+LINE 14 |         self.column("check", width=40, stretch=False, anchor="center")
+LINE 15 |         self.column("name", width=260, stretch=True)
+LINE 16 |         
+LINE 17 |         self.tag_configure("checked", foreground="#1b5e20")
+LINE 18 |         self.tag_configure("unchecked", foreground="#757575")
+LINE 19 |         self.bind("<Button-1>", self.on_click)
+LINE 20 |         self.checked_items: Set[str] = set()
+LINE 21 | 
+LINE 22 |     def insert_file(self, parent, rel_path: str, is_checked: bool = True):
+LINE 23 |         item = self.insert(parent, "end", text="📄", values=("☑" if is_checked else "☐", rel_path), tags=("checked" if is_checked else "unchecked",))
+LINE 24 |         if is_checked:
+LINE 25 |             self.checked_items.add(rel_path)
+LINE 26 |         return item
+LINE 27 | 
+LINE 28 |     def insert_folder(self, parent, rel_path: str):
+LINE 29 |         return self.insert(parent, "end", text="📁", values=("", rel_path), open=True)
+LINE 30 | 
+LINE 31 |     def check_item(self, item):
+LINE 32 |         rel_path = self.set(item, "name")
+LINE 33 |         if rel_path:
+LINE 34 |             self.set(item, "check", "☑")
+LINE 35 |             self.item(item, tags=("checked",))
+LINE 36 |             if not self.get_children(item):
+LINE 37 |                 self.checked_items.add(rel_path)
+LINE 38 |         for child in self.get_children(item):
+LINE 39 |             self.check_item(child)
+LINE 40 | 
+LINE 41 |     def uncheck_item(self, item):
+LINE 42 |         rel_path = self.set(item, "name")
+LINE 43 |         if rel_path:
+LINE 44 |             self.set(item, "check", "☐")
+LINE 45 |             self.item(item, tags=("unchecked",))
+LINE 46 |             if rel_path in self.checked_items:
+LINE 47 |                 self.checked_items.remove(rel_path)
+LINE 48 |         for child in self.get_children(item):
+LINE 49 |             self.uncheck_item(child)
+LINE 50 | 
+LINE 51 |     def toggle_item(self, item):
+LINE 52 |         check_val = self.set(item, "check")
+LINE 53 |         if check_val == "☑":
+LINE 54 |             self.uncheck_item(item)
+LINE 55 |         else:
+LINE 56 |             self.check_item(item)
+LINE 57 | 
+LINE 58 |     def toggle_all_header(self):
+LINE 59 |         all_children = self.get_children()
+LINE 60 |         if not all_children:
+LINE 61 |             return
+LINE 62 |         all_checked = all(self.set(child, "check") == "☑" for child in all_children if self.set(child, "check") != "")
+LINE 63 |         for child in all_children:
+LINE 64 |             if all_checked:
+LINE 65 |                 self.uncheck_item(child)
+LINE 66 |             else:
+LINE 67 |                 self.check_item(child)
+LINE 68 | 
+LINE 69 |     def on_click(self, event):
+LINE 70 |         region = self.identify_region(event.x, event.y)
+LINE 71 |         item = self.identify_row(event.y)
+LINE 72 |         if not item:
+LINE 73 |             return
+LINE 74 |         column = self.identify_column(event.x)
+LINE 75 |         if region == "cell" and column == "#2":
+LINE 76 |             self.toggle_item(item)
+LINE 77 |         elif region == "tree":
+LINE 78 |             self.toggle_item(item)
+LINE 79 | 
+LINE 80 |     def select_all(self):
+LINE 81 |         for item in self.get_children():
+LINE 82 |             self.check_item(item)
+LINE 83 | 
+LINE 84 |     def deselect_all(self):
+LINE 85 |         for item in self.get_children():
+LINE 86 |             self.uncheck_item(item)
+LINE 87 | 
+LINE 88 |     def get_checked_files(self) -> List[str]:
+LINE 89 |         return list(self.checked_items)
+```
+
+==============================================================
+FILE: app/gui/main_window.py
+==============================================================
+```py
+LINE   1 | """Main Tkinter window – redesigned layout with left tree, right problem pane, and full bottom stats bar."""
+LINE   2 | import os
+LINE   3 | import sys
+LINE   4 | import subprocess
+LINE   5 | import tkinter as tk
+LINE   6 | from tkinter import ttk, scrolledtext
+LINE   7 | 
+LINE   8 | from app.models.project import ExportConfig, DEFAULT_ALLOWED_EXTENSIONS
+LINE   9 | from app.core.file_selector import FileSelectorManager
+LINE  10 | from app.generators.prompt_generator import PromptGenerator
+LINE  11 | from app.generators.markdown_generator import generate_markdown_bundle
+LINE  12 | from app.generators.text_generator import generate_text_bundle
+LINE  13 | from app.generators.standalone_prompt_generator import generate_standalone_prompt
+LINE  14 | from app.gui.file_tree import CheckboxTreeview
+LINE  15 | from app.gui import dialogs
+LINE  16 | from app.utils.file_utils import (
+LINE  17 |     copy_to_clipboard, write_text_file, KNOWN_BINARY_EXTENSIONS,
+LINE  18 |     is_binary_file, get_file_size,
+LINE  19 | )
+LINE  20 | 
+LINE  21 | # ─── Colour palette ─────────────────────────────────────────────────────────
+LINE  22 | C_BG        = "#1e2330"   # main background
+LINE  23 | C_PANEL     = "#252b3b"   # panel background
+LINE  24 | C_BORDER    = "#323a50"   # separator / border
+LINE  25 | C_ACCENT    = "#4f8ef7"   # primary accent (blue)
+LINE  26 | C_ACCENT_DK = "#3a6fcc"   # accent hover
+LINE  27 | C_SUCCESS   = "#3ecf8e"   # green
+LINE  28 | C_WARN      = "#f5a623"   # amber
+LINE  29 | C_TEXT      = "#e8eaf0"   # primary text
+LINE  30 | C_TEXT2     = "#8b92a8"   # secondary / muted
+LINE  31 | C_ENTRY     = "#2a3148"   # entry bg
+LINE  32 | C_TREE_SEL  = "#2f3d5c"   # tree selection highlight
+LINE  33 | C_STAT_BG   = "#161b28"   # bottom bar bg
+LINE  34 | # ────────────────────────────────────────────────────────────────────────────
+LINE  35 | 
+LINE  36 | 
+LINE  37 | class MainWindow:
+LINE  38 |     def __init__(self, root: tk.Tk):
+LINE  39 |         self.root = root
+LINE  40 |         self.root.title("DeepSeek Code Packager")
+LINE  41 |         self.root.geometry("1340x860")
+LINE  42 |         self.root.minsize(1100, 700)
+LINE  43 |         self.root.configure(bg=C_BG)
+LINE  44 | 
+LINE  45 |         # ── State ──────────────────────────────────────────────────────────
+LINE  46 |         self.selector   = FileSelectorManager()
+LINE  47 |         self.config     = ExportConfig()
+LINE  48 | 
+LINE  49 |         default_excl    = ".git, node_modules, __pycache__, venv, .venv, dist, build, .idea, .vscode"
+LINE  50 |         default_exts    = ", ".join(sorted(DEFAULT_ALLOWED_EXTENSIONS))
+LINE  51 | 
+LINE  52 |         self.var_folder   = tk.StringVar()
+LINE  53 |         self.var_excl     = tk.StringVar(value=default_excl)
+LINE  54 |         self.var_exts     = tk.StringVar(value=default_exts)
+LINE  55 |         self.var_filter   = tk.BooleanVar(value=True)
+LINE  56 |         self.var_lineno   = tk.BooleanVar(value=True)
+LINE  57 |         self.var_tree     = tk.BooleanVar(value=True)
+LINE  58 |         self.var_instruct = tk.BooleanVar(value=True)
+LINE  59 |         self.var_max_file = tk.DoubleVar(value=2.0)
+LINE  60 |         self.var_max_tot  = tk.DoubleVar(value=50.0)
+LINE  61 |         self.var_max_n    = tk.IntVar(value=100)
+LINE  62 |         self.var_fmt      = tk.StringVar(value="markdown")
+LINE  63 | 
+LINE  64 |         # Bottom stats vars
+LINE  65 |         self.sv_folder    = tk.StringVar(value="0")
+LINE  66 |         self.sv_sel_files = tk.StringVar(value="0")
+LINE  67 |         self.sv_included  = tk.StringVar(value="0")
+LINE  68 |         self.sv_excluded  = tk.StringVar(value="0")
+LINE  69 |         self.sv_size      = tk.StringVar(value="0.00 MB")
+LINE  70 |         self.sv_lines     = tk.StringVar(value="0")
+LINE  71 |         self.sv_status    = tk.StringVar(value="Listo.")
+LINE  72 | 
+LINE  73 |         self._setup_styles()
+LINE  74 |         self._build_header()
+LINE  75 |         self._build_main()
+LINE  76 |         self._build_bottom()
+LINE  77 | 
+LINE  78 |     # ── Style helpers ─────────────────────────────────────────────────────
+LINE  79 |     def _setup_styles(self):
+LINE  80 |         s = ttk.Style()
+LINE  81 |         s.theme_use("clam")
+LINE  82 | 
+LINE  83 |         common = {"background": C_BG, "foreground": C_TEXT, "fieldbackground": C_ENTRY,
+LINE  84 |                   "bordercolor": C_BORDER, "lightcolor": C_BORDER, "darkcolor": C_BORDER,
+LINE  85 |                   "troughcolor": C_PANEL, "selectbackground": C_TREE_SEL,
+LINE  86 |                   "selectforeground": C_TEXT}
+LINE  87 | 
+LINE  88 |         s.configure(".",                font=("Segoe UI", 9), **common)
+LINE  89 |         s.configure("TFrame",           background=C_BG)
+LINE  90 |         s.configure("TLabel",           background=C_BG, foreground=C_TEXT)
+LINE  91 |         s.configure("TEntry",           fieldbackground=C_ENTRY, foreground=C_TEXT,
+LINE  92 |                     insertcolor=C_TEXT, bordercolor=C_BORDER)
+LINE  93 |         s.configure("TCheckbutton",     background=C_BG, foreground=C_TEXT2)
+LINE  94 |         s.configure("TRadiobutton",     background=C_BG, foreground=C_TEXT2)
+LINE  95 |         s.configure("Vertical.TScrollbar",   background=C_BORDER, troughcolor=C_PANEL)
+LINE  96 |         s.configure("Horizontal.TScrollbar", background=C_BORDER, troughcolor=C_PANEL)
+LINE  97 |         s.configure("TSeparator",       background=C_BORDER)
+LINE  98 |         s.configure("TPanedwindow",     background=C_BORDER)
+LINE  99 |         s.configure("TSpinbox",         fieldbackground=C_ENTRY, foreground=C_TEXT,
+LINE 100 |                     insertcolor=C_TEXT, bordercolor=C_BORDER, arrowcolor=C_TEXT2)
+LINE 101 | 
+LINE 102 |         # Panel labels
+LINE 103 |         s.configure("Panel.TFrame",     background=C_PANEL)
+LINE 104 |         s.configure("Panel.TLabel",     background=C_PANEL, foreground=C_TEXT)
+LINE 105 |         s.configure("Muted.TLabel",     background=C_PANEL, foreground=C_TEXT2,
+LINE 106 |                     font=("Segoe UI", 8))
+LINE 107 |         s.configure("Title.TLabel",     background=C_BG, foreground=C_TEXT,
+LINE 108 |                     font=("Segoe UI", 15, "bold"))
+LINE 109 |         s.configure("Sub.TLabel",       background=C_BG, foreground=C_TEXT2,
+LINE 110 |                     font=("Segoe UI", 9))
+LINE 111 |         s.configure("Sec.TLabel",       background=C_PANEL, foreground=C_ACCENT,
+LINE 112 |                     font=("Segoe UI", 9, "bold"))
+LINE 113 |         s.configure("StatKey.TLabel",   background=C_STAT_BG, foreground=C_TEXT2,
+LINE 114 |                     font=("Segoe UI", 8))
+LINE 115 |         s.configure("StatVal.TLabel",   background=C_STAT_BG, foreground=C_TEXT,
+LINE 116 |                     font=("Segoe UI", 10, "bold"))
+LINE 117 |         s.configure("Status.TLabel",    background=C_STAT_BG, foreground=C_TEXT2,
+LINE 118 |                     font=("Segoe UI", 8, "italic"))
+LINE 119 | 
+LINE 120 |         # Treeview
+LINE 121 |         s.configure("Treeview",         background=C_PANEL, foreground=C_TEXT,
+LINE 122 |                     fieldbackground=C_PANEL, bordercolor=C_BORDER, rowheight=22)
+LINE 123 |         s.configure("Treeview.Heading", background=C_BORDER, foreground=C_TEXT2,
+LINE 124 |                     relief="flat", font=("Segoe UI", 8, "bold"))
+LINE 125 |         s.map("Treeview",               background=[("selected", C_TREE_SEL)],
+LINE 126 |                                         foreground=[("selected", C_TEXT)])
+LINE 127 |         s.map("Treeview.Heading",       background=[("active", C_BORDER)])
+LINE 128 | 
+LINE 129 |         # Buttons
+LINE 130 |         for name, bg, hover in [
+LINE 131 |             ("Accent.TButton",  C_ACCENT,   C_ACCENT_DK),
+LINE 132 |             ("Success.TButton", C_SUCCESS,  "#2faa75"),
+LINE 133 |             ("Neutral.TButton", C_BORDER,   "#404860"),
+LINE 134 |             ("Warn.TButton",    C_WARN,     "#cc8b1a"),
+LINE 135 |         ]:
+LINE 136 |             s.configure(name, background=bg, foreground=C_BG if name != "Neutral.TButton" else C_TEXT,
+LINE 137 |                         relief="flat", font=("Segoe UI", 9, "bold"), padding=(10, 5))
+LINE 138 |             s.map(name, background=[("active", hover)])
+LINE 139 | 
+LINE 140 |     # ── Header ────────────────────────────────────────────────────────────
+LINE 141 |     def _build_header(self):
+LINE 142 |         bar = ttk.Frame(self.root, padding=(16, 10, 16, 8))
+LINE 143 |         bar.pack(fill=tk.X)
+LINE 144 | 
+LINE 145 |         ttk.Label(bar, text="📦  DeepSeek Code Packager", style="Title.TLabel").pack(side=tk.LEFT)
+LINE 146 | 
+LINE 147 |         right = ttk.Frame(bar)
+LINE 148 |         right.pack(side=tk.RIGHT)
+LINE 149 |         ttk.Label(right,
+LINE 150 |                   text="Sin API · Sin conexión · Proyectos grandes seguros",
+LINE 151 |                   style="Sub.TLabel").pack(anchor="e")
+LINE 152 | 
+LINE 153 |         ttk.Separator(self.root).pack(fill=tk.X)
+LINE 154 | 
+LINE 155 |     # ── Main 3-pane layout ────────────────────────────────────────────────
+LINE 156 |     def _build_main(self):
+LINE 157 |         paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
+LINE 158 |         paned.pack(fill=tk.BOTH, expand=True, padx=8, pady=6)
+LINE 159 | 
+LINE 160 |         self._build_left(paned)
+LINE 161 |         self._build_right(paned)
+LINE 162 | 
+LINE 163 |     # ──────────────────────────────────────────────────────────────────────
+LINE 164 |     # LEFT pane  –  project tree
+LINE 165 |     # ──────────────────────────────────────────────────────────────────────
+LINE 166 |     def _build_left(self, paned):
+LINE 167 |         left = ttk.Frame(paned, style="Panel.TFrame", padding=0)
+LINE 168 |         paned.add(left, weight=2)
+LINE 169 | 
+LINE 170 |         # ── Folder row
+LINE 171 |         folder_bar = ttk.Frame(left, style="Panel.TFrame", padding=(8, 6))
+LINE 172 |         folder_bar.pack(fill=tk.X)
+LINE 173 | 
+LINE 174 |         ttk.Label(folder_bar, text="📂  Carpeta del proyecto", style="Sec.TLabel").pack(anchor="w")
+LINE 175 | 
+LINE 176 |         fe = ttk.Frame(folder_bar, style="Panel.TFrame")
+LINE 177 |         fe.pack(fill=tk.X, pady=(4, 0))
+LINE 178 | 
+LINE 179 |         self.folder_entry = ttk.Entry(fe, textvariable=self.var_folder, state="readonly")
+LINE 180 |         self.folder_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+LINE 181 | 
+LINE 182 |         ttk.Button(fe, text="📂 Seleccionar carpeta",
+LINE 183 |                    style="Accent.TButton",
+LINE 184 |                    command=self.on_select_folder).pack(side=tk.LEFT, padx=(0, 3))
+LINE 185 |         ttk.Button(fe, text="✖",
+LINE 186 |                    style="Neutral.TButton",
+LINE 187 |                    command=self.on_remove_folder, width=3).pack(side=tk.LEFT)
+LINE 188 | 
+LINE 189 |         ttk.Separator(left).pack(fill=tk.X, pady=4)
+LINE 190 | 
+LINE 191 |         # ── Filters row (collapsed / compact)
+LINE 192 |         flt = ttk.Frame(left, style="Panel.TFrame", padding=(8, 0))
+LINE 193 |         flt.pack(fill=tk.X)
+LINE 194 | 
+LINE 195 |         fl1 = ttk.Frame(flt, style="Panel.TFrame")
+LINE 196 |         fl1.pack(fill=tk.X, pady=2)
+LINE 197 |         ttk.Label(fl1, text="Excluir carpetas:", style="Muted.TLabel").pack(side=tk.LEFT, padx=(0, 4))
+LINE 198 |         ex = ttk.Entry(fl1, textvariable=self.var_excl, font=("Consolas", 8))
+LINE 199 |         ex.pack(side=tk.LEFT, fill=tk.X, expand=True)
+LINE 200 |         ex.bind("<FocusOut>", lambda _: self.reload_tree())
+LINE 201 | 
+LINE 202 |         fl2 = ttk.Frame(flt, style="Panel.TFrame")
+LINE 203 |         fl2.pack(fill=tk.X, pady=2)
+LINE 204 |         ttk.Checkbutton(fl2, text="Filtrar extensiones:", variable=self.var_filter,
+LINE 205 |                         command=self.reload_tree, style="TCheckbutton").pack(side=tk.LEFT, padx=(0, 4))
+LINE 206 |         ext_e = ttk.Entry(fl2, textvariable=self.var_exts, font=("Consolas", 8))
+LINE 207 |         ext_e.pack(side=tk.LEFT, fill=tk.X, expand=True)
+LINE 208 |         ext_e.bind("<FocusOut>", lambda _: self.reload_tree())
+LINE 209 | 
+LINE 210 |         ttk.Separator(left).pack(fill=tk.X, pady=4)
+LINE 211 | 
+LINE 212 |         # ── Tree toolbar
+LINE 213 |         tb = ttk.Frame(left, style="Panel.TFrame", padding=(8, 0, 8, 4))
+LINE 214 |         tb.pack(fill=tk.X)
+LINE 215 |         ttk.Button(tb, text="☑ Todos", style="Neutral.TButton",
+LINE 216 |                    command=self.on_select_all_tree).pack(side=tk.LEFT, padx=(0, 4))
+LINE 217 |         ttk.Button(tb, text="☐ Ninguno", style="Neutral.TButton",
+LINE 218 |                    command=self.on_deselect_all_tree).pack(side=tk.LEFT, padx=(0, 4))
+LINE 219 |         ttk.Button(tb, text="🔄 Recargar", style="Neutral.TButton",
+LINE 220 |                    command=self.reload_tree).pack(side=tk.RIGHT)
+LINE 221 | 
+LINE 222 |         # ── Tree widget
+LINE 223 |         tc = ttk.Frame(left, style="Panel.TFrame", padding=(4, 0, 4, 4))
+LINE 224 |         tc.pack(fill=tk.BOTH, expand=True)
+LINE 225 | 
+LINE 226 |         self.tree = CheckboxTreeview(tc)
+LINE 227 |         sy = ttk.Scrollbar(tc, orient=tk.VERTICAL,   command=self.tree.yview)
+LINE 228 |         sx = ttk.Scrollbar(tc, orient=tk.HORIZONTAL, command=self.tree.xview)
+LINE 229 |         self.tree.configure(yscrollcommand=sy.set, xscrollcommand=sx.set)
+LINE 230 |         sy.pack(side=tk.RIGHT, fill=tk.Y)
+LINE 231 |         sx.pack(side=tk.BOTTOM, fill=tk.X)
+LINE 232 |         self.tree.pack(fill=tk.BOTH, expand=True)
+LINE 233 |         self.tree.bind("<<TreeviewSelect>>", lambda _: self._refresh_selection_stats())
+LINE 234 |         self.tree.bind("<ButtonRelease-1>",  lambda _: self.root.after(50, self._refresh_selection_stats))
+LINE 235 | 
+LINE 236 |         ttk.Separator(left).pack(fill=tk.X, pady=4)
+LINE 237 | 
+LINE 238 |         # ── Individual files list
+LINE 239 |         il = ttk.Frame(left, style="Panel.TFrame", padding=(8, 0))
+LINE 240 |         il.pack(fill=tk.X)
+LINE 241 | 
+LINE 242 |         ttk.Label(il, text="📄  Archivos individuales adicionales", style="Sec.TLabel").pack(anchor="w")
+LINE 243 | 
+LINE 244 |         il_tb = ttk.Frame(il, style="Panel.TFrame")
+LINE 245 |         il_tb.pack(fill=tk.X, pady=(4, 3))
+LINE 246 |         ttk.Button(il_tb, text="➕ Agregar archivos",
+LINE 247 |                    style="Neutral.TButton",
+LINE 248 |                    command=self.on_add_individual_files).pack(side=tk.LEFT, padx=(0, 4))
+LINE 249 |         ttk.Button(il_tb, text="🗑 Quitar",
+LINE 250 |                    style="Neutral.TButton",
+LINE 251 |                    command=self.on_remove_individual_file).pack(side=tk.LEFT, padx=(0, 4))
+LINE 252 |         ttk.Button(il_tb, text="🧹 Limpiar",
+LINE 253 |                    style="Neutral.TButton",
+LINE 254 |                    command=self.on_clear_individual_files).pack(side=tk.RIGHT)
+LINE 255 | 
+LINE 256 |         lc = ttk.Frame(il, style="Panel.TFrame", padding=(0, 0, 0, 6))
+LINE 257 |         lc.pack(fill=tk.X)
+LINE 258 |         self.file_listbox = tk.Listbox(
+LINE 259 |             lc, height=4, selectmode=tk.SINGLE,
+LINE 260 |             font=("Consolas", 8),
+LINE 261 |             bg=C_ENTRY, fg=C_TEXT,
+LINE 262 |             selectbackground=C_TREE_SEL, selectforeground=C_TEXT,
+LINE 263 |             relief="flat", bd=0, highlightthickness=0,
+LINE 264 |         )
+LINE 265 |         ls = ttk.Scrollbar(lc, orient=tk.VERTICAL, command=self.file_listbox.yview)
+LINE 266 |         self.file_listbox.configure(yscrollcommand=ls.set)
+LINE 267 |         ls.pack(side=tk.RIGHT, fill=tk.Y)
+LINE 268 |         self.file_listbox.pack(fill=tk.X, expand=True)
+LINE 269 | 
+LINE 270 |     # ──────────────────────────────────────────────────────────────────────
+LINE 271 |     # RIGHT pane  –  problem description + settings + preview
+LINE 272 |     # ──────────────────────────────────────────────────────────────────────
+LINE 273 |     def _build_right(self, paned):
+LINE 274 |         right = ttk.Frame(paned, style="Panel.TFrame", padding=0)
+LINE 275 |         paned.add(right, weight=3)
+LINE 276 | 
+LINE 277 |         # ── Problem description (always visible, prominent)
+LINE 278 |         desc_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 8, 10, 4))
+LINE 279 |         desc_hdr.pack(fill=tk.X)
+LINE 280 |         ttk.Label(desc_hdr, text="📝  Describe el problema", style="Sec.TLabel").pack(anchor="w")
+LINE 281 |         ttk.Label(desc_hdr,
+LINE 282 |                   text="Este texto se incluirá en deepseek_prompt.md como REPORTED PROBLEM",
+LINE 283 |                   style="Muted.TLabel").pack(anchor="w")
+LINE 284 | 
+LINE 285 |         desc_body = ttk.Frame(right, style="Panel.TFrame", padding=(10, 0))
+LINE 286 |         desc_body.pack(fill=tk.X)
+LINE 287 |         self.problem_text = scrolledtext.ScrolledText(
+LINE 288 |             desc_body, height=5,
+LINE 289 |             font=("Segoe UI", 10),
+LINE 290 |             bg=C_ENTRY, fg=C_TEXT,
+LINE 291 |             insertbackground=C_TEXT,
+LINE 292 |             selectbackground=C_TREE_SEL, selectforeground=C_TEXT,
+LINE 293 |             relief="flat", bd=1, padx=8, pady=6,
+LINE 294 |             wrap=tk.WORD,
+LINE 295 |         )
+LINE 296 |         self.problem_text.pack(fill=tk.X, expand=True)
+LINE 297 |         self.problem_text.insert(
+LINE 298 |             "1.0",
+LINE 299 |             "Por favor analiza el siguiente código del proyecto. "
+LINE 300 |             "Identifica posibles errores, refactorizaciones recomendadas y soluciones al problema."
+LINE 301 |         )
+LINE 302 | 
+LINE 303 |         ttk.Separator(right).pack(fill=tk.X, pady=6)
+LINE 304 | 
+LINE 305 |         # ── Generation settings (collapsible look)
+LINE 306 |         cfg = ttk.Frame(right, style="Panel.TFrame", padding=(10, 0))
+LINE 307 |         cfg.pack(fill=tk.X)
+LINE 308 | 
+LINE 309 |         ttk.Label(cfg, text="⚙️  Configuración de generación", style="Sec.TLabel").pack(anchor="w", pady=(0, 4))
+LINE 310 | 
+LINE 311 |         r1 = ttk.Frame(cfg, style="Panel.TFrame")
+LINE 312 |         r1.pack(fill=tk.X, pady=2)
+LINE 313 |         ttk.Label(r1, text="Máx. archivo:", style="Muted.TLabel").pack(side=tk.LEFT, padx=(0, 3))
+LINE 314 |         ttk.Spinbox(r1, from_=0.1, to=50.0, increment=0.5,
+LINE 315 |                     textvariable=self.var_max_file, width=5).pack(side=tk.LEFT, padx=(0, 12))
+LINE 316 |         ttk.Label(r1, text="MB  ·  Máx. total:", style="Muted.TLabel").pack(side=tk.LEFT, padx=(0, 3))
+LINE 317 |         ttk.Spinbox(r1, from_=1.0, to=500.0, increment=5.0,
+LINE 318 |                     textvariable=self.var_max_tot, width=6).pack(side=tk.LEFT, padx=(0, 12))
+LINE 319 |         ttk.Label(r1, text="MB  ·  Máx. archivos:", style="Muted.TLabel").pack(side=tk.LEFT, padx=(0, 3))
+LINE 320 |         ttk.Spinbox(r1, from_=1, to=5000, increment=10,
+LINE 321 |                     textvariable=self.var_max_n, width=5).pack(side=tk.LEFT)
+LINE 322 | 
+LINE 323 |         r2 = ttk.Frame(cfg, style="Panel.TFrame")
+LINE 324 |         r2.pack(fill=tk.X, pady=2)
+LINE 325 |         for txt, var in [
+LINE 326 |             ("Nº de línea", self.var_lineno),
+LINE 327 |             ("Árbol de carpetas", self.var_tree),
+LINE 328 |             ("Instrucciones DeepSeek", self.var_instruct),
+LINE 329 |             ("Filtrar por extensión", self.var_filter),
+LINE 330 |         ]:
+LINE 331 |             ttk.Checkbutton(r2, text=txt, variable=var).pack(side=tk.LEFT, padx=(0, 14))
+LINE 332 |         ttk.Label(r2, text="Formato:", style="Muted.TLabel").pack(side=tk.LEFT, padx=(8, 3))
+LINE 333 |         ttk.Radiobutton(r2, text="Markdown", value="markdown", variable=self.var_fmt).pack(side=tk.LEFT, padx=(0, 6))
+LINE 334 |         ttk.Radiobutton(r2, text="Texto",    value="text",     variable=self.var_fmt).pack(side=tk.LEFT)
+LINE 335 | 
+LINE 336 |         ttk.Separator(right).pack(fill=tk.X, pady=6)
+LINE 337 | 
+LINE 338 |         # ── Preview label
+LINE 339 |         prev_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 0))
+LINE 340 |         prev_hdr.pack(fill=tk.X)
+LINE 341 |         ttk.Label(prev_hdr, text="🔍  Vista previa del documento generado", style="Sec.TLabel").pack(anchor="w")
+LINE 342 | 
+LINE 343 |         # ── Preview area
+LINE 344 |         prev_body = ttk.Frame(right, style="Panel.TFrame", padding=(10, 4, 10, 4))
+LINE 345 |         prev_body.pack(fill=tk.BOTH, expand=True)
+LINE 346 |         self.preview_text = scrolledtext.ScrolledText(
+LINE 347 |             prev_body, wrap=tk.NONE,
+LINE 348 |             font=("Consolas", 9),
+LINE 349 |             bg=C_ENTRY, fg=C_TEXT,
+LINE 350 |             insertbackground=C_TEXT,
+LINE 351 |             selectbackground=C_TREE_SEL, selectforeground=C_TEXT,
+LINE 352 |             relief="flat", bd=0, padx=8, pady=6,
+LINE 353 |         )
+LINE 354 |         self.preview_text.pack(fill=tk.BOTH, expand=True)
+LINE 355 | 
+LINE 356 |     # ──────────────────────────────────────────────────────────────────────
+LINE 357 |     # BOTTOM  –  stats bar + action buttons
+LINE 358 |     # ──────────────────────────────────────────────────────────────────────
+LINE 359 |     def _build_bottom(self):
+LINE 360 |         ttk.Separator(self.root).pack(fill=tk.X)
+LINE 361 | 
+LINE 362 |         bottom = tk.Frame(self.root, bg=C_STAT_BG)
+LINE 363 |         bottom.pack(fill=tk.X, side=tk.BOTTOM)
+LINE 364 | 
+LINE 365 |         # ── Action buttons (left side of bottom bar)
+LINE 366 |         btn_strip = tk.Frame(bottom, bg=C_STAT_BG, padx=8, pady=6)
+LINE 367 |         btn_strip.pack(side=tk.LEFT)
+LINE 368 | 
+LINE 369 |         ttk.Button(btn_strip, text="⚡ Generar contexto",
+LINE 370 |                    style="Accent.TButton",
+LINE 371 |                    command=self.on_generate_prompt).pack(side=tk.LEFT, padx=(0, 5))
+LINE 372 |         ttk.Button(btn_strip, text="📁 Abrir carpeta resultados",
+LINE 373 |                    style="Success.TButton",
+LINE 374 |                    command=self.on_open_results_folder).pack(side=tk.LEFT, padx=(0, 5))
+LINE 375 |         ttk.Button(btn_strip, text="📋 Copiar prompt",
+LINE 376 |                    style="Neutral.TButton",
+LINE 377 |                    command=self.on_copy_clipboard).pack(side=tk.LEFT, padx=(0, 5))
+LINE 378 |         ttk.Button(btn_strip, text="💾 Guardar como…",
+LINE 379 |                    style="Neutral.TButton",
+LINE 380 |                    command=self.on_export_file).pack(side=tk.LEFT, padx=(0, 5))
+LINE 381 |         ttk.Button(btn_strip, text="🗑 Limpiar selección",
+LINE 382 |                    style="Neutral.TButton",
+LINE 383 |                    command=self.on_clear_all).pack(side=tk.LEFT)
+LINE 384 | 
+LINE 385 |         # ── Stat tiles (right side of bottom bar)
+LINE 386 |         stats = tk.Frame(bottom, bg=C_STAT_BG, padx=12, pady=4)
+LINE 387 |         stats.pack(side=tk.RIGHT)
+LINE 388 | 
+LINE 389 |         def _stat(parent, key):
+LINE 390 |             cell = tk.Frame(parent, bg=C_STAT_BG, padx=10, pady=2)
+LINE 391 |             cell.pack(side=tk.LEFT)
+LINE 392 |             var = tk.StringVar(value="—")
+LINE 393 |             tk.Label(cell, text=key, bg=C_STAT_BG, fg=C_TEXT2,
+LINE 394 |                      font=("Segoe UI", 8)).pack()
+LINE 395 |             tk.Label(cell, textvariable=var, bg=C_STAT_BG, fg=C_TEXT,
+LINE 396 |                      font=("Segoe UI", 11, "bold")).pack()
+LINE 397 |             return var
+LINE 398 | 
+LINE 399 |         self.sv_folder    = _stat(stats, "Carpeta")
+LINE 400 |         self.sv_sel_files = _stat(stats, "Archivos sel.")
+LINE 401 |         self.sv_included  = _stat(stats, "Incluidos")
+LINE 402 |         self.sv_excluded  = _stat(stats, "Excluidos")
+LINE 403 |         self.sv_size      = _stat(stats, "Tamaño total")
+LINE 404 |         self.sv_lines     = _stat(stats, "Líneas")
+LINE 405 | 
+LINE 406 |         # ── Status text (very bottom strip)
+LINE 407 |         status_bar = tk.Frame(self.root, bg="#0f1320", pady=2)
+LINE 408 |         status_bar.pack(fill=tk.X, side=tk.BOTTOM)
+LINE 409 |         tk.Label(status_bar, textvariable=self.sv_status,
+LINE 410 |                  bg="#0f1320", fg=C_TEXT2,
+LINE 411 |                  font=("Segoe UI", 8, "italic"),
+LINE 412 |                  anchor="w", padx=10).pack(fill=tk.X)
+LINE 413 | 
+LINE 414 |         self.sv_status.set("Listo. Selecciona una carpeta para comenzar.")
+LINE 415 | 
+LINE 416 |     # ── Stat refresh ─────────────────────────────────────────────────────
+LINE 417 |     def _refresh_selection_stats(self):
+LINE 418 |         folder  = self.var_folder.get()
+LINE 419 |         has_fld = 1 if folder else 0
+LINE 420 |         sel_files = len(self.tree.get_checked_files()) + len(self.selector.get_selection().individual_files)
+LINE 421 | 
+LINE 422 |         # Count binary vs. included among selected files
+LINE 423 |         included = 0
+LINE 424 |         excluded = 0
+LINE 425 |         total_bytes = 0
+LINE 426 | 
+LINE 427 |         checked = self.tree.get_checked_files()
+LINE 428 |         ind     = self.selector.get_selection().individual_files
+LINE 429 | 
+LINE 430 |         all_paths = []
+LINE 431 |         if folder:
+LINE 432 |             for rel in checked:
+LINE 433 |                 all_paths.append(os.path.join(folder, rel))
+LINE 434 |         for abs_p in ind:
+LINE 435 |             all_paths.append(abs_p)
+LINE 436 | 
+LINE 437 |         for fp in all_paths:
+LINE 438 |             if not os.path.isfile(fp):
+LINE 439 |                 continue
+LINE 440 |             if is_binary_file(fp):
+LINE 441 |                 excluded += 1
+LINE 442 |             else:
+LINE 443 |                 included += 1
+LINE 444 |                 total_bytes += get_file_size(fp)
+LINE 445 | 
+LINE 446 |         size_mb = total_bytes / (1024 * 1024)
+LINE 447 | 
+LINE 448 |         self.sv_folder.set(str(has_fld))
+LINE 449 |         self.sv_sel_files.set(str(sel_files))
+LINE 450 |         self.sv_included.set(str(included))
+LINE 451 |         self.sv_excluded.set(str(excluded))
+LINE 452 |         self.sv_size.set(f"{size_mb:.2f} MB")
+LINE 453 |         # Lines shown only after generation
+LINE 454 |         # self.sv_lines is updated in on_generate_prompt
+LINE 455 | 
+LINE 456 |     # ── UI event handlers ────────────────────────────────────────────────
+LINE 457 |     def on_select_folder(self):
+LINE 458 |         folder = dialogs.ask_folder("Seleccionar Carpeta del Proyecto")
+LINE 459 |         if folder:
+LINE 460 |             self.selector.set_folder(folder)
+LINE 461 |             self.var_folder.set(folder)
+LINE 462 |             self.reload_tree()
+LINE 463 |             self._refresh_selection_stats()
+LINE 464 |             self.sv_status.set(f"Carpeta seleccionada: {folder}")
+LINE 465 | 
+LINE 466 |     def on_remove_folder(self):
+LINE 467 |         self.selector.remove_folder()
+LINE 468 |         self.var_folder.set("")
+LINE 469 |         for item in self.tree.get_children():
+LINE 470 |             self.tree.delete(item)
+LINE 471 |         self.tree.checked_items.clear()
+LINE 472 |         self._refresh_selection_stats()
+LINE 473 |         self.sv_status.set("Carpeta removida.")
+LINE 474 | 
+LINE 475 |     def on_clear_all(self):
+LINE 476 |         self.on_remove_folder()
+LINE 477 |         self.on_clear_individual_files()
+LINE 478 |         self.preview_text.delete("1.0", tk.END)
+LINE 479 |         self.sv_lines.set("0")
+LINE 480 |         self.sv_status.set("Selección limpiada.")
+LINE 481 | 
+LINE 482 |     def reload_tree(self):
+LINE 483 |         for item in self.tree.get_children():
+LINE 484 |             self.tree.delete(item)
+LINE 485 |         self.tree.checked_items.clear()
+LINE 486 | 
+LINE 487 |         folder = self.var_folder.get()
+LINE 488 |         if not folder or not os.path.isdir(folder):
+LINE 489 |             return
+LINE 490 | 
+LINE 491 |         self.selector.set_exclusions_from_string(self.var_excl.get())
+LINE 492 |         excluded_dirs = self.selector.get_selection().excluded_dirs
+LINE 493 |         allowed_exts  = self._get_exts()
+LINE 494 |         filter_ext    = self.var_filter.get()
+LINE 495 | 
+LINE 496 |         root_item = self.tree.insert("", "end", text="📁",
+LINE 497 |                                      values=("", os.path.basename(folder)), open=True)
+LINE 498 | 
+LINE 499 |         for dirpath, dirnames, filenames in os.walk(folder):
+LINE 500 |             dirnames[:] = [d for d in sorted(dirnames) if d not in excluded_dirs]
+LINE 501 |             rel_dir = os.path.relpath(dirpath, folder)
+LINE 502 | 
+LINE 503 |             parent_item = root_item if rel_dir == "." else self._find_folder_item(rel_dir)
+LINE 504 |             if not parent_item:
+LINE 505 |                 continue
+LINE 506 | 
+LINE 507 |             for d in dirnames:
+LINE 508 |                 rel_sub = os.path.join(rel_dir, d) if rel_dir != "." else d
+LINE 509 |                 self.tree.insert_folder(parent_item, rel_sub)
+LINE 510 | 
+LINE 511 |             for f in sorted(filenames):
+LINE 512 |                 ext = os.path.splitext(f)[1].lower()
+LINE 513 |                 if ext in KNOWN_BINARY_EXTENSIONS:
+LINE 514 |                     continue
+LINE 515 |                 if filter_ext and allowed_exts and ext not in allowed_exts:
+LINE 516 |                     continue
+LINE 517 |                 rel_file = os.path.join(rel_dir, f) if rel_dir != "." else f
+LINE 518 |                 self.tree.insert_file(parent_item, rel_file)
+LINE 519 | 
+LINE 520 |         self._refresh_selection_stats()
+LINE 521 | 
+LINE 522 |     def _find_folder_item(self, rel_path: str):
+LINE 523 |         def search(item):
+LINE 524 |             if self.tree.set(item, "name") == rel_path:
+LINE 525 |                 return item
+LINE 526 |             for ch in self.tree.get_children(item):
+LINE 527 |                 found = search(ch)
+LINE 528 |                 if found:
+LINE 529 |                     return found
+LINE 530 |             return None
+LINE 531 |         for item in self.tree.get_children():
+LINE 532 |             found = search(item)
+LINE 533 |             if found:
+LINE 534 |                 return found
+LINE 535 |         return None
+LINE 536 | 
+LINE 537 |     def _get_exts(self) -> set:
+LINE 538 |         exts = set()
+LINE 539 |         for e in self.var_exts.get().split(","):
+LINE 540 |             c = e.strip().lower()
+LINE 541 |             if c:
+LINE 542 |                 exts.add(c if c.startswith(".") else "." + c)
+LINE 543 |         return exts
+LINE 544 | 
+LINE 545 |     def on_select_all_tree(self):
+LINE 546 |         self.tree.select_all()
+LINE 547 |         self._refresh_selection_stats()
+LINE 548 | 
+LINE 549 |     def on_deselect_all_tree(self):
+LINE 550 |         self.tree.deselect_all()
+LINE 551 |         self._refresh_selection_stats()
+LINE 552 | 
+LINE 553 |     def on_add_individual_files(self):
+LINE 554 |         files = dialogs.ask_files("Seleccionar Archivos Individuales")
+LINE 555 |         if files:
+LINE 556 |             added = self.selector.add_individual_files(files)
+LINE 557 |             self.file_listbox.delete(0, tk.END)
+LINE 558 |             for f in self.selector.get_selection().individual_files:
+LINE 559 |                 self.file_listbox.insert(tk.END, f)
+LINE 560 |             self._refresh_selection_stats()
+LINE 561 |             self.sv_status.set(f"Se agregaron {added} archivo(s) individual(es).")
+LINE 562 | 
+LINE 563 |     def on_remove_individual_file(self):
+LINE 564 |         sel = self.file_listbox.curselection()
+LINE 565 |         if sel:
+LINE 566 |             val = self.file_listbox.get(sel[0])
+LINE 567 |             self.selector.remove_individual_file(val)
+LINE 568 |             self.file_listbox.delete(sel[0])
+LINE 569 |             self._refresh_selection_stats()
+LINE 570 |             self.sv_status.set(f"Archivo removido: {os.path.basename(val)}")
+LINE 571 | 
+LINE 572 |     def on_clear_individual_files(self):
+LINE 573 |         self.selector.clear_individual_files()
+LINE 574 |         self.file_listbox.delete(0, tk.END)
+LINE 575 |         self._refresh_selection_stats()
+LINE 576 |         self.sv_status.set("Lista de archivos individuales limpiada.")
+LINE 577 | 
+LINE 578 |     def get_output_dir(self) -> str:
+LINE 579 |         out_dir = os.path.join(
+LINE 580 |             os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "output"
+LINE 581 |         )
+LINE 582 |         os.makedirs(out_dir, exist_ok=True)
+LINE 583 |         return out_dir
+LINE 584 | 
+LINE 585 |     def on_open_results_folder(self):
+LINE 586 |         out_dir = self.get_output_dir()
+LINE 587 |         try:
+LINE 588 |             if os.name == "nt":
+LINE 589 |                 os.startfile(out_dir)
+LINE 590 |             else:
+LINE 591 |                 subprocess.run(["open" if sys.platform == "darwin" else "xdg-open", out_dir])
+LINE 592 |             self.sv_status.set(f"Carpeta de resultados abierta: {out_dir}")
+LINE 593 |         except Exception as exc:
+LINE 594 |             dialogs.show_error("Error", f"No se pudo abrir la carpeta: {exc}")
+LINE 595 | 
+LINE 596 |     def on_generate_prompt(self):
+LINE 597 |         folder = self.var_folder.get()
+LINE 598 |         ind    = self.selector.get_selection().individual_files
+LINE 599 | 
+LINE 600 |         if not folder and not ind:
+LINE 601 |             dialogs.show_warning("Atención",
+LINE 602 |                                  "Selecciona una carpeta o al menos un archivo individual.")
+LINE 603 |             return
+LINE 604 | 
+LINE 605 |         self.selector.set_checked_folder_files(self.tree.get_checked_files())
+LINE 606 |         self.selector.set_exclusions_from_string(self.var_excl.get())
+LINE 607 | 
+LINE 608 |         try: self.config.max_file_size_mb  = float(self.var_max_file.get())
+LINE 609 |         except ValueError: self.config.max_file_size_mb = 2.0
+LINE 610 | 
+LINE 611 |         try: self.config.max_total_size_mb = float(self.var_max_tot.get())
+LINE 612 |         except ValueError: self.config.max_total_size_mb = 50.0
+LINE 613 | 
+LINE 614 |         try: self.config.max_files = int(self.var_max_n.get())
+LINE 615 |         except ValueError: self.config.max_files = 100
+LINE 616 | 
+LINE 617 |         self.config.add_line_numbers        = self.var_lineno.get()
+LINE 618 |         self.config.include_tree            = self.var_tree.get()
+LINE 619 |         self.config.include_system_instructions = self.var_instruct.get()
+LINE 620 |         self.config.output_format           = self.var_fmt.get()
+LINE 621 | 
+LINE 622 |         problem_desc = self.problem_text.get("1.0", tk.END).strip()
+LINE 623 |         gen = PromptGenerator(self.config)
+LINE 624 | 
+LINE 625 |         doc_text, included, excluded, omitted, total_lines = gen.generate(
+LINE 626 |             self.selector.get_selection(), problem_desc
+LINE 627 |         )
+LINE 628 | 
+LINE 629 |         if included == 0 and omitted == 0:
+LINE 630 |             dialogs.show_warning("Atención",
+LINE 631 |                                  "No hay archivos de código válidos seleccionados.")
+LINE 632 |             return
+LINE 633 | 
+LINE 634 |         # Preview
+LINE 635 |         self.preview_text.delete("1.0", tk.END)
+LINE 636 |         self.preview_text.insert(tk.END, doc_text)
+LINE 637 | 
+LINE 638 |         # Update bottom stats
+LINE 639 |         self._refresh_selection_stats()
+LINE 640 |         self.sv_included.set(str(included))
+LINE 641 |         self.sv_excluded.set(str(excluded))
+LINE 642 |         self.sv_lines.set(f"{total_lines:,}")
+LINE 643 | 
+LINE 644 |         # Save output files
+LINE 645 |         out_dir     = self.get_output_dir()
+LINE 646 |         md_text, _, _, _, _  = generate_markdown_bundle(
+LINE 647 |             self.selector.get_selection(), problem_desc, self.config)
+LINE 648 |         txt_text, _, _, _, _ = generate_text_bundle(
+LINE 649 |             self.selector.get_selection(), problem_desc, self.config)
+LINE 650 |         prompt_text = generate_standalone_prompt(problem_desc)
+LINE 651 | 
+LINE 652 |         write_text_file(os.path.join(out_dir, "deepseek_project_context.md"),  md_text)
+LINE 653 |         write_text_file(os.path.join(out_dir, "deepseek_project_context.txt"), txt_text)
+LINE 654 |         write_text_file(os.path.join(out_dir, "deepseek_prompt.md"),           prompt_text)
+LINE 655 | 
+LINE 656 |         dialogs.show_info(
+LINE 657 |             "✅ Archivos Preparados",
+LINE 658 |             f"Archivos generados en:\n{out_dir}\n\n"
+LINE 659 |             f"• Incluidos:  {included}\n"
+LINE 660 |             f"• Excluidos:  {excluded}\n"
+LINE 661 |             f"• Omitidos:   {omitted}\n"
+LINE 662 |             f"• Líneas:     {total_lines:,}\n\n"
+LINE 663 |             "Abre DeepSeek en tu navegador y adjunta:\n"
+LINE 664 |             "  1. deepseek_prompt.md\n"
+LINE 665 |             "  2. deepseek_project_context.md\n"
+LINE 666 |             "  3. deepseek_project_context.txt"
+LINE 667 |         )
+LINE 668 |         self.sv_status.set(
+LINE 669 |             f"Listo · Incluidos: {included} · Excluidos: {excluded} · Omitidos: {omitted} · Líneas: {total_lines:,}"
+LINE 670 |         )
+LINE 671 | 
+LINE 672 |     def on_copy_clipboard(self):
+LINE 673 |         content = self.preview_text.get("1.0", tk.END).strip()
+LINE 674 |         if not content:
+LINE 675 |             dialogs.show_warning("Atención",
+LINE 676 |                                  "Genera el contexto primero (⚡ Generar contexto).")
+LINE 677 |             return
+LINE 678 |         if copy_to_clipboard(self.root, content):
+LINE 679 |             self.sv_status.set("Contenido copiado al portapapeles.")
+LINE 680 | 
+LINE 681 |     def on_export_file(self):
+LINE 682 |         content = self.preview_text.get("1.0", tk.END).strip()
+LINE 683 |         if not content:
+LINE 684 |             dialogs.show_warning("Atención",
+LINE 685 |                                  "Genera el contexto primero (⚡ Generar contexto).")
+LINE 686 |             return
+LINE 687 |         ext = ".md" if self.var_fmt.get() == "markdown" else ".txt"
+LINE 688 |         fp  = dialogs.ask_save_file("Guardar Documento", default_ext=ext)
+LINE 689 |         if fp:
+LINE 690 |             ok, msg = write_text_file(fp, content)
+LINE 691 |             if ok:
+LINE 692 |                 self.sv_status.set(f"Guardado: {os.path.basename(fp)}")
+LINE 693 |                 dialogs.show_info("Guardado", f"Archivo guardado en:\n{fp}")
+LINE 694 |             else:
+LINE 695 |                 dialogs.show_error("Error", f"No se pudo guardar: {msg}")
+```
+
+==============================================================
+FILE: app/models/__init__.py
+==============================================================
+```py
+LINE 1 | """Models package initialization."""
+LINE 2 | from app.models.project import ProjectSelection, FileItem, ExportConfig
+LINE 3 | 
+LINE 4 | __all__ = ["ProjectSelection", "FileItem", "ExportConfig"]
+```
+
+==============================================================
+FILE: app/models/project.py
+==============================================================
+```py
+LINE  1 | """Data models for project selection, files, and export configuration."""
+LINE  2 | from dataclasses import dataclass, field
+LINE  3 | from typing import Set, List, Optional
+LINE  4 | import os
+LINE  5 | 
+LINE  6 | DEFAULT_ALLOWED_EXTENSIONS = {
+LINE  7 |     ".py", ".js", ".jsx", ".ts", ".tsx", ".vue", ".php", ".html", ".htm",
+LINE  8 |     ".css", ".scss", ".sass", ".less", ".json", ".sql", ".md", ".txt",
+LINE  9 |     ".java", ".cpp", ".c", ".h", ".hpp", ".cs", ".go", ".rs", ".rb",
+LINE 10 |     ".sh", ".bat", ".cmd", ".ps1", ".yaml", ".yml", ".xml", ".ini", ".env", ".config"
+LINE 11 | }
+LINE 12 | 
+LINE 13 | 
+LINE 14 | @dataclass
+LINE 15 | class FileItem:
+LINE 16 |     """Represents an individual file item in the selection."""
+LINE 17 |     path: str
+LINE 18 |     rel_path: str = ""
+LINE 19 |     is_checked: bool = True
+LINE 20 |     is_individual: bool = False
+LINE 21 |     size: int = 0
+LINE 22 | 
+LINE 23 |     def __post_init__(self):
+LINE 24 |         if not self.rel_path:
+LINE 25 |             self.rel_path = os.path.basename(self.path)
+LINE 26 | 
+LINE 27 | 
+LINE 28 | @dataclass
+LINE 29 | class ProjectSelection:
+LINE 30 |     """Stores current selection state: 1 folder + N individual files."""
+LINE 31 |     folder_path: Optional[str] = None
+LINE 32 |     checked_folder_files: Set[str] = field(default_factory=set)
+LINE 33 |     individual_files: List[str] = field(default_factory=list)
+LINE 34 |     excluded_dirs: Set[str] = field(
+LINE 35 |         default_factory=lambda: {
+LINE 36 |             ".git", "node_modules", "__pycache__", "venv", ".venv", 
+LINE 37 |             "dist", "build", ".idea", ".vscode"
+LINE 38 |         }
+LINE 39 |     )
+LINE 40 |     allowed_extensions: Set[str] = field(default_factory=lambda: set(DEFAULT_ALLOWED_EXTENSIONS))
+LINE 41 |     filter_by_extension: bool = True
+LINE 42 | 
+LINE 43 |     def set_folder(self, folder_path: str) -> None:
+LINE 44 |         """Sets single project folder (replaces any previous folder)."""
+LINE 45 |         self.folder_path = folder_path
+LINE 46 |         self.checked_folder_files.clear()
+LINE 47 | 
+LINE 48 |     def remove_folder(self) -> None:
+LINE 49 |         """Clears single project folder."""
+LINE 50 |         self.folder_path = None
+LINE 51 |         self.checked_folder_files.clear()
+LINE 52 | 
+LINE 53 |     def add_individual_files(self, paths: List[str]) -> int:
+LINE 54 |         """Adds unique individual file paths."""
+LINE 55 |         added = 0
+LINE 56 |         for p in paths:
+LINE 57 |             abs_p = os.path.abspath(p)
+LINE 58 |             if abs_p not in self.individual_files:
+LINE 59 |                 self.individual_files.append(abs_p)
+LINE 60 |                 added += 1
+LINE 61 |         return added
+LINE 62 | 
+LINE 63 |     def remove_individual_file(self, path: str) -> None:
+LINE 64 |         """Removes a file from individual files list."""
+LINE 65 |         if path in self.individual_files:
+LINE 66 |             self.individual_files.remove(path)
+LINE 67 | 
+LINE 68 |     def clear_individual_files(self) -> None:
+LINE 69 |         """Clears all individual files."""
+LINE 70 |         self.individual_files.clear()
+LINE 71 | 
+LINE 72 |     def is_file_extension_allowed(self, filename: str) -> bool:
+LINE 73 |         """Checks if file extension is allowed."""
+LINE 74 |         if not self.filter_by_extension or not self.allowed_extensions:
+LINE 75 |             return True
+LINE 76 |         ext = os.path.splitext(filename)[1].lower()
+LINE 77 |         return ext in self.allowed_extensions
+LINE 78 | 
+LINE 79 | 
+LINE 80 | @dataclass
+LINE 81 | class ExportConfig:
+LINE 82 |     """Export and formatting configurations with size & file limits."""
+LINE 83 |     add_line_numbers: bool = True
+LINE 84 |     include_tree: bool = True
+LINE 85 |     include_system_instructions: bool = True
+LINE 86 |     max_file_size_mb: float = 2.0
+LINE 87 |     max_total_size_mb: float = 50.0
+LINE 88 |     max_files: int = 100
+LINE 89 |     output_format: str = "markdown"  # "markdown" or "text"
+LINE 90 |     max_chars_per_file: int = 60000
+```
+
+==============================================================
+FILE: app/utils/__init__.py
+==============================================================
+```py
+LINE 1 | """Utils package initialization."""
+LINE 2 | from app.utils.path_utils import normalize_path, get_relative_path
+LINE 3 | from app.utils.file_utils import safe_read_file, copy_to_clipboard, write_text_file, format_bytes
+LINE 4 | 
+LINE 5 | __all__ = ["normalize_path", "get_relative_path", "safe_read_file", "copy_to_clipboard", "write_text_file", "format_bytes"]
+```
+
+==============================================================
+FILE: app/utils/file_utils.py
+==============================================================
+```py
+LINE   1 | """File system I/O operations, binary detection, and memory-safe reading."""
+LINE   2 | import os
+LINE   3 | import tkinter as tk
+LINE   4 | from typing import Tuple
+LINE   5 | 
+LINE   6 | # Common non-code / binary / media extensions
+LINE   7 | KNOWN_BINARY_EXTENSIONS = {
+LINE   8 |     # Images
+LINE   9 |     ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".svg", ".webp", ".tiff", ".psd",
+LINE  10 |     # Videos & Audio
+LINE  11 |     ".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mp3", ".wav", ".ogg", ".flac",
+LINE  12 |     # Executables & Compiled Binaries
+LINE  13 |     ".exe", ".dll", ".so", ".dylib", ".bin", ".dat", ".o", ".a", ".pyc", ".pyo", ".class", ".sys",
+LINE  14 |     # Archives & Compressed
+LINE  15 |     ".zip", ".tar", ".gz", ".7z", ".rar", ".bz2", ".xz", ".iso", ".jar",
+LINE  16 |     # Documents / Databases
+LINE  17 |     ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".db", ".sqlite", ".sqlite3"
+LINE  18 | }
+LINE  19 | 
+LINE  20 | 
+LINE  21 | def is_binary_file(path: str) -> bool:
+LINE  22 |     """
+LINE  23 |     Checks if a file is binary by extension and by inspecting the first 1024 bytes
+LINE  24 |     for null characters or non-text control bytes.
+LINE  25 |     """
+LINE  26 |     ext = os.path.splitext(path)[1].lower()
+LINE  27 |     if ext in KNOWN_BINARY_EXTENSIONS:
+LINE  28 |         return True
+LINE  29 | 
+LINE  30 |     try:
+LINE  31 |         with open(path, 'rb') as f:
+LINE  32 |             chunk = f.read(1024)
+LINE  33 |             if b'\x00' in chunk:
+LINE  34 |                 return True
+LINE  35 |             # High proportion of non-printable bytes indicates binary
+LINE  36 |             if chunk:
+LINE  37 |                 non_text = sum(1 for byte in chunk if byte < 9 or (13 < byte < 32) or byte == 127)
+LINE  38 |                 if non_text / len(chunk) > 0.3:
+LINE  39 |                     return True
+LINE  40 |     except Exception:
+LINE  41 |         pass
+LINE  42 |     return False
+LINE  43 | 
+LINE  44 | 
+LINE  45 | def get_file_size(path: str) -> int:
+LINE  46 |     """Returns size of file in bytes."""
+LINE  47 |     try:
+LINE  48 |         return os.path.getsize(path)
+LINE  49 |     except Exception:
+LINE  50 |         return 0
+LINE  51 | 
+LINE  52 | 
+LINE  53 | def safe_read_file(path: str, max_bytes: int = 1_048_576) -> str:
+LINE  54 |     """
+LINE  55 |     Reads file content safely using common encodings.
+LINE  56 |     Truncates content if size exceeds max_bytes to protect memory usage.
+LINE  57 |     """
+LINE  58 |     if is_binary_file(path):
+LINE  59 |         return f"[OMITIDO: Archivo binario no textual - {os.path.basename(path)}]"
+LINE  60 | 
+LINE  61 |     file_size = get_file_size(path)
+LINE  62 |     is_truncated = False
+LINE  63 |     
+LINE  64 |     if file_size > max_bytes:
+LINE  65 |         is_truncated = True
+LINE  66 | 
+LINE  67 |     encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252']
+LINE  68 |     content = None
+LINE  69 | 
+LINE  70 |     for enc in encodings:
+LINE  71 |         try:
+LINE  72 |             with open(path, 'r', encoding=enc) as f:
+LINE  73 |                 if is_truncated:
+LINE  74 |                     content = f.read(max_bytes)
+LINE  75 |                 else:
+LINE  76 |                     content = f.read()
+LINE  77 |                 break
+LINE  78 |         except (UnicodeDecodeError, Exception):
+LINE  79 |             continue
+LINE  80 | 
+LINE  81 |     if content is None:
+LINE  82 |         try:
+LINE  83 |             with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+LINE  84 |                 content = f.read(max_bytes) if is_truncated else f.read()
+LINE  85 |         except Exception as e:
+LINE  86 |             return f"[Error critico al leer archivo: {e}]"
+LINE  87 | 
+LINE  88 |     if is_truncated:
+LINE  89 |         size_mb = file_size / (1024 * 1024)
+LINE  90 |         limit_mb = max_bytes / (1024 * 1024)
+LINE  91 |         content += f"\n\n... [CONTENIDO TRUNCADO: El archivo supera el límite de {limit_mb:.1f} MB (Tamaño real: {size_mb:.2f} MB)] ..."
+LINE  92 | 
+LINE  93 |     return content
+LINE  94 | 
+LINE  95 | 
+LINE  96 | def write_text_file(path: str, content: str) -> Tuple[bool, str]:
+LINE  97 |     """Writes text content to file safely with UTF-8 encoding."""
+LINE  98 |     try:
+LINE  99 |         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+LINE 100 |         with open(path, 'w', encoding='utf-8') as f:
+LINE 101 |             f.write(content)
+LINE 102 |         return True, "Guardado exitosamente."
+LINE 103 |     except Exception as e:
+LINE 104 |         return False, str(e)
+LINE 105 | 
+LINE 106 | 
+LINE 107 | def copy_to_clipboard(root: tk.Tk, text: str) -> bool:
+LINE 108 |     """Copies text string to system clipboard using Tkinter."""
+LINE 109 |     try:
+LINE 110 |         root.clipboard_clear()
+LINE 111 |         root.clipboard_append(text)
+LINE 112 |         root.update()
+LINE 113 |         return True
+LINE 114 |     except Exception:
+LINE 115 |         return False
+LINE 116 | 
+LINE 117 | 
+LINE 118 | def format_bytes(size_bytes: int) -> str:
+LINE 119 |     """Formats raw bytes into human readable string (KB, MB)."""
+LINE 120 |     if size_bytes < 1024:
+LINE 121 |         return f"{size_bytes} B"
+LINE 122 |     elif size_bytes < 1024 * 1024:
+LINE 123 |         return f"{size_bytes / 1024:.1f} KB"
+LINE 124 |     else:
+LINE 125 |         return f"{size_bytes / (1024 * 1024):.2f} MB"
+```
+
+==============================================================
+FILE: app/utils/path_utils.py
+==============================================================
+```py
+LINE  1 | """Path resolution and string formatting utilities."""
+LINE  2 | import os
+LINE  3 | 
+LINE  4 | 
+LINE  5 | def normalize_path(path: str) -> str:
+LINE  6 |     """Normalizes path for cross-platform consistency."""
+LINE  7 |     if not path:
+LINE  8 |         return ""
+LINE  9 |     return os.path.abspath(os.path.normpath(path))
+LINE 10 | 
+LINE 11 | 
+LINE 12 | def get_relative_path(path: str, start_dir: str) -> str:
+LINE 13 |     """Returns path relative to start_dir if possible, otherwise absolute path."""
+LINE 14 |     try:
+LINE 15 |         norm_path = normalize_path(path)
+LINE 16 |         norm_start = normalize_path(start_dir)
+LINE 17 |         if norm_path.startswith(norm_start):
+LINE 18 |             return os.path.relpath(norm_path, norm_start)
+LINE 19 |     except Exception:
+LINE 20 |         pass
+LINE 21 |     return os.path.basename(path)
+```
+
+==============================================================
+FILE: deepseek_gui.py
+==============================================================
+```py
+LINE 1 | """
+LINE 2 | Launcher wrapper for backward compatibility.
+LINE 3 | Invokes the modular entry point main.py.
+LINE 4 | """
+LINE 5 | from main import main
+LINE 6 | 
+LINE 7 | if __name__ == "__main__":
+LINE 8 |     main()
+```
+
+==============================================================
+FILE: ejecutar.bat
+==============================================================
+```bat
+LINE  1 | @echo off
+LINE  2 | title DeepSeek Debugger GUI
+LINE  3 | cd /d "%~dp0"
+LINE  4 | 
+LINE  5 | echo ========================================================
+LINE  6 | echo         Iniciando DeepSeek Debugger GUI
+LINE  7 | echo ========================================================
+LINE  8 | echo.
+LINE  9 | 
+LINE 10 | :: 1. Verificar si el entorno virtual existe
+LINE 11 | if not exist "%~dp0venv\Scripts\python.exe" (
+LINE 12 |     echo [INFO] Creando el entorno virtual venv...
+LINE 13 |     python -m venv "%~dp0venv"
+LINE 14 |     if errorlevel 1 (
+LINE 15 |         echo [ERROR] No se pudo crear el entorno virtual.
+LINE 16 |         echo Asegurate de tener Python instalado y agregado al PATH.
+LINE 17 |         echo.
+LINE 18 |         pause
+LINE 19 |         exit /b 1
+LINE 20 |     )
+LINE 21 |     echo [INFO] Instalando dependencias desde requirements.txt...
+LINE 22 |     "%~dp0venv\Scripts\python.exe" -m pip install -r "%~dp0requirements.txt"
+LINE 23 |     if errorlevel 1 (
+LINE 24 |         echo [ERROR] Error al instalar dependencias.
+LINE 25 |         echo.
+LINE 26 |         pause
+LINE 27 |         exit /b 1
+LINE 28 |     )
+LINE 29 | )
+LINE 30 | 
+LINE 31 | :: 2. Ejecutar la aplicacion usando el Python del entorno virtual
+LINE 32 | echo [INFO] Lanzando la interfaz grafica...
+LINE 33 | start "" "%~dp0venv\Scripts\pythonw.exe" "%~dp0main.py"
+LINE 34 | 
+LINE 35 | if errorlevel 1 (
+LINE 36 |     echo [ERROR] Ocurrio un error al lanzar la aplicacion.
+LINE 37 |     echo.
+LINE 38 |     pause
+LINE 39 |     exit /b 1
+LINE 40 | )
+LINE 41 | 
+LINE 42 | echo [INFO] Aplicacion iniciada correctamente.
+```
+
+==============================================================
+FILE: ejecutar_con_consola.bat
+==============================================================
+```bat
+LINE  1 | @echo off
+LINE  2 | title DeepSeek Debugger GUI - Modo Consola
+LINE  3 | cd /d "%~dp0"
+LINE  4 | 
+LINE  5 | echo ========================================================
+LINE  6 | echo         Ejecutando en Modo Consola - Debug
+LINE  7 | echo ========================================================
+LINE  8 | echo.
+LINE  9 | 
+LINE 10 | if not exist "%~dp0venv\Scripts\python.exe" (
+LINE 11 |     echo [INFO] Creando el entorno virtual venv...
+LINE 12 |     python -m venv "%~dp0venv"
+LINE 13 |     echo [INFO] Instalando dependencias...
+LINE 14 |     "%~dp0venv\Scripts\python.exe" -m pip install -r "%~dp0requirements.txt"
+LINE 15 | )
+LINE 16 | 
+LINE 17 | echo [INFO] Iniciando main.py...
+LINE 18 | echo.
+LINE 19 | "%~dp0venv\Scripts\python.exe" "%~dp0main.py"
+LINE 20 | 
+LINE 21 | echo.
+LINE 22 | echo ========================================================
+LINE 23 | echo La aplicacion se ha cerrado. Presiona cualquier tecla para salir.
+LINE 24 | echo ========================================================
+LINE 25 | pause
+```
+
+==============================================================
+FILE: iniciar_deepseek_debugger.sh
+==============================================================
+```sh
+LINE  1 | #!/bin/bash
+LINE  2 | 
+LINE  3 | # Título de la terminal
+LINE  4 | echo -ne "\033]0;DeepSeek Debugger GUI\007"
+LINE  5 | 
+LINE  6 | # Cambiar al directorio donde está este script
+LINE  7 | cd "$(dirname "$0")" || exit 1
+LINE  8 | 
+LINE  9 | echo "========================================================"
+LINE 10 | echo "        Iniciando DeepSeek Debugger GUI"
+LINE 11 | echo "========================================================"
+LINE 12 | echo
+LINE 13 | 
+LINE 14 | # 1. Verificar si el entorno virtual existe
+LINE 15 | if [ ! -f "venv/bin/python" ]; then
+LINE 16 |     echo "[INFO] Creando el entorno virtual venv..."
+LINE 17 | 
+LINE 18 |     python3 -m venv venv
+LINE 19 | 
+LINE 20 |     if [ $? -ne 0 ]; then
+LINE 21 |         echo "[ERROR] No se pudo crear el entorno virtual."
+LINE 22 |         echo "Asegúrate de tener Python 3 instalado."
+LINE 23 |         echo
+LINE 24 |         read -p "Presiona Enter para salir..."
+LINE 25 |         exit 1
+LINE 26 |     fi
+LINE 27 | 
+LINE 28 |     echo "[INFO] Instalando dependencias desde requirements.txt..."
+LINE 29 | 
+LINE 30 |     venv/bin/python -m pip install -r requirements.txt
+LINE 31 | 
+LINE 32 |     if [ $? -ne 0 ]; then
+LINE 33 |         echo "[ERROR] Error al instalar dependencias."
+LINE 34 |         echo
+LINE 35 |         read -p "Presiona Enter para salir..."
+LINE 36 |         exit 1
+LINE 37 |     fi
+LINE 38 | fi
+LINE 39 | 
+LINE 40 | # 2. Ejecutar la aplicación usando Python del entorno virtual
+LINE 41 | echo "[INFO] Lanzando la interfaz gráfica..."
+LINE 42 | 
+LINE 43 | venv/bin/python main.py
+LINE 44 | 
+LINE 45 | if [ $? -ne 0 ]; then
+LINE 46 |     echo "[ERROR] Ocurrió un error al ejecutar la aplicación."
+LINE 47 |     echo
+LINE 48 |     read -p "Presiona Enter para salir..."
+LINE 49 |     exit 1
+LINE 50 | fi
+LINE 51 | 
+LINE 52 | echo "[INFO] Aplicación finalizada correctamente."
+```
+
+==============================================================
+FILE: main.py
+==============================================================
+```py
+LINE  1 | """Main entry point for DeepSeek Code Packager."""
+LINE  2 | import sys
+LINE  3 | import os
+LINE  4 | import tkinter as tk
+LINE  5 | 
+LINE  6 | # Ensure current working directory is in sys.path
+LINE  7 | sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+LINE  8 | 
+LINE  9 | from app.gui.main_window import MainWindow
+LINE 10 | 
+LINE 11 | 
+LINE 12 | def main():
+LINE 13 |     root = tk.Tk()
+LINE 14 |     app = MainWindow(root)
+LINE 15 |     root.mainloop()
+LINE 16 | 
+LINE 17 | 
+LINE 18 | if __name__ == "__main__":
+LINE 19 |     main()
+```
+
+==============================================================
+FILE: output/deepseek_prompt.md
+==============================================================
+```md
+LINE   1 | # PROMPT PROFESIONAL PARA DEEPSEEK WEB CHAT
+LINE   2 | 
+LINE   3 | > **Instrucción para el usuario:** Copia este texto y pégalo directamente en el chat de DeepSeek junto con los archivos adjuntos (`deepseek_project_context.md` o `deepseek_project_context.txt`).
+LINE   4 | 
+LINE   5 | ==============================================================
+LINE   6 | REPORTED PROBLEM / PROBLEMA REPORTADO
+LINE   7 | ==============================================================
+LINE   8 | quiero cambiar de base de datos  a uno de prueba de otra base de datos en supabase
+LINE   9 | 
+LINE  10 | ==============================================================
+LINE  11 | PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO
+LINE  12 | ==============================================================
+LINE  13 | Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional.
+LINE  14 | 
+LINE  15 | ---
+LINE  16 | 
+LINE  17 | ### 📋 INSTRUCCIONES DE ANÁLISIS (REGLAS OBLIGATORIAS)
+LINE  18 | 
+LINE  19 | Realiza un análisis exhaustivo respetando estrictamente los siguientes principios:
+LINE  20 | 
+LINE  21 | #### 1. Análisis Arquitectónico y Dependencias
+LINE  22 | 1. **Analiza la arquitectura del proyecto primero** antes de proponer cualquier cambio.
+LINE  23 | 2. **Analiza las dependencias entre archivos**: cómo interactúan clases, funciones, componentes e importaciones.
+LINE  24 | 3. **No asumas que un archivo funciona de forma aislada**: evalúa el impacto en otros componentes.
+LINE  25 | 
+LINE  26 | #### 2. Causa Raíz y Solución Escalable
+LINE  27 | 4. **Identifica la causa raíz del problema**: no apliques parches temporales ni soluciones superficiales.
+LINE  28 | 5. **Evita soluciones temporales**: propón soluciones escalables, limpias y mantenibles.
+LINE  29 | 6. **Preserva la funcionalidad existente**: no elimines funcionalidades ni cambies comportamientos sin justificación técnica explícita.
+LINE  30 | 
+LINE  31 | #### 3. Especificidad de las Modificaciones
+LINE  32 | 7. **Especifica exactamente qué archivos deben modificarse**, incluyendo la ruta relativa.
+LINE  33 | 8. **Indica el número de línea aproximado** para cada modificación.
+LINE  34 | 9. **Explica cada modificación** con su justificación técnica.
+LINE  35 | 10. **Muestra el código corregido** listo para copiar y pegar.
+LINE  36 | 11. **Detecta posibles efectos secundarios** de cada cambio propuesto.
+LINE  37 | 12. **Indica si se deben crear nuevos archivos** (con ruta y propósito).
+LINE  38 | 13. **Indica si la estructura del proyecto debe modificarse**.
+LINE  39 | 
+LINE  40 | ---
+LINE  41 | 
+LINE  42 | ### 📐 FORMATO DE RESPUESTA OBLIGATORIO
+LINE  43 | 
+LINE  44 | Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
+LINE  45 | 
+LINE  46 | ---
+LINE  47 | 
+LINE  48 | # DIAGNOSIS
+LINE  49 | 
+LINE  50 | ## Problem
+LINE  51 | [Descripción clara y técnica del problema detectado en el código]
+LINE  52 | 
+LINE  53 | ## Root Cause
+LINE  54 | [Explicación técnica de la causa raíz. ¿Por qué ocurre? ¿Qué lo genera?]
+LINE  55 | 
+LINE  56 | ---
+LINE  57 | 
+LINE  58 | # FILES TO MODIFY
+LINE  59 | 
+LINE  60 | ## 1. [ruta/relativa/archivo.ext]
+LINE  61 | Approximate line: [número aproximado de línea]
+LINE  62 | 
+LINE  63 | ### Problem
+LINE  64 | [Descripción precisa del problema en este archivo]
+LINE  65 | 
+LINE  66 | ### Solution
+LINE  67 | [Descripción detallada de la modificación propuesta]
+LINE  68 | 
+LINE  69 | ### Current Code
+LINE  70 | ```
+LINE  71 | [bloque de código actual que debe reemplazarse]
+LINE  72 | ```
+LINE  73 | 
+LINE  74 | ### Corrected Code
+LINE  75 | ```
+LINE  76 | [bloque de código corregido listo para sustituir]
+LINE  77 | ```
+LINE  78 | 
+LINE  79 | ---
+LINE  80 | [Repite la sección anterior para cada archivo que deba modificarse]
+LINE  81 | 
+LINE  82 | ---
+LINE  83 | 
+LINE  84 | # NEW FILES
+LINE  85 | [Si se requieren nuevos archivos, lístallos aquí con su ruta relativa, propósito y contenido de ejemplo.
+LINE  86 | Si no se requieren nuevos archivos, escribe: No se requieren nuevos archivos.]
+LINE  87 | 
+LINE  88 | ---
+LINE  89 | 
+LINE  90 | # ARCHITECTURAL CHANGES
+LINE  91 | [Describe si la estructura de carpetas, módulos o dependencias del proyecto debe modificarse.
+LINE  92 | Si no se requieren cambios arquitectónicos, escribe: No se requieren cambios arquitectónicos.]
+LINE  93 | 
+LINE  94 | ---
+LINE  95 | 
+LINE  96 | # RISKS OR SIDE EFFECTS
+LINE  97 | [Lista de posibles riesgos, efectos secundarios o regresiones que podrían ocurrir al aplicar los cambios propuestos.
+LINE  98 | Si no hay riesgos identificados, escribe: Sin riesgos identificados.]
+LINE  99 | 
+LINE 100 | ---
+LINE 101 | 
+LINE 102 | # IMPLEMENTATION PLAN
+LINE 103 | [Lista ordenada y numerada de pasos concretos para implementar los cambios de forma segura:]
+LINE 104 | 
+LINE 105 | 1. [Primer paso]
+LINE 106 | 2. [Segundo paso]
+LINE 107 | 3. [Tercer paso]
+LINE 108 | 4. [Cuarto paso]
+LINE 109 | [...continúa según sea necesario]
+LINE 110 | 
+LINE 111 | ---
+LINE 112 | 
+LINE 113 | ==============================================================
+LINE 114 | ATTACHMENTS / ARCHIVOS ADJUNTOS
+LINE 115 | ==============================================================
+LINE 116 | Por favor revisa el archivo de contexto adjunto (`deepseek_project_context.md` / `deepseek_project_context.txt`) que contiene:
+LINE 117 | - **Project Summary**: desglose de archivos seleccionados por extensión y total de líneas.
+LINE 118 | - **Dependencies and References**: importaciones y dependencias detectadas automáticamente por archivo.
+LINE 119 | - **Estructura del Proyecto**: diagrama en árbol jerárquico de carpetas y archivos.
+LINE 120 | - **Código Fuente**: contenido de los archivos seleccionados con sus **rutas relativas** y **números de línea originales** (`LINE X | ...`).
+LINE 121 | 
+LINE 122 | Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba.
+```
+
+==============================================================
+FILE: output/etapas_produccion_export_2026-08-27_105739.sql
+==============================================================
+```sql
+LINE  1 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Detalles de producción', 50, 24, 'Etapa producción 1', 17, 83);
+LINE  2 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Detalle producción', 50, 25, 'Etapa producción 2', 17, 83);
+LINE  3 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Tostado de granos según el tipo de café a obtener, considerando la twmperatura de inicio y evaluandi la evolución de temp durante todo el proceso de tostado.', 74, 27, 'Tostado', 21, 88);
+LINE  4 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Proceso de molido según el tipo de producto, marca. Previa verificación la granulometría cprrecta.', 74, 28, 'Molido', 21, 88);
+LINE  5 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Colocado cada producto procesado en los envases correctos (marca, peso y tipo producto).', 74, 29, 'Envasado', 21, 88);
+LINE  6 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Tostado de granos', 75, 31, 'Tostado', 19, 99);
+LINE  7 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Molido de granos', 75, 32, 'Molido', 19, 99);
+LINE  8 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Envaso de producto terminado', 75, 33, 'Envasado', 19, 99);
+LINE  9 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Tratamientos térmicos (cocción, ahumado, escaldado), secado y maduración, y finalmente enfriamiento y envasado para distribución, variando según el producto final (frescos, cocidos, curados)', 75, 34, 'Procesado', 27, 105);
+LINE 10 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Sección encargada del envasado o encapacado de los productos.', 75, 35, 'Envasado', 27, 105);
+LINE 11 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Sección de producción: preparación de materia prima (recepción, troceado, deshuesado, molido), mezclado y adición de condimentos, embutido (relleno en tripas).', 75, 36, 'Preparado Ingredientes', 27, 105);
+LINE 12 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('empaquetado', 75, 37, 'empaquetado', 19, 100);
+LINE 13 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('produccion', 75, 38, 'producion', 19, 99);
+LINE 14 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Corte del cuero', 75, 39, 'Corte', 29, 110);
+LINE 15 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Pegado y sellado de los calzados', 75, 40, 'Pegado y sellado', 29, 110);
+LINE 16 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Etapa final', 75, 41, 'Pintado y pulido', 29, 110);
+LINE 17 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Cortado de material', 119, 42, 'Cortado', 31, 113);
+LINE 18 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Formación de huellas', 75, 43, 'Fundido de goma', 29, 109);
+LINE 19 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Bordeado de plantillas', 75, 44, 'Afinación de acabado', 29, 109);
+LINE 20 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Aparado de partes', 119, 45, 'Aparado', 31, 113);
+LINE 21 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Conformado del calzado', 119, 46, 'Conformado', 31, 113);
+LINE 22 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Solado del calzado', 119, 47, 'Solado', 31, 113);
+LINE 23 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Afinado de detalles', 119, 48, 'Terminado', 31, 113);
+LINE 24 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Corte de piezas según modelo y talla', 50, 49, 'Corte', 33, 116);
+LINE 25 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Costura y unión de piezas', 50, 50, 'Aparado', 33, 117);
+LINE 26 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Conformado de puntera y talón', 50, 51, 'Conformado ', 33, 118);
+LINE 27 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Preparación, pegado y prensado de suela', 50, 52, 'Solado', 33, 119);
+LINE 28 | insert into `etapas_produccion` (`detalle`, `empresa_idempresa`, `idetapas_produccion`, `nombre_etapa`, `rubro_idrubro`, `seccion_idseccion`) values ('Limpieza, acabado, empaque y liberación', 50, 53, 'Terminado', 33, 120);
+```
+
+==============================================================
+FILE: requirements.txt
+==============================================================
+```txt
+LINE 1 | # No third-party API dependencies required.
+LINE 2 | # Built-in Python standard libraries (tkinter, pathlib, os, json, re) are used.
+```
+
+==============================================================
+FILE: run.bat
+==============================================================
+```bat
+LINE 1 | @echo off
+LINE 2 | cd /d "%~dp0"
+LINE 3 | call "%~dp0ejecutar.bat"
 ```
