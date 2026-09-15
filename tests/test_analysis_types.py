@@ -56,7 +56,7 @@ class TestAnalysisTypes(unittest.TestCase):
             profile = get_analysis_profile(key)
             prompt = generate_standalone_prompt("Test problem description", analysis_type=key)
 
-            self.assertIn(f"SELECTED ANALYSIS PROFILE: {profile.icon} {profile.name}", prompt)
+            self.assertIn(f"• PERFIL: {profile.icon} {profile.name}", prompt)
             self.assertIn(profile.objective, prompt)
             self.assertIn(profile.focus, prompt)
             self.assertIn(profile.priorities, prompt)

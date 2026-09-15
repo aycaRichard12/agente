@@ -1,25 +1,52 @@
 """Generates standalone professional prompt deepseek_prompt.md with structured DeepSeek response template."""
 from app.models.analysis_types import get_analysis_profile
+from app.models.analysis_modes import get_analysis_mode_config, MODE_PROJECT, MODE_PROBLEM
 
 
-def generate_standalone_prompt(problem_desc: str = "", analysis_type: str = "Detect errors") -> str:
+def generate_standalone_prompt(
+    problem_desc: str = "",
+    analysis_type: str = "Detect errors",
+    analysis_mode: str = "problem"
+) -> str:
     """
     Generates a professional copy-paste prompt instructing DeepSeek:
-    1. How to analyze the attached project context files according to the selected AnalysisProfile.
-    2. Defines the exact objective, focus, priorities, and expected outcome.
-    3. What exact structured markdown response format to return.
+    - Problem Mode: Focuses exclusively on diagnosing & resolving the specified problem (root cause, solution, code changes).
+    - Project Mode: Audits the project holistically (errors, duplicate code, bad practices, architecture, security, performance).
     """
-    problem_text = problem_desc.strip() if problem_desc.strip() else "[Describe aquí el problema o requerimiento que deseas abordar]"
     profile = get_analysis_profile(analysis_type)
+    mode_cfg = get_analysis_mode_config(analysis_mode)
+    is_project_mode = (mode_cfg.mode == MODE_PROJECT)
+
+    if is_project_mode:
+        problem_block = """==============================================================
+SCOPE OF ANALYSIS / ALCANCE DE AUDITORÍA HOLÍSTICA (MODO PROYECTO)
+==============================================================
+Realiza una auditoría técnica transversal completa de todo el proyecto adjunto:
+• Detección de errores y bugs latentes en el código.
+• Identificación de código duplicado y deuda técnica (DRY).
+• Malas prácticas de programación e ineficiencias.
+• Deficiencias de arquitectura, acoplamiento indebido y separación de capas.
+• Vulnerabilidades de seguridad (OWASP) y riesgos de exposición.
+• Oportunidades concretas de optimización de rendimiento (CPU, memoria, I/O)."""
+        response_template_to_use = mode_cfg.response_template
+    else:
+        problem_text = problem_desc.strip() if problem_desc.strip() else "[Describe aquí el problema o incidencia que deseas resolver]"
+        problem_block = f"""==============================================================
+REPORTED PROBLEM / PROBLEMA REPORTADO
+==============================================================
+{problem_text}"""
+        response_template_to_use = profile.response_template
 
     prompt = f"""# PROMPT PROFESIONAL PARA DEEPSEEK WEB CHAT
 
 > **Instrucción para el usuario:** Copia este texto y pégalo directamente en el chat de DeepSeek junto con los archivos adjuntos (`deepseek_project_context.md` o `deepseek_project_context.txt`).
 
 ==============================================================
-TIPO DE ANÁLISIS SELECCIONADO / SELECTED ANALYSIS PROFILE: {profile.icon} {profile.name}
+MODO Y PERFIL DE ANÁLISIS SELECCIONADO
 ==============================================================
-• OBJETIVO: {profile.objective}
+• MODO: {mode_cfg.icon} {mode_cfg.display_name}
+• PERFIL: {profile.icon} {profile.name}
+• OBJETIVO: {profile.objective if not is_project_mode else mode_cfg.description}
 • ENFOQUE: {profile.focus}
 • PRIORIDADES: {profile.priorities}
 • RESULTADO ESPERADO: {profile.expected_outcome}
@@ -27,50 +54,28 @@ TIPO DE ANÁLISIS SELECCIONADO / SELECTED ANALYSIS PROFILE: {profile.icon} {prof
 ⚠️ REGLA DE CONCRECIÓN TÉCNICA Y ACCIÓN:
 {profile.response_instructions}
 
-==============================================================
-REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO
-==============================================================
-{problem_text}
+{problem_block}
 
 ==============================================================
 PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO
 ==============================================================
-Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional bajo el perfil "{profile.name}".
+Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional bajo el modo "{mode_cfg.display_name}".
 
 ---
 
-### 📋 INSTRUCCIONES DE ANÁLISIS (REGLAS OBLIGATORIAS)
+### 📋 INSTRUCCIONES DE ANÁLISIS ({mode_cfg.mode.upper()} MODE RULES)
 
-Realiza el análisis respetando estrictamente los siguientes principios:
-
-#### 1. Análisis Arquitectónico y Dependencias
-1. **Analiza la arquitectura del proyecto primero** antes de proponer cualquier cambio.
-2. **Analiza las dependencias entre archivos**: cómo interactúan clases, funciones, componentes e importaciones.
-3. **No asumas que un archivo funciona de forma aislada**: evalúa el impacto en otros componentes.
-
-#### 2. Causa Raíz y Solución Escalable
-4. **Identifica la causa raíz o el diseño adecuado**: no apliques parches temporales ni soluciones superficiales.
-5. **Evita soluciones temporales**: propón soluciones escalables, limpias y mantenibles.
-6. **Preserva la funcionalidad existente**: no elimines funcionalidades ni cambies comportamientos sin justificación técnica explícita.
-
-#### 3. Especificidad de las Modificaciones
-7. **Especifica exactamente qué archivos deben modificarse**, incluyendo la ruta relativa.
-8. **Indica el número de línea aproximado** para cada modificación.
-9. **Explica cada modificación** con su justificación técnica concisa.
-10. **Muestra el código corregido/implementado** listo para copiar y pegar sin placeholders incompletos.
-11. **Detecta posibles efectos secundarios** de cada cambio propuesto.
-12. **Indica si se deben crear nuevos archivos** (con ruta y propósito).
-13. **Indica si la estructura del proyecto debe modificarse**.
+{mode_cfg.prompt_instructions}
 
 ---
 
-### 📐 FORMATO DE RESPUESTA OBLIGATORIO PARA: {profile.name.upper()}
+### 📐 FORMATO DE RESPUESTA OBLIGATORIO PARA: {mode_cfg.display_name.upper()}
 
-Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown adaptada al perfil seleccionado. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
+Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown adaptada al modo seleccionado. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
 
 ---
 
-{profile.response_template}
+{response_template_to_use}
 
 ---
 
@@ -83,6 +88,6 @@ Por favor revisa el archivo de contexto adjunto (`deepseek_project_context.md` /
 - **Estructura del Proyecto**: diagrama en árbol jerárquico de carpetas y archivos.
 - **Código Fuente**: contenido de los archivos seleccionados con sus **rutas relativas** y **números de línea originales** (`LINE X | ...`).
 
-Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba para el perfil "{profile.name}".
+Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba.
 """
     return prompt

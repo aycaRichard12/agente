@@ -10,6 +10,9 @@ from app.models.project import ExportConfig, DEFAULT_ALLOWED_EXTENSIONS
 from app.models.analysis_types import (
     ANALYSIS_PROFILES, get_analysis_profile, get_all_analysis_types
 )
+from app.models.analysis_modes import (
+    ANALYSIS_MODES, get_analysis_mode_config, MODE_PROBLEM, MODE_PROJECT
+)
 from app.core.file_selector import FileSelectorManager
 from app.generators.prompt_generator import PromptGenerator
 from app.generators.markdown_generator import generate_markdown_bundle
@@ -67,6 +70,7 @@ class MainWindow:
         self.var_max_n    = tk.IntVar(value=100)
         self.var_fmt      = tk.StringVar(value="markdown")
         self.var_analysis_type = tk.StringVar(value="Detect errors")
+        self.var_analysis_mode = tk.StringVar(value=MODE_PROBLEM)
 
         # Bottom stats vars
         self.sv_folder    = tk.StringVar(value="0")
@@ -317,15 +321,47 @@ class MainWindow:
 
         ttk.Separator(right).pack(fill=tk.X, pady=(4, 2))
 
-        # ── Problem description (always visible, prominent)
-        desc_hdr = ttk.Frame(right, style="Panel.TFrame", padding=(10, 6, 10, 4))
+        # ── Analysis Mode selector
+        mode_frame = ttk.Frame(right, style="Panel.TFrame", padding=(10, 6, 10, 2))
+        mode_frame.pack(fill=tk.X)
+
+        ttk.Label(mode_frame, text="🔁  Modo de análisis:", style="Sec.TLabel").pack(anchor="w", pady=(0, 4))
+
+        mode_btn_row = ttk.Frame(mode_frame, style="Panel.TFrame")
+        mode_btn_row.pack(fill=tk.X)
+
+        for mode_key, mode_cfg in ANALYSIS_MODES.items():
+            ttk.Radiobutton(
+                mode_btn_row,
+                text=f"{mode_cfg.icon}  {mode_cfg.display_name}",
+                variable=self.var_analysis_mode,
+                value=mode_key,
+                command=self._on_analysis_mode_changed,
+            ).pack(side=tk.LEFT, padx=(0, 18))
+
+        self.lbl_mode_hint = ttk.Label(
+            mode_frame,
+            text="",
+            style="Muted.TLabel",
+            wraplength=600,
+            justify=tk.LEFT,
+        )
+        self.lbl_mode_hint.pack(anchor="w", pady=(3, 0))
+
+        ttk.Separator(right).pack(fill=tk.X, pady=(4, 2))
+
+        # ── Problem container (visible in Problem Mode, hidden in Project Mode)
+        self.problem_container = ttk.Frame(right, style="Panel.TFrame")
+        self.problem_container.pack(fill=tk.X)
+
+        desc_hdr = ttk.Frame(self.problem_container, style="Panel.TFrame", padding=(10, 6, 10, 4))
         desc_hdr.pack(fill=tk.X)
         ttk.Label(desc_hdr, text="📝  Describe el problema / objetivo", style="Sec.TLabel").pack(anchor="w")
         ttk.Label(desc_hdr,
                   text="Este texto se incluirá en deepseek_prompt.md como REPORTED PROBLEM OR GOAL",
                   style="Muted.TLabel").pack(anchor="w")
 
-        desc_body = ttk.Frame(right, style="Panel.TFrame", padding=(10, 0))
+        desc_body = ttk.Frame(self.problem_container, style="Panel.TFrame", padding=(10, 0))
         desc_body.pack(fill=tk.X)
         self.problem_text = scrolledtext.ScrolledText(
             desc_body, height=5,
@@ -338,7 +374,31 @@ class MainWindow:
         )
         self.problem_text.pack(fill=tk.X, expand=True)
 
+        # ── Project Mode info card (visible in Project Mode, hidden in Problem Mode)
+        self.project_mode_container = ttk.Frame(right, style="Panel.TFrame")
+        # not packed initially — shown by _on_analysis_mode_changed
+
+        proj_card = ttk.Frame(self.project_mode_container, style="Panel.TFrame", padding=(10, 8))
+        proj_card.pack(fill=tk.X, padx=10, pady=4)
+        ttk.Label(proj_card, text="🏗️  Modo Proyecto — Auditoría Holística", style="Sec.TLabel").pack(anchor="w")
+        ttk.Label(
+            proj_card,
+            text=(
+                "La IA analizará el proyecto completo de forma transversal:\n"
+                "  • Errores y bugs latentes\n"
+                "  • Código duplicado y deuda técnica (DRY)\n"
+                "  • Malas prácticas e ineficiencias de diseño\n"
+                "  • Problemas arquitectónicos y acoplamiento\n"
+                "  • Vulnerabilidades de seguridad (OWASP)\n"
+                "  • Oportunidades de optimización de rendimiento\n\n"
+                "Genera una matriz de hallazgos priorizados y un plan de acción por fases."
+            ),
+            style="Muted.TLabel",
+            justify=tk.LEFT,
+        ).pack(anchor="w", pady=(4, 0))
+
         self._on_analysis_type_changed(init=True)
+        self._on_analysis_mode_changed(init=True)
 
         ttk.Separator(right).pack(fill=tk.X, pady=6)
 
@@ -557,6 +617,27 @@ class MainWindow:
                 self.problem_text.delete("1.0", tk.END)
                 self.problem_text.insert("1.0", profile.default_prompt_hint)
 
+    def _on_analysis_mode_changed(self, event=None, init: bool = False):
+        """Shows/hides problem container vs project-mode card based on selected mode."""
+        mode_key = self.var_analysis_mode.get()
+        mode_cfg = get_analysis_mode_config(mode_key)
+
+        if hasattr(self, "lbl_mode_hint"):
+            self.lbl_mode_hint.config(text=mode_cfg.description)
+
+        if mode_key == MODE_PROJECT:
+            if hasattr(self, "problem_container"):
+                self.problem_container.pack_forget()
+            if hasattr(self, "project_mode_container"):
+                self.project_mode_container.pack(fill=tk.X, after=None)
+                # Insert after the separator that precedes the problem_container
+                self.project_mode_container.pack(fill=tk.X)
+        else:
+            if hasattr(self, "project_mode_container"):
+                self.project_mode_container.pack_forget()
+            if hasattr(self, "problem_container"):
+                self.problem_container.pack(fill=tk.X)
+
     def apply_recommended_selection(self, selected_files: List[str], notify: bool = True):
         if not selected_files:
             if notify:
@@ -607,18 +688,20 @@ class MainWindow:
 
         root_item = self.tree.insert("", "end", text="📁",
                                      values=("", os.path.basename(folder)), open=True)
+        folder_items = {".": root_item}
 
         for dirpath, dirnames, filenames in os.walk(folder):
             dirnames[:] = [d for d in sorted(dirnames) if d not in excluded_dirs]
             rel_dir = os.path.relpath(dirpath, folder)
 
-            parent_item = root_item if rel_dir == "." else self._find_folder_item(rel_dir)
+            parent_item = folder_items.get(rel_dir)
             if not parent_item:
                 continue
 
             for d in dirnames:
                 rel_sub = os.path.join(rel_dir, d) if rel_dir != "." else d
-                self.tree.insert_folder(parent_item, rel_sub)
+                item = self.tree.insert_folder(parent_item, rel_sub)
+                folder_items[rel_sub] = item
 
             for f in sorted(filenames):
                 ext = os.path.splitext(f)[1].lower()
@@ -731,8 +814,12 @@ class MainWindow:
         self.config.include_system_instructions = self.var_instruct.get()
         self.config.output_format           = self.var_fmt.get()
         self.config.analysis_type           = self.var_analysis_type.get()
+        self.config.analysis_mode           = self.var_analysis_mode.get()
 
         problem_desc = self.problem_text.get("1.0", tk.END).strip()
+        # In Project Mode, ignore the problem text field
+        if self.config.analysis_mode == MODE_PROJECT:
+            problem_desc = ""
         gen = PromptGenerator(self.config)
 
         doc_text, included, excluded, omitted, total_lines = gen.generate(
@@ -760,7 +847,11 @@ class MainWindow:
             self.selector.get_selection(), problem_desc, self.config)
         txt_text, _, _, _, _ = generate_text_bundle(
             self.selector.get_selection(), problem_desc, self.config)
-        prompt_text = generate_standalone_prompt(problem_desc, analysis_type=self.config.analysis_type)
+        prompt_text = generate_standalone_prompt(
+            problem_desc,
+            analysis_type=self.config.analysis_type,
+            analysis_mode=self.config.analysis_mode,
+        )
 
         write_text_file(os.path.join(out_dir, "deepseek_project_context.md"),  md_text)
         write_text_file(os.path.join(out_dir, "deepseek_project_context.txt"), txt_text)

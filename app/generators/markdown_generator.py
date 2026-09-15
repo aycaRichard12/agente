@@ -8,6 +8,7 @@ from app.core.file_reader import read_and_format_file
 from app.core.project_structure import build_folder_tree_str
 from app.core.dependency_detector import DependencyDetector
 from app.models.analysis_types import get_analysis_profile
+from app.models.analysis_modes import get_analysis_mode_config, MODE_PROJECT
 from app.utils.file_utils import is_binary_file, get_file_size, safe_read_file
 
 
@@ -128,18 +129,27 @@ def generate_markdown_bundle(
             process_file(abs_f, display_name)
 
     analysis_type = getattr(config, "analysis_type", "Detect errors")
+    analysis_mode = getattr(config, "analysis_mode", "problem")
     profile = get_analysis_profile(analysis_type)
+    mode_cfg = get_analysis_mode_config(analysis_mode)
+    is_project_mode = (mode_cfg.mode == MODE_PROJECT)
 
     doc = []
 
-    # 1. REPORTED PROBLEM
+    # 1. REPORTED PROBLEM / HOLISTIC AUDIT SCOPE
     doc.append("==============================================================")
-    doc.append("REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO")
-    doc.append("==============================================================")
-    if problem_desc.strip():
-        doc.append(problem_desc.strip())
+    if is_project_mode:
+        doc.append("HOLISTIC PROJECT AUDIT / AUDITORÍA HOLÍSTICA DEL PROYECTO")
+        doc.append("==============================================================")
+        doc.append(f"{mode_cfg.icon} {mode_cfg.display_name}")
+        doc.append(mode_cfg.description)
     else:
-        doc.append("[No se especificó una descripción del problema]")
+        doc.append("REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO")
+        doc.append("==============================================================")
+        if problem_desc.strip():
+            doc.append(problem_desc.strip())
+        else:
+            doc.append("[No se especificó una descripción del problema]")
     doc.append("\n")
 
     # SELECTED ANALYSIS PROFILE
@@ -195,12 +205,20 @@ def generate_markdown_bundle(
     # Mandatory System Response Format Instructions for DeepSeek
     if config.include_system_instructions:
         doc.append("--------------------------------------------------------------")
-        doc.append(f"INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK ({profile.name.upper()})")
-        doc.append("--------------------------------------------------------------")
-        doc.append(profile.response_instructions)
-        doc.append("\nTu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al perfil:")
-        doc.append(f"\n{profile.response_template}\n")
+        if is_project_mode:
+            doc.append(f"INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK ({mode_cfg.display_name.upper()})")
+            doc.append("--------------------------------------------------------------")
+            doc.append(mode_cfg.prompt_instructions)
+            doc.append("\nTu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al modo:")
+            doc.append(f"\n{mode_cfg.response_template}\n")
+        else:
+            doc.append(f"INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK ({profile.name.upper()})")
+            doc.append("--------------------------------------------------------------")
+            doc.append(profile.response_instructions)
+            doc.append("\nTu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al perfil:")
+            doc.append(f"\n{profile.response_template}\n")
         doc.append("REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba.")
+
 
     if config.include_tree and folder_path and os.path.isdir(folder_path):
         tree_str = build_folder_tree_str(folder_path, list(selection.checked_folder_files), selection.excluded_dirs)

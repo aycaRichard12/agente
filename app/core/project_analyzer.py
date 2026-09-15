@@ -266,10 +266,10 @@ class ProjectAnalyzer:
                 full_path = os.path.join(dirpath, f)
                 ext = os.path.splitext(f)[1].lower()
 
-                if is_binary_file(full_path):
+                if self.allowed_extensions and ext not in self.allowed_extensions and f not in KNOWN_CONFIG_FILES and f not in KNOWN_ENTRY_POINTS:
                     continue
 
-                if self.allowed_extensions and ext not in self.allowed_extensions and f not in KNOWN_CONFIG_FILES and f not in KNOWN_ENTRY_POINTS:
+                if is_binary_file(full_path):
                     continue
 
                 try:
@@ -284,11 +284,12 @@ class ProjectAnalyzer:
 
                 # Count lines safely
                 lines_in_file = 0
-                try:
-                    with open(full_path, "r", encoding="utf-8", errors="ignore") as fp:
-                        lines_in_file = sum(1 for _ in fp)
-                except Exception:
-                    lines_in_file = 0
+                if size_bytes <= max_file_bytes:
+                    try:
+                        with open(full_path, "r", encoding="utf-8", errors="ignore") as fp:
+                            lines_in_file = sum(1 for _ in fp)
+                    except Exception:
+                        lines_in_file = 0
 
                 norm_rel = rel_file.replace("\\", "/")
                 is_ep = self._is_entry_point(norm_rel)
@@ -580,8 +581,14 @@ class ProjectAnalyzer:
         has_django = False
         has_pyside = False
 
+        scanned_py = 0
+        max_py_scan = 150
+
         for f in files:
             if f.rel_path.endswith(".py"):
+                if scanned_py >= max_py_scan:
+                    break
+                scanned_py += 1
                 try:
                     with open(f.abs_path, "r", encoding="utf-8", errors="ignore") as fp:
                         content = fp.read(4096)

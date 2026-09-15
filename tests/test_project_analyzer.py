@@ -172,6 +172,65 @@ class TestProjectAnalyzer(unittest.TestCase):
         finally:
             root.destroy()
 
+    def test_max_file_size_line_counting_limit(self):
+        """Tests that files exceeding max_file_size_mb leave lines_in_file = 0 without reading."""
+        temp_dir = tempfile.mkdtemp(prefix="test_max_size_")
+        try:
+            # Create a file with content
+            large_file = os.path.join(temp_dir, "large.py")
+            with open(large_file, "w", encoding="utf-8") as f:
+                f.write("line\n" * 100)
+
+            analyzer = ProjectAnalyzer(allowed_extensions={".py"})
+            # Pass max_file_size_mb tiny enough so 100 lines (~500 bytes) exceeds max_file_bytes
+            result = analyzer.analyze(temp_dir, max_file_size_mb=0.0001)  # ~104 bytes max
+
+            large_file_info = next(f for f in result.large_files if f["path"] == "large.py")
+            self.assertGreater(large_file_info["size_bytes"], 0)
+            self.assertEqual(large_file_info["lines"], 0)
+            self.assertEqual(result.total_lines, 0)
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_extension_filtering_before_binary_check(self):
+        """Tests that unallowed extensions are skipped before binary check."""
+        temp_dir = tempfile.mkdtemp(prefix="test_ext_filter_")
+        try:
+            # Create an unallowed extension file with null bytes (binary-like)
+            disallowed_file = os.path.join(temp_dir, "test.unknown")
+            with open(disallowed_file, "wb") as f:
+                f.write(b"some\x00data")
+
+            analyzer = ProjectAnalyzer(allowed_extensions={".py"})
+            result = analyzer.analyze(temp_dir)
+
+            self.assertEqual(result.total_files, 0)
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_detect_framework_python_scan_limit(self):
+        """Tests that _detect_framework inspects at most 150 .py files."""
+        temp_dir = tempfile.mkdtemp(prefix="test_fw_limit_")
+        try:
+            # Create 160 dummy .py files
+            for i in range(160):
+                with open(os.path.join(temp_dir, f"file_{i:03d}.py"), "w", encoding="utf-8") as f:
+                    f.write("# empty python file\n")
+
+            # Create 161st file with django import
+            with open(os.path.join(temp_dir, "file_160.py"), "w", encoding="utf-8") as f:
+                f.write("import django\n")
+
+            analyzer = ProjectAnalyzer(allowed_extensions={".py"})
+            result = analyzer.analyze(temp_dir)
+
+            # Since files are sorted (file_000 to file_160), file_160.py is the 161st file.
+            # Only 150 files should be inspected, so django in file_160.py should not be reached.
+            self.assertNotIn("Django", result.framework)
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
 
 if __name__ == "__main__":
     unittest.main()
+

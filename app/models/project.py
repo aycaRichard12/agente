@@ -89,3 +89,5 @@ class ExportConfig:
     output_format: str = "markdown"  # "markdown" or "text"
     max_chars_per_file: int = 60000
     analysis_type: str = "Detect errors"
+    analysis_mode: str = "problem"  # "problem" or "project"
+
