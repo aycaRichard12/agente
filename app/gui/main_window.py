@@ -24,6 +24,12 @@ from app.core.project_analyzer import ProjectAnalyzer
 from app.core.intelligent_context import IntelligentContextAnalyzer
 from app.gui.intelligent_context_dialog import IntelligentContextDialog
 from app.gui import dialogs
+# === AUTO-GENERATED: file_search_dependency_feature ===
+from app.gui.file_search_dialog import FileSearchDialog
+from app.gui.dependency_tree_dialog import DependencyTreeDialog
+# === END AUTO-GENERATED ===
+
+
 from app.utils.file_utils import (
     copy_to_clipboard, write_text_file, KNOWN_BINARY_EXTENSIONS,
     is_binary_file, get_file_size,
@@ -236,6 +242,8 @@ class MainWindow:
                    command=self.on_analyze_project).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="🧠 Selección Inteligente", style="Accent.TButton",
                    command=self.on_intelligent_context_select).pack(side=tk.LEFT, padx=(0, 4))
+        ttk.Button(tb, text="🔎 Buscador", style="Accent.TButton",
+                   command=self.on_open_file_search).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="🔄 Recargar", style="Neutral.TButton",
                    command=self.reload_tree).pack(side=tk.RIGHT)
 
@@ -934,7 +942,55 @@ class MainWindow:
             f"Listo · Incluidos: {included} · Excluidos: {excluded} · Omitidos: {omitted} · Líneas: {total_lines:,}"
         )
 
+    # === AUTO-GENERATED: file_search_dependency_feature ===
+    def on_open_file_search(self):
+        folder = self.var_folder.get()
+        if not folder or not os.path.isdir(folder):
+            dialogs.show_warning("Atención", "Selecciona una carpeta del proyecto primero.")
+            return
+
+        excluded = self.selector.get_selection().excluded_dirs
+        FileSearchDialog(
+            self.root,
+            folder,
+            excluded_dirs=excluded,
+            on_analyze_dependencies=self.open_dependency_tree,
+        )
+
+    def open_dependency_tree(self, rel_path: str):
+        folder = self.var_folder.get()
+        if not folder or not os.path.isdir(folder):
+            dialogs.show_warning("Atención", "Selecciona una carpeta del proyecto primero.")
+            return
+
+        excluded = self.selector.get_selection().excluded_dirs
+        DependencyTreeDialog(
+            self.root,
+            folder,
+            rel_path,
+            excluded_dirs=excluded,
+            on_apply_selection=self.apply_dependency_selection,
+        )
+
+    def apply_dependency_selection(self, selected_files: List[str]):
+        if not selected_files:
+            return
+
+        existing = set(self.tree.get_checked_files())
+        combined = existing | set(selected_files)
+
+        self.tree.set_checked_files(combined)
+        self.selector.set_checked_folder_files(self.tree.get_checked_files())
+        self._refresh_selection_stats()
+
+        self.sv_status.set(
+            f"✓ {len(selected_files)} dependencia(s) agregadas/actualizadas en la selección."
+        )
+    # === END AUTO-GENERATED ===
+
     def on_copy_clipboard(self):
+
+
         content = self.preview_text.get("1.0", tk.END).strip()
         if not content:
             dialogs.show_warning("Atención",
