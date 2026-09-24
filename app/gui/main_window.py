@@ -21,6 +21,8 @@ from app.generators.standalone_prompt_generator import generate_standalone_promp
 from app.gui.file_tree import CheckboxTreeview
 from app.gui.analysis_dialog import ProjectAnalysisDialog
 from app.core.project_analyzer import ProjectAnalyzer
+from app.core.intelligent_context import IntelligentContextAnalyzer
+from app.gui.intelligent_context_dialog import IntelligentContextDialog
 from app.gui import dialogs
 from app.utils.file_utils import (
     copy_to_clipboard, write_text_file, KNOWN_BINARY_EXTENSIONS,
@@ -232,6 +234,8 @@ class MainWindow:
                    command=self.on_deselect_all_tree).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="🔬 Analizar proyecto", style="Accent.TButton",
                    command=self.on_analyze_project).pack(side=tk.LEFT, padx=(0, 4))
+        ttk.Button(tb, text="🧠 Selección Inteligente", style="Accent.TButton",
+                   command=self.on_intelligent_context_select).pack(side=tk.LEFT, padx=(0, 4))
         ttk.Button(tb, text="🔄 Recargar", style="Neutral.TButton",
                    command=self.reload_tree).pack(side=tk.RIGHT)
 
@@ -600,6 +604,63 @@ class MainWindow:
             analysis=result,
             on_apply_selection=self.apply_recommended_selection
         )
+
+    def on_intelligent_context_select(self):
+        folder = self.var_folder.get()
+        if not folder or not os.path.isdir(folder):
+            dialogs.show_warning("Atención", "Selecciona una carpeta del proyecto primero.")
+            return
+
+        problem_desc = self.problem_text.get("1.0", tk.END).strip()
+        if not problem_desc:
+            dialogs.show_warning(
+                "Atención",
+                "Ingresa una descripción del problema en el panel derecho para realizar la selección inteligente."
+            )
+            return
+
+        self.sv_status.set("Ejecutando Selección Inteligente de Contexto...")
+        self.root.update_idletasks()
+
+        # Get candidate files (all checked files in tree, or all files in tree if none checked)
+        candidate_files = self.tree.get_checked_files()
+        if not candidate_files:
+            all_files = []
+            def _gather(item):
+                if not self.tree.get_children(item):
+                    name = self.tree.set(item, "name")
+                    if name:
+                        all_files.append(name)
+                for child in self.tree.get_children(item):
+                    _gather(child)
+            for r in self.tree.get_children():
+                _gather(r)
+            candidate_files = all_files
+
+        try:
+            max_file_mb = float(self.var_max_file.get())
+            max_tot_mb = float(self.var_max_tot.get())
+            max_n = int(self.var_max_n.get())
+        except ValueError:
+            max_file_mb, max_tot_mb, max_n = 2.0, 50.0, 100
+
+        analyzer = IntelligentContextAnalyzer()
+        prioritized = analyzer.analyze(
+            folder_path=folder,
+            candidate_rel_files=candidate_files,
+            problem_desc=problem_desc,
+            max_file_size_mb=max_file_mb,
+            max_total_size_mb=max_tot_mb,
+            max_files=max_n
+        )
+
+        IntelligentContextDialog(
+            self.root,
+            problem_desc=problem_desc,
+            prioritized_files=prioritized,
+            on_confirm=self.apply_recommended_selection
+        )
+        self.sv_status.set("Selección Inteligente completada.")
 
     def _on_analysis_type_changed(self, event=None, init: bool = False):
         selected = self.var_analysis_type.get()
