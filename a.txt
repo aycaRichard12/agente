@@ -1,0 +1,34 @@
+Implementar un sistema de Contexto Inteligente para seleccionar automáticamente los archivos relevantes según el problema descrito.
+El sistema ya dispone de límites por:
+ Tamaño individual de archivo.
+ Tamaño total del contexto.
+ Cantidad máxima de archivos.
+No modificar estos límites. El nuevo sistema debe decidir qué archivos incluir y con qué prioridad.
+ Prioridades
+ 🔴 Crítico: archivo directamente involucrado en el problema.
+ 🟠 Importante: dependencia directa o archivo que participa en el flujo afectado.
+ 🟡 Relacionado: dependencia indirecta o archivo potencialmente relevante.
+ ⚪ Secundario: archivo relacionado débilmente.
+ Ejemplo
+Problema:
+`Error al crear usuarios`
+Contexto detectado:
+```text
+🔴 routes/users.py
+🔴 controllers/user.py
+🔴 models/user.py
+🟠 services/user_service.py
+🟡 config/database.py
+```
+ Requisitos
+1. Analizar el problema ingresado por el usuario.
+2. Detectar automáticamente los archivos relacionados.
+3. Analizar dependencias entre archivos: imports, referencias, llamadas, herencia y uso de clases/funciones.
+4. Asignar una prioridad a cada archivo.
+5. Ordenar los archivos por prioridad.
+6. Aplicar los límites existentes comenzando siempre por los archivos de mayor prioridad.
+7. Mostrar al usuario los archivos seleccionados y su prioridad antes de generar el contexto.
+8. Permitir que el usuario agregue o quite archivos manualmente.
+9. Mantener intacta la lógica actual de generación de contexto; modificar únicamente el proceso de selección/priorización de archivos.
+10. Evitar incluir archivos irrelevantes cuando existan suficientes archivos de mayor prioridad.
+Objetivo: generar un contexto más pequeño y preciso, priorizando automáticamente los archivos que realmente pueden resolver el problema.
