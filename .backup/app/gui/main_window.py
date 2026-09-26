@@ -633,13 +633,6 @@ class MainWindow:
 
         analyzer = ProjectAnalyzer(excluded_dirs=excluded)
         result = analyzer.analyze(folder, max_file_size_mb=max_file_mb)
-        # === PERSISTENCE: PHASE1 (analyze) ===
-        try:
-            analyzer.persist_result(result)
-        except Exception:
-            pass
-        # === END PERSISTENCE: PHASE1 (analyze) ===
-
 
         self.sv_status.set(
             f"Análisis completado: {result.total_files} archivos, {result.total_lines:,} líneas. "

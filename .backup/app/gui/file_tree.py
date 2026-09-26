@@ -62,13 +62,10 @@ class CheckboxTreeview(ttk.Treeview):
     def uncheck_item(self, item):
         rel_path = self.set(item, "name")
         if rel_path:
-            was_checked = rel_path in self.checked_items
             self.set(item, "check", "☐")
             self.item(item, tags=("unchecked",))
             if rel_path in self.checked_items:
                 self.checked_items.remove(rel_path)
-            if was_checked:
-                self._notify_check_change(rel_path, False)
         for child in self.get_children(item):
             self.uncheck_item(child)
 
