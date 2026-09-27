@@ -73,6 +73,11 @@ class MainWindow:
         except Exception:
             self._persist_db = None
         # === END PERSISTENCE: PHASE1 (init) ===
+        # === PHASE 2: DEBOUNCE CHECKBOX ===
+        self._pending_checks = {}
+        self._flush_timer = None
+        # === END PHASE 2 ===
+
 
 
         default_excl    = ".git, node_modules, __pycache__, venv, .venv, dist, build, .idea, .vscode, vendor, .quasar, .github, public"
