@@ -1,7 +1,9 @@
 ==============================================================
 REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO
 ==============================================================
-el buscador es muy lento por que ?
+generar el codigo en python para hacer el cambio el codigo se creara en la raiz del archivo 
+el problema es este ejemplo seleccione un proyecto en quasar 
+entre al modulodo de buscador seleccione un archivo raiz y vi todas sus dependencia pero al aplicar seleccion no me selecciona todas las dependencias
 
 
 ==============================================================
@@ -19,22 +21,22 @@ PROJECT CONTEXT / CONTEXTO DEL PROYECTO
 ==============================================================
 • Nombre del Proyecto: agente
 • Ruta Base: /media/richard/Nuevo vol/quasar/dess/deploy/agente
-• Fecha de Generación: 2026-09-27 17:43:53
+• Fecha de Generación: 2026-09-28 15:24:45
 
 --------------------------------------------------------------
 PROJECT SUMMARY
 --------------------------------------------------------------
-Selected files: 58
+Selected files: 66
 File extensions:
-  .py: 50
+  .py: 56
+  .md: 3
   .bat: 3
-  .md: 2
+  .txt: 2
   .sh: 1
   .sql: 1
-  .txt: 1
 
 Total lines:
-12,679
+18,631
 
 --------------------------------------------------------------
 DEPENDENCIES AND REFERENCES
@@ -50,6 +52,10 @@ DEPENDENCIES AND REFERENCES
   - from app.core.dependency_detector import DependencyDetector
   - from app.core.project_structure import build_folder_tree_str
   - from app.models.project import DEFAULT_ALLOWED_EXTENSIONS
+• .backup/app/core/storage/database.py:
+  - import os
+  - import sqlite3
+  - from typing import Dict,
 • .backup/app/gui/file_tree.py:
   - import tkinter
   - from tkinter import ttk
@@ -70,6 +76,24 @@ DEPENDENCIES AND REFERENCES
   - from app.gui.file_tree import CheckboxTreeview
   - from app.gui.analysis_dialog import ProjectAnalysisDialog
   - from app.core.project_analyzer import ProjectAnalyzer
+• .backup_search_perf/app/core/project_scanner.py:
+  - import os
+  - import threading
+  - from typing import Set,
+  - from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
+• .backup_search_perf/app/core/storage/database.py:
+  - import os
+  - import sqlite3
+  - from typing import Dict,
+• .backup_search_perf/app/gui/file_search_dialog.py:
+  - import os
+  - import queue
+  - import threading
+  - import tkinter
+  - from tkinter import ttk
+  - from typing import Callable,
+  - from app.core.project_scanner import scan_directory
+  - from app.core.storage.database import get_database
 • app/core/__init__.py:
   - from app.core.project_scanner import scan_directory
   - from app.core.file_selector import FileSelectorManager
@@ -190,6 +214,7 @@ DEPENDENCIES AND REFERENCES
   - from tkinter import ttk
   - from typing import Callable,
   - from app.core.project_scanner import scan_directory
+  - from app.core.storage.database import get_database
 • app/gui/file_tree.py:
   - import tkinter
   - from tkinter import ttk
@@ -264,6 +289,19 @@ DEPENDENCIES AND REFERENCES
   - from app.core.storage.database import Database,
   - import sqlite3
   - from typing import Dict,
+  - from app.core.storage.database import get_database
+• apply_phase2_delta_scan.py:
+  - import argparse
+  - from datetime import datetime
+  - from pathlib import Path
+• apply_search_perf.py:
+  - import argparse
+  - import os
+  - import shutil
+  - import sys
+  - import py_compile
+  - from datetime import datetime
+  - from pathlib import Path
   - from app.core.storage.database import get_database
 • deepseek_gui.py:
   - from main import main
@@ -360,19 +398,6 @@ DEPENDENCIES AND REFERENCES
   - from app.gui.file_tree import CheckboxTreeview
 
 --------------------------------------------------------------
-⚠️ ARCHIVOS OMITIDOS POR LÍMITES DE TAMAÑO / OMITTED FILES WARNINGS
---------------------------------------------------------------
-File omitted:
-output/deepseek_project_context.md
-Reason:
-Exceeds the allowed limit of 2 MB.
-
-File omitted:
-output/deepseek_project_context.txt
-Reason:
-Exceeds the allowed limit of 2 MB.
-
---------------------------------------------------------------
 INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK (DETECT ERRORS)
 --------------------------------------------------------------
 El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
@@ -408,10 +433,22 @@ agente/
 ├── .backup/
 │   └── app/
 │       ├── core/
-│       │   └── project_analyzer.py
+│       │   ├── project_analyzer.py
+│       │   └── storage/
+│       │       └── database.py
 │       └── gui/
 │           ├── file_tree.py
 │           └── main_window.py
+├── .backup_apply_changes
+├── .backup_search_perf/
+│   └── app/
+│       ├── core/
+│       │   ├── project_scanner.py
+│       │   └── storage/
+│       │       └── database.py
+│       └── gui/
+│           └── file_search_dialog.py
+├── .cache
 ├── README.md
 ├── app/
 │   ├── __init__.py
@@ -454,6 +491,8 @@ agente/
 │       └── path_utils.py
 ├── apply_changes.py
 ├── apply_phase1_sqlite.py
+├── apply_phase2_delta_scan.py
+├── apply_search_perf.py
 ├── deepseek_gui.py
 ├── ejecutar.bat
 ├── ejecutar_con_consola.bat
@@ -1205,6 +1244,300 @@ LINE 713 |             if base in ("requirements.txt", "package.json", "composer
 LINE 714 |                 recommended.append(cfg)
 LINE 715 | 
 LINE 716 |         return sorted(list(dict.fromkeys(recommended)))
+```
+
+==============================================================
+FILE: .backup/app/core/storage/database.py
+==============================================================
+```py
+LINE   1 | """
+LINE   2 | SQLite persistence layer for project nodes, metrics and dependencies (Phase 1).
+LINE   3 | 
+LINE   4 | This module is intentionally restricted to:
+LINE   5 |   - Opening / creating the SQLite database.
+LINE   6 |   - Initializing the schema.
+LINE   7 |   - Executing queries and updates.
+LINE   8 |   - Managing transactions.
+LINE   9 |   - Providing the CRUD operations required for projects and nodes.
+LINE  10 | 
+LINE  11 | No Delta Scan or incremental change detection logic is implemented here.
+LINE  12 | """
+LINE  13 | import os
+LINE  14 | import sqlite3
+LINE  15 | from typing import Dict, List, Optional, Set, Tuple
+LINE  16 | 
+LINE  17 | 
+LINE  18 | # ---------------------------------------------------------------------------
+LINE  19 | # Path resolution
+LINE  20 | # ---------------------------------------------------------------------------
+LINE  21 | 
+LINE  22 | def _find_project_root() -> Optional[str]:
+LINE  23 |     """Walk up from this file to find the project root (contains main.py)."""
+LINE  24 |     here = os.path.dirname(os.path.abspath(__file__))
+LINE  25 |     candidate = os.path.abspath(os.path.join(here, "..", "..", ".."))
+LINE  26 |     if os.path.isfile(os.path.join(candidate, "main.py")):
+LINE  27 |         return candidate
+LINE  28 |     return None
+LINE  29 | 
+LINE  30 | 
+LINE  31 | def default_db_path() -> str:
+LINE  32 |     """Resolve project_cache.db path.
+LINE  33 | 
+LINE  34 |     Prefer <project_root>/.cache/project_cache.db, fallback to
+LINE  35 |     ~/.analyzer_app/project_cache.db when the project root cannot be resolved.
+LINE  36 |     """
+LINE  37 |     root = _find_project_root()
+LINE  38 |     if root:
+LINE  39 |         return os.path.join(root, ".cache", "project_cache.db")
+LINE  40 |     home = os.path.expanduser("~")
+LINE  41 |     return os.path.join(home, ".analyzer_app", "project_cache.db")
+LINE  42 | 
+LINE  43 | 
+LINE  44 | # ---------------------------------------------------------------------------
+LINE  45 | # Schema
+LINE  46 | # ---------------------------------------------------------------------------
+LINE  47 | 
+LINE  48 | SCHEMA_STATEMENTS = [
+LINE  49 |     """CREATE TABLE IF NOT EXISTS projects (
+LINE  50 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  51 |         path TEXT UNIQUE NOT NULL,
+LINE  52 |         project_type TEXT,
+LINE  53 |         framework TEXT,
+LINE  54 |         last_scanned TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+LINE  55 |     )""",
+LINE  56 |     """CREATE TABLE IF NOT EXISTS nodes (
+LINE  57 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  58 |         project_id INTEGER NOT NULL,
+LINE  59 |         rel_path TEXT NOT NULL,
+LINE  60 |         parent_path TEXT,
+LINE  61 |         is_dir BOOLEAN NOT NULL,
+LINE  62 |         mtime REAL NOT NULL,
+LINE  63 |         lines_count INTEGER DEFAULT 0,
+LINE  64 |         file_size INTEGER DEFAULT 0,
+LINE  65 |         is_important BOOLEAN DEFAULT 0,
+LINE  66 |         is_checked BOOLEAN DEFAULT 1,
+LINE  67 |         FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
+LINE  68 |         UNIQUE(project_id, rel_path)
+LINE  69 |     )""",
+LINE  70 |     """CREATE TABLE IF NOT EXISTS node_dependencies (
+LINE  71 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  72 |         source_node_id INTEGER NOT NULL,
+LINE  73 |         target_path TEXT NOT NULL,
+LINE  74 |         FOREIGN KEY(source_node_id) REFERENCES nodes(id) ON DELETE CASCADE
+LINE  75 |     )""",
+LINE  76 |     "CREATE INDEX IF NOT EXISTS idx_nodes_rel_path ON nodes(project_id, rel_path)",
+LINE  77 |     "CREATE INDEX IF NOT EXISTS idx_nodes_parent ON nodes(project_id, parent_path)",
+LINE  78 | ]
+LINE  79 | 
+LINE  80 | 
+LINE  81 | # ---------------------------------------------------------------------------
+LINE  82 | # Database
+LINE  83 | # ---------------------------------------------------------------------------
+LINE  84 | 
+LINE  85 | class Database:
+LINE  86 |     """Thin SQLite wrapper for the project cache (Phase 1)."""
+LINE  87 | 
+LINE  88 |     def __init__(self, db_path: Optional[str] = None):
+LINE  89 |         self.db_path = db_path or default_db_path()
+LINE  90 |         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+LINE  91 |         self._conn = sqlite3.connect(self.db_path, timeout=10.0)
+LINE  92 |         self._conn.row_factory = sqlite3.Row
+LINE  93 |         self._conn.execute("PRAGMA foreign_keys = ON")
+LINE  94 |         self._conn.execute("PRAGMA journal_mode = WAL")
+LINE  95 |         self._conn.execute("PRAGMA synchronous = NORMAL")
+LINE  96 |         self._init_schema()
+LINE  97 | 
+LINE  98 |     def _init_schema(self) -> None:
+LINE  99 |         with self._conn:
+LINE 100 |             for stmt in SCHEMA_STATEMENTS:
+LINE 101 |                 self._conn.execute(stmt)
+LINE 102 | 
+LINE 103 |     # ---------- projects ----------
+LINE 104 | 
+LINE 105 |     def get_or_create_project(self, path: str,
+LINE 106 |                               project_type: Optional[str] = None,
+LINE 107 |                               framework: Optional[str] = None) -> int:
+LINE 108 |         cur = self._conn.cursor()
+LINE 109 |         cur.execute("SELECT id FROM projects WHERE path = ?", (path,))
+LINE 110 |         row = cur.fetchone()
+LINE 111 |         if row:
+LINE 112 |             return int(row["id"])
+LINE 113 |         cur.execute(
+LINE 114 |             "INSERT INTO projects (path, project_type, framework) VALUES (?, ?, ?)",
+LINE 115 |             (path, project_type, framework),
+LINE 116 |         )
+LINE 117 |         self._conn.commit()
+LINE 118 |         return int(cur.lastrowid)
+LINE 119 | 
+LINE 120 |     def get_project_by_path(self, path: str) -> Optional[Dict]:
+LINE 121 |         cur = self._conn.cursor()
+LINE 122 |         cur.execute("SELECT * FROM projects WHERE path = ?", (path,))
+LINE 123 |         row = cur.fetchone()
+LINE 124 |         return dict(row) if row else None
+LINE 125 | 
+LINE 126 |     def update_last_scanned(self, project_id: int) -> None:
+LINE 127 |         with self._conn:
+LINE 128 |             self._conn.execute(
+LINE 129 |                 "UPDATE projects SET last_scanned = CURRENT_TIMESTAMP WHERE id = ?",
+LINE 130 |                 (project_id,),
+LINE 131 |             )
+LINE 132 | 
+LINE 133 |     def delete_project(self, path: str) -> None:
+LINE 134 |         with self._conn:
+LINE 135 |             self._conn.execute("DELETE FROM projects WHERE path = ?", (path,))
+LINE 136 | 
+LINE 137 |     # ---------- nodes ----------
+LINE 138 | 
+LINE 139 |     def replace_nodes(self, project_id: int, nodes: List[Dict]) -> None:
+LINE 140 |         """Delete existing nodes for project and insert the new batch atomically."""
+LINE 141 |         rows = [
+LINE 142 |             (
+LINE 143 |                 project_id,
+LINE 144 |                 n["rel_path"],
+LINE 145 |                 n.get("parent_path"),
+LINE 146 |                 int(bool(n.get("is_dir", 0))),
+LINE 147 |                 float(n.get("mtime", 0.0) or 0.0),
+LINE 148 |                 int(n.get("lines_count", 0) or 0),
+LINE 149 |                 int(n.get("file_size", 0) or 0),
+LINE 150 |                 int(bool(n.get("is_important", 0))),
+LINE 151 |                 int(bool(n.get("is_checked", 1))),
+LINE 152 |             )
+LINE 153 |             for n in nodes
+LINE 154 |         ]
+LINE 155 |         with self._conn:
+LINE 156 |             self._conn.execute("DELETE FROM nodes WHERE project_id = ?", (project_id,))
+LINE 157 |             if rows:
+LINE 158 |                 self._conn.executemany(
+LINE 159 |                     """INSERT INTO nodes
+LINE 160 |                        (project_id, rel_path, parent_path, is_dir, mtime,
+LINE 161 |                         lines_count, file_size, is_important, is_checked)
+LINE 162 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+LINE 163 |                     rows,
+LINE 164 |                 )
+LINE 165 | 
+LINE 166 |     def get_nodes(self, project_id: int) -> List[Dict]:
+LINE 167 |         cur = self._conn.cursor()
+LINE 168 |         cur.execute("SELECT * FROM nodes WHERE project_id = ?", (project_id,))
+LINE 169 |         return [dict(r) for r in cur.fetchall()]
+LINE 170 | 
+LINE 171 |     def update_is_checked(self, project_id: int,
+LINE 172 |                           rel_path: str, is_checked: bool) -> None:
+LINE 173 |         with self._conn:
+LINE 174 |             self._conn.execute(
+LINE 175 |                 "UPDATE nodes SET is_checked = ? "
+LINE 176 |                 "WHERE project_id = ? AND rel_path = ?",
+LINE 177 |                 (int(bool(is_checked)), project_id, rel_path),
+LINE 178 |             )
+LINE 179 | 
+LINE 180 |     def update_is_checked_batch(self, project_id: int,
+LINE 181 |                                 updates: List[Tuple[str, bool]]) -> None:
+LINE 182 |         rows = [(int(bool(c)), project_id, rp) for rp, c in updates]
+LINE 183 |         if not rows:
+LINE 184 |             return
+LINE 185 |         with self._conn:
+LINE 186 |             self._conn.executemany(
+LINE 187 |                 "UPDATE nodes SET is_checked = ? "
+LINE 188 |                 "WHERE project_id = ? AND rel_path = ?",
+LINE 189 |                 rows,
+LINE 190 |             )
+LINE 191 | 
+LINE 192 |     def load_checked_state(self, project_path: str) -> Optional[Set[str]]:
+LINE 193 |         """Return the set of checked rel_paths (files only).
+LINE 194 | 
+LINE 195 |         Returns None when there is no persisted data for this project,
+LINE 196 |         so the caller can distinguish "never saved" from "all unchecked".
+LINE 197 |         """
+LINE 198 |         cur = self._conn.cursor()
+LINE 199 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
+LINE 200 |         row = cur.fetchone()
+LINE 201 |         if not row:
+LINE 202 |             return None
+LINE 203 |         project_id = int(row["id"])
+LINE 204 |         cur.execute(
+LINE 205 |             "SELECT rel_path, is_checked FROM nodes "
+LINE 206 |             "WHERE project_id = ? AND is_dir = 0",
+LINE 207 |             (project_id,),
+LINE 208 |         )
+LINE 209 |         rows = cur.fetchall()
+LINE 210 |         if not rows:
+LINE 211 |             return None
+LINE 212 |         return {r["rel_path"] for r in rows if r["is_checked"]}
+LINE 213 | 
+LINE 214 |     def delete_nodes(self, project_id: int) -> None:
+LINE 215 |         with self._conn:
+LINE 216 |             self._conn.execute("DELETE FROM nodes WHERE project_id = ?", (project_id,))
+LINE 217 | 
+LINE 218 |     # ---------- dependencies ----------
+LINE 219 | 
+LINE 220 |     def save_dependencies_batch(self, project_id: int,
+LINE 221 |                                 deps: List[Tuple[str, str]]) -> None:
+LINE 222 |         """deps: list of (source_rel_path, target_path)."""
+LINE 223 |         if not deps:
+LINE 224 |             return
+LINE 225 |         cur = self._conn.cursor()
+LINE 226 |         cur.execute("SELECT id, rel_path FROM nodes WHERE project_id = ?", (project_id,))
+LINE 227 |         id_map = {r["rel_path"]: int(r["id"]) for r in cur.fetchall()}
+LINE 228 | 
+LINE 229 |         rows = []
+LINE 230 |         for src_rel, target in deps:
+LINE 231 |             node_id = id_map.get(src_rel)
+LINE 232 |             if node_id is None:
+LINE 233 |                 continue
+LINE 234 |             rows.append((node_id, target))
+LINE 235 | 
+LINE 236 |         with self._conn:
+LINE 237 |             self._conn.execute(
+LINE 238 |                 """DELETE FROM node_dependencies
+LINE 239 |                    WHERE source_node_id IN
+LINE 240 |                          (SELECT id FROM nodes WHERE project_id = ?)""",
+LINE 241 |                 (project_id,),
+LINE 242 |             )
+LINE 243 |             if rows:
+LINE 244 |                 self._conn.executemany(
+LINE 245 |                     "INSERT INTO node_dependencies (source_node_id, target_path) "
+LINE 246 |                     "VALUES (?, ?)",
+LINE 247 |                     rows,
+LINE 248 |                 )
+LINE 249 | 
+LINE 250 |     def get_dependencies(self, project_id: int) -> List[Dict]:
+LINE 251 |         cur = self._conn.cursor()
+LINE 252 |         cur.execute(
+LINE 253 |             """SELECT n.rel_path AS source_path, d.target_path AS target_path
+LINE 254 |                FROM node_dependencies d
+LINE 255 |                JOIN nodes n ON n.id = d.source_node_id
+LINE 256 |                WHERE n.project_id = ?""",
+LINE 257 |             (project_id,),
+LINE 258 |         )
+LINE 259 |         return [dict(r) for r in cur.fetchall()]
+LINE 260 | 
+LINE 261 |     def close(self) -> None:
+LINE 262 |         try:
+LINE 263 |             self._conn.close()
+LINE 264 |         except Exception:
+LINE 265 |             pass
+LINE 266 | 
+LINE 267 | 
+LINE 268 | # ---------------------------------------------------------------------------
+LINE 269 | # Singleton accessor
+LINE 270 | # ---------------------------------------------------------------------------
+LINE 271 | 
+LINE 272 | _db_singleton: Optional[Database] = None
+LINE 273 | 
+LINE 274 | 
+LINE 275 | def get_database(db_path: Optional[str] = None) -> Database:
+LINE 276 |     """Return the process-wide Database singleton."""
+LINE 277 |     global _db_singleton
+LINE 278 |     if _db_singleton is None or (db_path and db_path != _db_singleton.db_path):
+LINE 279 |         _db_singleton = Database(db_path)
+LINE 280 |     return _db_singleton
+LINE 281 | 
+LINE 282 | 
+LINE 283 | def reset_database_singleton() -> None:
+LINE 284 |     """For tests: close and drop the current singleton."""
+LINE 285 |     global _db_singleton
+LINE 286 |     if _db_singleton is not None:
+LINE 287 |         _db_singleton.close()
+LINE 288 |     _db_singleton = None
 ```
 
 ==============================================================
@@ -2434,6 +2767,892 @@ LINE 1065 |                 self.sv_status.set(f"Guardado: {os.path.basename(fp)
 LINE 1066 |                 dialogs.show_info("Guardado", f"Archivo guardado en:\n{fp}")
 LINE 1067 |             else:
 LINE 1068 |                 dialogs.show_error("Error", f"No se pudo guardar: {msg}")
+```
+
+==============================================================
+FILE: .backup_search_perf/app/core/project_scanner.py
+==============================================================
+```py
+LINE   1 | """Project scanner module for scanning directory structures with caching."""
+LINE   2 | import os
+LINE   3 | import threading
+LINE   4 | from typing import Set, Dict, Any, List, Optional, Tuple
+LINE   5 | from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
+LINE   6 | 
+LINE   7 | _cache_lock = threading.Lock()
+LINE   8 | # Cache mapping: key -> (folder_mtime, valid_files)
+LINE   9 | _SCAN_CACHE: Dict[Tuple, Tuple[float, List[str]]] = {}
+LINE  10 | _MAX_CACHE_ENTRIES = 50
+LINE  11 | 
+LINE  12 | 
+LINE  13 | def clear_scan_cache() -> None:
+LINE  14 |     """Clears the scan directory cache."""
+LINE  15 |     with _cache_lock:
+LINE  16 |         _SCAN_CACHE.clear()
+LINE  17 | 
+LINE  18 | 
+LINE  19 | def is_file_allowed(filename: str, allowed_extensions: Optional[Set[str]], filter_by_ext: bool = True) -> bool:
+LINE  20 |     """Checks if file is allowed (not binary media and matching allowed extensions)."""
+LINE  21 |     ext = os.path.splitext(filename)[1].lower()
+LINE  22 |     if ext in KNOWN_BINARY_EXTENSIONS:
+LINE  23 |         return False
+LINE  24 |     if filter_by_ext and allowed_extensions:
+LINE  25 |         return ext in allowed_extensions
+LINE  26 |     return True
+LINE  27 | 
+LINE  28 | 
+LINE  29 | def scan_directory(
+LINE  30 |     folder_path: str,
+LINE  31 |     excluded_dirs: Optional[Set[str]] = None,
+LINE  32 |     allowed_extensions: Optional[Set[str]] = None,
+LINE  33 |     use_cache: bool = True,
+LINE  34 |     force_refresh: bool = False,
+LINE  35 | ) -> List[str]:
+LINE  36 |     """
+LINE  37 |     Recursively scans folder_path ignoring excluded_dirs and non-allowed file extensions.
+LINE  38 |     Returns sorted list of relative file paths. Uses thread-safe caching with mtime checking.
+LINE  39 |     """
+LINE  40 |     if not folder_path or not os.path.isdir(folder_path):
+LINE  41 |         return []
+LINE  42 | 
+LINE  43 |     abs_folder = os.path.abspath(folder_path)
+LINE  44 |     excluded_set = set(excluded_dirs) if excluded_dirs else set()
+LINE  45 |     allowed_tuple = tuple(sorted(allowed_extensions)) if allowed_extensions else None
+LINE  46 |     cache_key = (abs_folder, tuple(sorted(excluded_set)), allowed_tuple)
+LINE  47 | 
+LINE  48 |     # FIX: firma de invalidación recursiva ligera (raíz + subdirectorios
+LINE  49 |     # inmediatos). No es perfecta, pero evita devolver caché obsoleta cuando
+LINE  50 |     # cambian archivos dentro de subcarpetas de primer nivel, sin coste de
+LINE  51 |     # os.walk completo.
+LINE  52 |     signature = 0.0
+LINE  53 |     try:
+LINE  54 |         signature = os.path.getmtime(abs_folder)
+LINE  55 |         with os.scandir(abs_folder) as it:
+LINE  56 |             for entry in it:
+LINE  57 |                 if entry.is_dir(follow_symlinks=False):
+LINE  58 |                     try:
+LINE  59 |                         signature = max(
+LINE  60 |                             signature,
+LINE  61 |                             entry.stat(follow_symlinks=False).st_mtime,
+LINE  62 |                         )
+LINE  63 |                     except OSError:
+LINE  64 |                         continue
+LINE  65 |     except OSError:
+LINE  66 |         pass
+LINE  67 | 
+LINE  68 |     if use_cache and not force_refresh:
+LINE  69 |         with _cache_lock:
+LINE  70 |             if cache_key in _SCAN_CACHE:
+LINE  71 |                 cached_mtime, cached_files = _SCAN_CACHE[cache_key]
+LINE  72 |                 if cached_mtime == signature:
+LINE  73 |                     return list(cached_files)
+LINE  74 | 
+LINE  75 |     valid_files = []
+LINE  76 | 
+LINE  77 |     def _walk_error(err: OSError):
+LINE  78 |         pass  # Ignore permission/access errors gracefully
+LINE  79 | 
+LINE  80 |     try:
+LINE  81 |         for dirpath, dirnames, filenames in os.walk(abs_folder, onerror=_walk_error):
+LINE  82 |             dirnames[:] = [d for d in dirnames if d not in excluded_set]
+LINE  83 |             rel_dir = os.path.relpath(dirpath, abs_folder)
+LINE  84 | 
+LINE  85 |             for f in filenames:
+LINE  86 |                 try:
+LINE  87 |                     if is_file_allowed(f, allowed_extensions):
+LINE  88 |                         rel_file = f if rel_dir == '.' else os.path.join(rel_dir, f)
+LINE  89 |                         valid_files.append(rel_file.replace("\\", "/"))
+LINE  90 |                 except Exception:
+LINE  91 |                     continue
+LINE  92 |     except Exception:
+LINE  93 |         pass
+LINE  94 | 
+LINE  95 |     valid_files = sorted(valid_files)
+LINE  96 | 
+LINE  97 |     if use_cache:
+LINE  98 |         with _cache_lock:
+LINE  99 |             if len(_SCAN_CACHE) >= _MAX_CACHE_ENTRIES:
+LINE 100 |                 try:
+LINE 101 |                     first_key = next(iter(_SCAN_CACHE))
+LINE 102 |                     del _SCAN_CACHE[first_key]
+LINE 103 |                 except (StopIteration, KeyError):
+LINE 104 |                     pass
+LINE 105 |             _SCAN_CACHE[cache_key] = (folder_mtime, valid_files)
+LINE 106 | 
+LINE 107 |     return valid_files
+```
+
+==============================================================
+FILE: .backup_search_perf/app/core/storage/database.py
+==============================================================
+```py
+LINE   1 | """
+LINE   2 | SQLite persistence layer for project nodes, metrics and dependencies (Phase 1).
+LINE   3 | 
+LINE   4 | This module is intentionally restricted to:
+LINE   5 |   - Opening / creating the SQLite database.
+LINE   6 |   - Initializing the schema.
+LINE   7 |   - Executing queries and updates.
+LINE   8 |   - Managing transactions.
+LINE   9 |   - Providing the CRUD operations required for projects and nodes.
+LINE  10 | 
+LINE  11 | No Delta Scan or incremental change detection logic is implemented here.
+LINE  12 | """
+LINE  13 | import os
+LINE  14 | import sqlite3
+LINE  15 | from typing import Dict, List, Optional, Set, Tuple
+LINE  16 | 
+LINE  17 | 
+LINE  18 | # ---------------------------------------------------------------------------
+LINE  19 | # Path resolution
+LINE  20 | # ---------------------------------------------------------------------------
+LINE  21 | 
+LINE  22 | def _find_project_root() -> Optional[str]:
+LINE  23 |     """Walk up from this file to find the project root (contains main.py)."""
+LINE  24 |     here = os.path.dirname(os.path.abspath(__file__))
+LINE  25 |     candidate = os.path.abspath(os.path.join(here, "..", "..", ".."))
+LINE  26 |     if os.path.isfile(os.path.join(candidate, "main.py")):
+LINE  27 |         return candidate
+LINE  28 |     return None
+LINE  29 | 
+LINE  30 | 
+LINE  31 | def default_db_path() -> str:
+LINE  32 |     """Resolve project_cache.db path.
+LINE  33 | 
+LINE  34 |     Prefer <project_root>/.cache/project_cache.db, fallback to
+LINE  35 |     ~/.analyzer_app/project_cache.db when the project root cannot be resolved.
+LINE  36 |     """
+LINE  37 |     root = _find_project_root()
+LINE  38 |     if root:
+LINE  39 |         return os.path.join(root, ".cache", "project_cache.db")
+LINE  40 |     home = os.path.expanduser("~")
+LINE  41 |     return os.path.join(home, ".analyzer_app", "project_cache.db")
+LINE  42 | 
+LINE  43 | 
+LINE  44 | # ---------------------------------------------------------------------------
+LINE  45 | # Schema
+LINE  46 | # ---------------------------------------------------------------------------
+LINE  47 | 
+LINE  48 | SCHEMA_STATEMENTS = [
+LINE  49 |     """CREATE TABLE IF NOT EXISTS projects (
+LINE  50 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  51 |         path TEXT UNIQUE NOT NULL,
+LINE  52 |         project_type TEXT,
+LINE  53 |         framework TEXT,
+LINE  54 |         last_scanned TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+LINE  55 |     )""",
+LINE  56 |     """CREATE TABLE IF NOT EXISTS nodes (
+LINE  57 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  58 |         project_id INTEGER NOT NULL,
+LINE  59 |         rel_path TEXT NOT NULL,
+LINE  60 |         parent_path TEXT,
+LINE  61 |         is_dir BOOLEAN NOT NULL,
+LINE  62 |         mtime REAL NOT NULL,
+LINE  63 |         lines_count INTEGER DEFAULT 0,
+LINE  64 |         file_size INTEGER DEFAULT 0,
+LINE  65 |         is_important BOOLEAN DEFAULT 0,
+LINE  66 |         is_checked BOOLEAN DEFAULT 1,
+LINE  67 |         FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
+LINE  68 |         UNIQUE(project_id, rel_path)
+LINE  69 |     )""",
+LINE  70 |     """CREATE TABLE IF NOT EXISTS node_dependencies (
+LINE  71 |         id INTEGER PRIMARY KEY AUTOINCREMENT,
+LINE  72 |         source_node_id INTEGER NOT NULL,
+LINE  73 |         target_path TEXT NOT NULL,
+LINE  74 |         FOREIGN KEY(source_node_id) REFERENCES nodes(id) ON DELETE CASCADE
+LINE  75 |     )""",
+LINE  76 |     "CREATE INDEX IF NOT EXISTS idx_nodes_rel_path ON nodes(project_id, rel_path)",
+LINE  77 |     "CREATE INDEX IF NOT EXISTS idx_nodes_parent ON nodes(project_id, parent_path)",
+LINE  78 | ]
+LINE  79 | 
+LINE  80 | 
+LINE  81 | # ---------------------------------------------------------------------------
+LINE  82 | # Database
+LINE  83 | # ---------------------------------------------------------------------------
+LINE  84 | 
+LINE  85 | class Database:
+LINE  86 |     """Thin SQLite wrapper for the project cache (Phase 1)."""
+LINE  87 | 
+LINE  88 |     def __init__(self, db_path: Optional[str] = None):
+LINE  89 |         self.db_path = db_path or default_db_path()
+LINE  90 |         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+LINE  91 |         self._conn = sqlite3.connect(self.db_path, timeout=10.0)
+LINE  92 |         self._conn.row_factory = sqlite3.Row
+LINE  93 |         self._conn.execute("PRAGMA foreign_keys = ON")
+LINE  94 |         self._conn.execute("PRAGMA journal_mode = WAL")
+LINE  95 |         self._conn.execute("PRAGMA synchronous = NORMAL")
+LINE  96 |         self._init_schema()
+LINE  97 | 
+LINE  98 |     def _init_schema(self) -> None:
+LINE  99 |         with self._conn:
+LINE 100 |             for stmt in SCHEMA_STATEMENTS:
+LINE 101 |                 self._conn.execute(stmt)
+LINE 102 | 
+LINE 103 |     # ---------- projects ----------
+LINE 104 | 
+LINE 105 |     def get_or_create_project(self, path: str,
+LINE 106 |                               project_type: Optional[str] = None,
+LINE 107 |                               framework: Optional[str] = None) -> int:
+LINE 108 |         cur = self._conn.cursor()
+LINE 109 |         cur.execute("SELECT id FROM projects WHERE path = ?", (path,))
+LINE 110 |         row = cur.fetchone()
+LINE 111 |         if row:
+LINE 112 |             return int(row["id"])
+LINE 113 |         cur.execute(
+LINE 114 |             "INSERT INTO projects (path, project_type, framework) VALUES (?, ?, ?)",
+LINE 115 |             (path, project_type, framework),
+LINE 116 |         )
+LINE 117 |         self._conn.commit()
+LINE 118 |         return int(cur.lastrowid)
+LINE 119 | 
+LINE 120 |     def get_project_by_path(self, path: str) -> Optional[Dict]:
+LINE 121 |         cur = self._conn.cursor()
+LINE 122 |         cur.execute("SELECT * FROM projects WHERE path = ?", (path,))
+LINE 123 |         row = cur.fetchone()
+LINE 124 |         return dict(row) if row else None
+LINE 125 | 
+LINE 126 |     def update_last_scanned(self, project_id: int) -> None:
+LINE 127 |         with self._conn:
+LINE 128 |             self._conn.execute(
+LINE 129 |                 "UPDATE projects SET last_scanned = CURRENT_TIMESTAMP WHERE id = ?",
+LINE 130 |                 (project_id,),
+LINE 131 |             )
+LINE 132 | 
+LINE 133 |     def delete_project(self, path: str) -> None:
+LINE 134 |         with self._conn:
+LINE 135 |             self._conn.execute("DELETE FROM projects WHERE path = ?", (path,))
+LINE 136 | 
+LINE 137 |     # ---------- nodes ----------
+LINE 138 | 
+LINE 139 |     def replace_nodes(self, project_id: int, nodes: List[Dict]) -> None:
+LINE 140 |         """Delete existing nodes for project and insert the new batch atomically."""
+LINE 141 |         rows = [
+LINE 142 |             (
+LINE 143 |                 project_id,
+LINE 144 |                 n["rel_path"],
+LINE 145 |                 n.get("parent_path"),
+LINE 146 |                 int(bool(n.get("is_dir", 0))),
+LINE 147 |                 float(n.get("mtime", 0.0) or 0.0),
+LINE 148 |                 int(n.get("lines_count", 0) or 0),
+LINE 149 |                 int(n.get("file_size", 0) or 0),
+LINE 150 |                 int(bool(n.get("is_important", 0))),
+LINE 151 |                 int(bool(n.get("is_checked", 1))),
+LINE 152 |             )
+LINE 153 |             for n in nodes
+LINE 154 |         ]
+LINE 155 |         with self._conn:
+LINE 156 |             self._conn.execute("DELETE FROM nodes WHERE project_id = ?", (project_id,))
+LINE 157 |             if rows:
+LINE 158 |                 self._conn.executemany(
+LINE 159 |                     """INSERT INTO nodes
+LINE 160 |                        (project_id, rel_path, parent_path, is_dir, mtime,
+LINE 161 |                         lines_count, file_size, is_important, is_checked)
+LINE 162 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+LINE 163 |                     rows,
+LINE 164 |                 )
+LINE 165 | 
+LINE 166 |     def get_nodes(self, project_id: int) -> List[Dict]:
+LINE 167 |         cur = self._conn.cursor()
+LINE 168 |         cur.execute("SELECT * FROM nodes WHERE project_id = ?", (project_id,))
+LINE 169 |         return [dict(r) for r in cur.fetchall()]
+LINE 170 | 
+LINE 171 |     def update_is_checked(self, project_id: int,
+LINE 172 |                           rel_path: str, is_checked: bool) -> None:
+LINE 173 |         with self._conn:
+LINE 174 |             self._conn.execute(
+LINE 175 |                 "UPDATE nodes SET is_checked = ? "
+LINE 176 |                 "WHERE project_id = ? AND rel_path = ?",
+LINE 177 |                 (int(bool(is_checked)), project_id, rel_path),
+LINE 178 |             )
+LINE 179 | 
+LINE 180 |     def update_is_checked_batch(self, project_id: int,
+LINE 181 |                                 updates: List[Tuple[str, bool]]) -> None:
+LINE 182 |         rows = [(int(bool(c)), project_id, rp) for rp, c in updates]
+LINE 183 |         if not rows:
+LINE 184 |             return
+LINE 185 |         with self._conn:
+LINE 186 |             self._conn.executemany(
+LINE 187 |                 "UPDATE nodes SET is_checked = ? "
+LINE 188 |                 "WHERE project_id = ? AND rel_path = ?",
+LINE 189 |                 rows,
+LINE 190 |             )
+LINE 191 | 
+LINE 192 |     def load_checked_state(self, project_path: str) -> Optional[Set[str]]:
+LINE 193 |         """Return the set of checked rel_paths (files only).
+LINE 194 | 
+LINE 195 |         Returns None when there is no persisted data for this project,
+LINE 196 |         so the caller can distinguish "never saved" from "all unchecked".
+LINE 197 |         """
+LINE 198 |         cur = self._conn.cursor()
+LINE 199 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
+LINE 200 |         row = cur.fetchone()
+LINE 201 |         if not row:
+LINE 202 |             return None
+LINE 203 |         project_id = int(row["id"])
+LINE 204 |         cur.execute(
+LINE 205 |             "SELECT rel_path, is_checked FROM nodes "
+LINE 206 |             "WHERE project_id = ? AND is_dir = 0",
+LINE 207 |             (project_id,),
+LINE 208 |         )
+LINE 209 |         rows = cur.fetchall()
+LINE 210 |         if not rows:
+LINE 211 |             return None
+LINE 212 |         return {r["rel_path"] for r in rows if r["is_checked"]}
+LINE 213 | 
+LINE 214 |     def delete_nodes(self, project_id: int) -> None:
+LINE 215 |         with self._conn:
+LINE 216 |             self._conn.execute("DELETE FROM nodes WHERE project_id = ?", (project_id,))
+LINE 217 | 
+LINE 218 |     # ---------- dependencies ----------
+LINE 219 | 
+LINE 220 |     def save_dependencies_batch(self, project_id: int,
+LINE 221 |                                 deps: List[Tuple[str, str]]) -> None:
+LINE 222 |         """deps: list of (source_rel_path, target_path)."""
+LINE 223 |         if not deps:
+LINE 224 |             return
+LINE 225 |         cur = self._conn.cursor()
+LINE 226 |         cur.execute("SELECT id, rel_path FROM nodes WHERE project_id = ?", (project_id,))
+LINE 227 |         id_map = {r["rel_path"]: int(r["id"]) for r in cur.fetchall()}
+LINE 228 | 
+LINE 229 |         rows = []
+LINE 230 |         for src_rel, target in deps:
+LINE 231 |             node_id = id_map.get(src_rel)
+LINE 232 |             if node_id is None:
+LINE 233 |                 continue
+LINE 234 |             rows.append((node_id, target))
+LINE 235 | 
+LINE 236 |         with self._conn:
+LINE 237 |             self._conn.execute(
+LINE 238 |                 """DELETE FROM node_dependencies
+LINE 239 |                    WHERE source_node_id IN
+LINE 240 |                          (SELECT id FROM nodes WHERE project_id = ?)""",
+LINE 241 |                 (project_id,),
+LINE 242 |             )
+LINE 243 |             if rows:
+LINE 244 |                 self._conn.executemany(
+LINE 245 |                     "INSERT INTO node_dependencies (source_node_id, target_path) "
+LINE 246 |                     "VALUES (?, ?)",
+LINE 247 |                     rows,
+LINE 248 |                 )
+LINE 249 | 
+LINE 250 |     def get_dependencies(self, project_id: int) -> List[Dict]:
+LINE 251 |         cur = self._conn.cursor()
+LINE 252 |         cur.execute(
+LINE 253 |             """SELECT n.rel_path AS source_path, d.target_path AS target_path
+LINE 254 |                FROM node_dependencies d
+LINE 255 |                JOIN nodes n ON n.id = d.source_node_id
+LINE 256 |                WHERE n.project_id = ?""",
+LINE 257 |             (project_id,),
+LINE 258 |         )
+LINE 259 |         return [dict(r) for r in cur.fetchall()]
+LINE 260 | 
+LINE 261 |     # === PHASE 2: DELTA SCAN ===
+LINE 262 |     def load_nodes_map(self, project_path: str):
+LINE 263 |         cur = self._conn.cursor()
+LINE 264 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
+LINE 265 |         row = cur.fetchone()
+LINE 266 |         if not row:
+LINE 267 |             return None
+LINE 268 |         project_id = int(row["id"])
+LINE 269 |         cur.execute(
+LINE 270 |             "SELECT id, rel_path, parent_path, is_dir, mtime, lines_count, "
+LINE 271 |             "file_size, is_important, is_checked FROM nodes WHERE project_id = ?",
+LINE 272 |             (project_id,),
+LINE 273 |         )
+LINE 274 |         return {r["rel_path"]: dict(r) for r in cur.fetchall()}
+LINE 275 | 
+LINE 276 |     def apply_delta(self, project_id, to_insert, to_update,
+LINE 277 |                     to_delete_paths, dep_pairs):
+LINE 278 |         if to_delete_paths:
+LINE 279 |             with self._conn:
+LINE 280 |                 self._conn.executemany(
+LINE 281 |                     "DELETE FROM nodes WHERE project_id = ? AND rel_path = ?",
+LINE 282 |                     [(project_id, rp) for rp in to_delete_paths],
+LINE 283 |                 )
+LINE 284 |         if to_update:
+LINE 285 |             with self._conn:
+LINE 286 |                 self._conn.executemany(
+LINE 287 |                     """UPDATE nodes SET mtime=?, lines_count=?, file_size=?,
+LINE 288 |                                        is_important=?
+LINE 289 |                        WHERE project_id=? AND rel_path=?""",
+LINE 290 |                     [(n["mtime"], n["lines_count"], n["file_size"],
+LINE 291 |                       int(bool(n.get("is_important", 0))),
+LINE 292 |                       project_id, n["rel_path"]) for n in to_update],
+LINE 293 |                 )
+LINE 294 |         if to_insert:
+LINE 295 |             with self._conn:
+LINE 296 |                 self._conn.executemany(
+LINE 297 |                     """INSERT INTO nodes
+LINE 298 |                        (project_id, rel_path, parent_path, is_dir, mtime,
+LINE 299 |                         lines_count, file_size, is_important, is_checked)
+LINE 300 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+LINE 301 |                     [(project_id, n["rel_path"], n.get("parent_path"),
+LINE 302 |                       int(bool(n.get("is_dir", 0))),
+LINE 303 |                       float(n.get("mtime", 0.0)),
+LINE 304 |                       int(n.get("lines_count", 0) or 0),
+LINE 305 |                       int(n.get("file_size", 0) or 0),
+LINE 306 |                       int(bool(n.get("is_important", 0))),
+LINE 307 |                       int(bool(n.get("is_checked", 1))))
+LINE 308 |                      for n in to_insert],
+LINE 309 |                 )
+LINE 310 |         if to_update or to_insert or to_delete_paths:
+LINE 311 |             with self._conn:
+LINE 312 |                 pairs = ([(project_id, n["rel_path"]) for n in to_update] +
+LINE 313 |                          [(project_id, n["rel_path"]) for n in to_insert] +
+LINE 314 |                          [(project_id, rp) for rp in to_delete_paths])
+LINE 315 |                 self._conn.executemany(
+LINE 316 |                     """DELETE FROM node_dependencies
+LINE 317 |                        WHERE source_node_id IN
+LINE 318 |                          (SELECT id FROM nodes WHERE project_id=? AND rel_path=?)""",
+LINE 319 |                     pairs,
+LINE 320 |                 )
+LINE 321 |                 if dep_pairs:
+LINE 322 |                     cur = self._conn.cursor()
+LINE 323 |                     cur.execute(
+LINE 324 |                         "SELECT id, rel_path FROM nodes WHERE project_id=?",
+LINE 325 |                         (project_id,))
+LINE 326 |                     id_map = {r["rel_path"]: int(r["id"])
+LINE 327 |                               for r in cur.fetchall()}
+LINE 328 |                     rows = [(id_map[s], t) for s, t in dep_pairs if s in id_map]
+LINE 329 |                     if rows:
+LINE 330 |                         self._conn.executemany(
+LINE 331 |                             "INSERT INTO node_dependencies "
+LINE 332 |                             "(source_node_id, target_path) VALUES (?, ?)",
+LINE 333 |                             rows,
+LINE 334 |                         )
+LINE 335 |         self.update_last_scanned(project_id)
+LINE 336 |     # === END PHASE 2 ===
+LINE 337 | 
+LINE 338 |     def close(self) -> None:
+LINE 339 |         try:
+LINE 340 |             self._conn.close()
+LINE 341 |         except Exception:
+LINE 342 |             pass
+LINE 343 | 
+LINE 344 | 
+LINE 345 | # ---------------------------------------------------------------------------
+LINE 346 | # Singleton accessor
+LINE 347 | # ---------------------------------------------------------------------------
+LINE 348 | 
+LINE 349 | _db_singleton: Optional[Database] = None
+LINE 350 | 
+LINE 351 | 
+LINE 352 | def get_database(db_path: Optional[str] = None) -> Database:
+LINE 353 |     """Return the process-wide Database singleton."""
+LINE 354 |     global _db_singleton
+LINE 355 |     if _db_singleton is None or (db_path and db_path != _db_singleton.db_path):
+LINE 356 |         _db_singleton = Database(db_path)
+LINE 357 |     return _db_singleton
+LINE 358 | 
+LINE 359 | 
+LINE 360 | def reset_database_singleton() -> None:
+LINE 361 |     """For tests: close and drop the current singleton."""
+LINE 362 |     global _db_singleton
+LINE 363 |     if _db_singleton is not None:
+LINE 364 |         _db_singleton.close()
+LINE 365 |     _db_singleton = None
+```
+
+==============================================================
+FILE: .backup_search_perf/app/gui/file_search_dialog.py
+==============================================================
+```py
+LINE   1 | """File search dialog with per-file dependency analysis action and optimized performance."""
+LINE   2 | import os
+LINE   3 | import queue
+LINE   4 | import threading
+LINE   5 | import tkinter as tk
+LINE   6 | from tkinter import ttk
+LINE   7 | from typing import Callable, List, Optional, Set, Tuple
+LINE   8 | 
+LINE   9 | from app.core.project_scanner import scan_directory
+LINE  10 | 
+LINE  11 | C_BG = "#1e2330"
+LINE  12 | C_PANEL = "#252b3b"
+LINE  13 | C_BORDER = "#323a50"
+LINE  14 | C_ACCENT = "#4f8ef7"
+LINE  15 | C_TEXT = "#e8eaf0"
+LINE  16 | C_TEXT2 = "#8b92a8"
+LINE  17 | C_ENTRY = "#2a3148"
+LINE  18 | 
+LINE  19 | MAX_RENDER_LIMIT = 500
+LINE  20 | BATCH_SIZE = 25              # 100 -> 25 : tandas más pequeñas, sin bloquear el mainloop
+LINE  21 | DEBOUNCE_MS = 150
+LINE  22 | LOADING_DELAY_MS = 200
+LINE  23 | QUEUE_CHECK_MS = 20
+LINE  24 | RENDER_BATCH_DELAY_MS = 15   # 1 -> 15 : cede el hilo entre tandas
+LINE  25 | 
+LINE  26 | 
+LINE  27 | class FileSearchDialog(tk.Toplevel):
+LINE  28 |     def __init__(
+LINE  29 |         self,
+LINE  30 |         parent: tk.Tk,
+LINE  31 |         folder_path: str,
+LINE  32 |         excluded_dirs: Optional[Set[str]] = None,
+LINE  33 |         on_analyze_dependencies: Optional[Callable[[str], None]] = None,
+LINE  34 |     ):
+LINE  35 |         super().__init__(parent)
+LINE  36 |         self.folder_path = folder_path
+LINE  37 |         self.excluded_dirs = excluded_dirs or set()
+LINE  38 |         self.on_analyze_dependencies = on_analyze_dependencies
+LINE  39 | 
+LINE  40 |         self.title("🔎 Buscador de archivos")
+LINE  41 |         self.geometry("820x560")
+LINE  42 |         self.minsize(640, 420)
+LINE  43 |         self.configure(bg=C_BG)
+LINE  44 | 
+LINE  45 |         self.transient(parent)
+LINE  46 |         self.grab_set()
+LINE  47 | 
+LINE  48 |         self.search_var = tk.StringVar()
+LINE  49 |         self.all_files: List[str] = []
+LINE  50 |         self._files_indexed: List[Tuple[str, str]] = []  # [(rel_path, rel_path_lower)]
+LINE  51 | 
+LINE  52 |         self._scan_id: int = 0
+LINE  53 |         self._scan_queue: queue.Queue = queue.Queue()
+LINE  54 | 
+LINE  55 |         self._debounce_timer: Optional[str] = None
+LINE  56 |         self._loading_timer: Optional[str] = None
+LINE  57 |         self._render_timer: Optional[str] = None
+LINE  58 |         self._poll_timer: Optional[str] = None
+LINE  59 |         self._last_query: Optional[str] = None
+LINE  60 | 
+LINE  61 |         self.lbl_loading: Optional[tk.Label] = None
+LINE  62 | 
+LINE  63 |         self._build_header()
+LINE  64 |         self._build_results()
+LINE  65 | 
+LINE  66 |         # Bind trace on search_var for debounced searching
+LINE  67 |         self._trace_id = self.search_var.trace_add("write", self._on_query_trace)
+LINE  68 | 
+LINE  69 |         # Cleanup on destroy
+LINE  70 |         self.bind("<Destroy>", self._on_destroy)
+LINE  71 | 
+LINE  72 |         self._load_files()
+LINE  73 | 
+LINE  74 |     def _build_header(self):
+LINE  75 |         hdr = tk.Frame(self, bg=C_PANEL, padx=12, pady=10)
+LINE  76 |         hdr.pack(fill=tk.X)
+LINE  77 | 
+LINE  78 |         header_top = tk.Frame(hdr, bg=C_PANEL)
+LINE  79 |         header_top.pack(fill=tk.X)
+LINE  80 | 
+LINE  81 |         tk.Label(
+LINE  82 |             header_top,
+LINE  83 |             text="🔎 Buscar archivos del proyecto",
+LINE  84 |             font=("Segoe UI", 12, "bold"),
+LINE  85 |             bg=C_PANEL,
+LINE  86 |             fg=C_TEXT,
+LINE  87 |         ).pack(side=tk.LEFT, anchor="w")
+LINE  88 | 
+LINE  89 |         self.lbl_loading = tk.Label(
+LINE  90 |             header_top,
+LINE  91 |             text="⏳ Escaneando...",
+LINE  92 |             font=("Segoe UI", 9, "italic"),
+LINE  93 |             bg=C_PANEL,
+LINE  94 |             fg=C_ACCENT,
+LINE  95 |         )
+LINE  96 | 
+LINE  97 |         row = tk.Frame(hdr, bg=C_PANEL)
+LINE  98 |         row.pack(fill=tk.X, pady=(6, 0))
+LINE  99 | 
+LINE 100 |         self.entry = ttk.Entry(row, textvariable=self.search_var, font=("Consolas", 9))
+LINE 101 |         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
+LINE 102 | 
+LINE 103 |         ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
+LINE 104 |         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
+LINE 105 | 
+LINE 106 |     def _build_results(self):
+LINE 107 |         container = tk.Frame(
+LINE 108 |             self,
+LINE 109 |             bg=C_ENTRY,
+LINE 110 |             bd=1,
+LINE 111 |             relief="flat",
+LINE 112 |             highlightbackground=C_BORDER,
+LINE 113 |             highlightthickness=1,
+LINE 114 |         )
+LINE 115 |         container.pack(fill=tk.BOTH, expand=True, padx=12, pady=8)
+LINE 116 | 
+LINE 117 |         self.canvas = tk.Canvas(container, bg=C_ENTRY, bd=0, highlightthickness=0)
+LINE 118 |         scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL, command=self.canvas.yview)
+LINE 119 |         self.scroll_frame = tk.Frame(self.canvas, bg=C_ENTRY)
+LINE 120 | 
+LINE 121 |         self.scroll_frame.bind(
+LINE 122 |             "<Configure>",
+LINE 123 |             lambda _e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+LINE 124 |         )
+LINE 125 |         self.canvas_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
+LINE 126 | 
+LINE 127 |         def _on_resize(event):
+LINE 128 |             if self.winfo_exists():
+LINE 129 |                 self.canvas.itemconfig(self.canvas_window, width=event.width)
+LINE 130 | 
+LINE 131 |         self.canvas.bind("<Configure>", _on_resize)
+LINE 132 | 
+LINE 133 |         # Scoped mousewheel binding directly to canvas and scroll_frame
+LINE 134 |         def _on_mousewheel(event):
+LINE 135 |             if not self.winfo_exists():
+LINE 136 |                 return
+LINE 137 |             if event.delta:
+LINE 138 |                 self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+LINE 139 |             elif event.num == 4:
+LINE 140 |                 self.canvas.yview_scroll(-1, "units")
+LINE 141 |             elif event.num == 5:
+LINE 142 |                 self.canvas.yview_scroll(1, "units")
+LINE 143 | 
+LINE 144 |         self.canvas.bind("<MouseWheel>", _on_mousewheel)
+LINE 145 |         self.canvas.bind("<Button-4>", _on_mousewheel)
+LINE 146 |         self.canvas.bind("<Button-5>", _on_mousewheel)
+LINE 147 |         self.scroll_frame.bind("<MouseWheel>", _on_mousewheel)
+LINE 148 |         self.scroll_frame.bind("<Button-4>", _on_mousewheel)
+LINE 149 |         self.scroll_frame.bind("<Button-5>", _on_mousewheel)
+LINE 150 | 
+LINE 151 |         self.canvas.configure(yscrollcommand=scrollbar.set)
+LINE 152 |         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+LINE 153 |         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+LINE 154 | 
+LINE 155 |     def _load_files(self, force_refresh: bool = False):
+LINE 156 |         self._scan_id += 1
+LINE 157 |         current_scan_id = self._scan_id
+LINE 158 | 
+LINE 159 |         # Schedule delayed loading indicator after 200ms
+LINE 160 |         self._cancel_timer("_loading_timer")
+LINE 161 |         self._loading_timer = self.after(
+LINE 162 |             LOADING_DELAY_MS, lambda: self._show_loading(current_scan_id)
+LINE 163 |         )
+LINE 164 | 
+LINE 165 |         # FIX: launch background worker: DB-first, os.walk fallback
+LINE 166 |         threading.Thread(
+LINE 167 |             target=self._async_scan_worker,
+LINE 168 |             args=(
+LINE 169 |                 current_scan_id,
+LINE 170 |                 self.folder_path,
+LINE 171 |                 self.excluded_dirs,
+LINE 172 |                 self._scan_queue,
+LINE 173 |                 force_refresh,
+LINE 174 |             ),
+LINE 175 |             daemon=True,
+LINE 176 |         ).start()
+LINE 177 | 
+LINE 178 |         # Start queue polling loop on main GUI thread
+LINE 179 |         self._schedule_queue_check()
+LINE 180 | 
+LINE 181 |     def _schedule_queue_check(self):
+LINE 182 |         self._cancel_timer("_poll_timer")
+LINE 183 |         if self.winfo_exists():
+LINE 184 |             self._poll_timer = self.after(QUEUE_CHECK_MS, self._check_scan_queue)
+LINE 185 | 
+LINE 186 |     def _check_scan_queue(self):
+LINE 187 |         if not self.winfo_exists():
+LINE 188 |             return
+LINE 189 | 
+LINE 190 |         received = False
+LINE 191 |         latest_files = None
+LINE 192 |         source = None
+LINE 193 | 
+LINE 194 |         while True:
+LINE 195 |             try:
+LINE 196 |                 sid, files, src = self._scan_queue.get_nowait()
+LINE 197 |                 if sid == self._scan_id:
+LINE 198 |                     latest_files = files
+LINE 199 |                     source = src
+LINE 200 |                     received = True
+LINE 201 |             except queue.Empty:
+LINE 202 |                 break
+LINE 203 | 
+LINE 204 |         if received and latest_files is not None:
+LINE 205 |             self._hide_loading()
+LINE 206 |             self.all_files = latest_files
+LINE 207 |             self._files_indexed = [(f, f.lower()) for f in latest_files]
+LINE 208 |             if self.lbl_loading is not None and self.winfo_exists():
+LINE 209 |                 tag = "caché DB" if source == "db" else "escaneo"
+LINE 210 |                 self.lbl_loading.config(
+LINE 211 |                     text=f"✓ {len(latest_files)} archivos ({tag})"
+LINE 212 |                 )
+LINE 213 |             self._refresh_results(force=True)
+LINE 214 |         else:
+LINE 215 |             # Reschedule queue check
+LINE 216 |             self._schedule_queue_check()
+LINE 217 | 
+LINE 218 |     @staticmethod
+LINE 219 |     def _async_scan_worker(
+LINE 220 |         scan_id: int,
+LINE 221 |         folder_path: str,
+LINE 222 |         excluded_dirs: Set[str],
+LINE 223 |         res_queue: queue.Queue,
+LINE 224 |         force_refresh: bool = False,
+LINE 225 |     ):
+LINE 226 |         """Worker thread entry point: DB-first con fallback a os.walk.
+LINE 227 | 
+LINE 228 |         Estrategia:
+LINE 229 |           1) Si !force_refresh, consultar SQLite (project_cache.db). ~1 ms.
+LINE 230 |           2) Si la DB no tiene filas o el usuario forzó refresco, os.walk.
+LINE 231 |         """
+LINE 232 |         files: List[str] = []
+LINE 233 |         source = "scan"
+LINE 234 |         try:
+LINE 235 |             from app.core.storage.database import get_database
+LINE 236 | 
+LINE 237 |             if not force_refresh:
+LINE 238 |                 db = get_database()
+LINE 239 |                 db_files, _last_scanned, exists = db.load_file_paths(folder_path)
+LINE 240 |                 if exists and db_files:
+LINE 241 |                     files = db_files
+LINE 242 |                     source = "db"
+LINE 243 | 
+LINE 244 |             if not files:
+LINE 245 |                 files = scan_directory(
+LINE 246 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 247 |                 )
+LINE 248 |                 source = "scan"
+LINE 249 |         except Exception:
+LINE 250 |             # Ante cualquier fallo, caer a escaneo directo
+LINE 251 |             try:
+LINE 252 |                 files = scan_directory(
+LINE 253 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 254 |                 )
+LINE 255 |             except Exception:
+LINE 256 |                 files = []
+LINE 257 |             source = "scan"
+LINE 258 | 
+LINE 259 |         res_queue.put((scan_id, files, source))
+LINE 260 | 
+LINE 261 |     def _show_loading(self, scan_id: int):
+LINE 262 |         if not self.winfo_exists():
+LINE 263 |             return
+LINE 264 |         if scan_id == self._scan_id and self.lbl_loading:
+LINE 265 |             self.lbl_loading.pack(side=tk.RIGHT)
+LINE 266 | 
+LINE 267 |     def _hide_loading(self):
+LINE 268 |         self._cancel_timer("_loading_timer")
+LINE 269 |         if self.winfo_exists() and self.lbl_loading:
+LINE 270 |             self.lbl_loading.pack_forget()
+LINE 271 | 
+LINE 272 |     def _on_query_trace(self, *args):
+LINE 273 |         self._cancel_timer("_debounce_timer")
+LINE 274 |         self._debounce_timer = self.after(DEBOUNCE_MS, self._refresh_results)
+LINE 275 | 
+LINE 276 |     def _force_refresh_results(self):
+LINE 277 |         self._cancel_timer("_debounce_timer")
+LINE 278 |         self._refresh_results(force=True)
+LINE 279 | 
+LINE 280 |     def _clear_search(self):
+LINE 281 |         self.search_var.set("")
+LINE 282 |         self._force_refresh_results()
+LINE 283 | 
+LINE 284 |     def _cancel_timer(self, attr_name: str):
+LINE 285 |         timer_id = getattr(self, attr_name, None)
+LINE 286 |         if timer_id:
+LINE 287 |             try:
+LINE 288 |                 self.after_cancel(timer_id)
+LINE 289 |             except Exception:
+LINE 290 |                 pass
+LINE 291 |             setattr(self, attr_name, None)
+LINE 292 | 
+LINE 293 |     def _cancel_render_task(self):
+LINE 294 |         self._cancel_timer("_render_timer")
+LINE 295 | 
+LINE 296 |     def _refresh_results(self, force: bool = False):
+LINE 297 |         if not self.winfo_exists():
+LINE 298 |             return
+LINE 299 | 
+LINE 300 |         query = self.search_var.get().strip().lower()
+LINE 301 |         if not force and self._last_query == query:
+LINE 302 |             return
+LINE 303 |         self._last_query = query
+LINE 304 | 
+LINE 305 |         self._cancel_render_task()
+LINE 306 | 
+LINE 307 |         # Clear existing scroll_frame children
+LINE 308 |         for child in self.scroll_frame.winfo_children():
+LINE 309 |             child.destroy()
+LINE 310 | 
+LINE 311 |         matches = [
+LINE 312 |             rel for rel, rel_lower in self._files_indexed
+LINE 313 |             if not query or query in rel_lower
+LINE 314 |         ]
+LINE 315 | 
+LINE 316 |         if not matches:
+LINE 317 |             tk.Label(
+LINE 318 |                 self.scroll_frame,
+LINE 319 |                 text="(Sin resultados)",
+LINE 320 |                 font=("Segoe UI", 9, "italic"),
+LINE 321 |                 bg=C_ENTRY,
+LINE 322 |                 fg=C_TEXT2,
+LINE 323 |             ).pack(anchor="w", padx=10, pady=10)
+LINE 324 |             return
+LINE 325 | 
+LINE 326 |         total_matches = len(matches)
+LINE 327 |         matches_to_render = matches[:MAX_RENDER_LIMIT]
+LINE 328 | 
+LINE 329 |         # FIX: incluso la primera tanda se agenda con after(0, ...) para no
+LINE 330 |         # bloquear el hilo de la GUI dentro de _refresh_results.
+LINE 331 |         self._render_timer = self.after(
+LINE 332 |             0,
+LINE 333 |             lambda: self._render_batch(matches_to_render, 0, total_matches),
+LINE 334 |         )
+LINE 335 | 
+LINE 336 |     def _render_batch(self, matches_subset: List[str], start_idx: int, total_matches: int):
+LINE 337 |         if not self.winfo_exists():
+LINE 338 |             return
+LINE 339 | 
+LINE 340 |         end_idx = min(start_idx + BATCH_SIZE, len(matches_subset))
+LINE 341 | 
+LINE 342 |         for idx in range(start_idx, end_idx):
+LINE 343 |             rel = matches_subset[idx]
+LINE 344 |             row = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=3)
+LINE 345 |             row.pack(fill=tk.X)
+LINE 346 | 
+LINE 347 |             tk.Label(
+LINE 348 |                 row,
+LINE 349 |                 text=rel,
+LINE 350 |                 font=("Consolas", 9),
+LINE 351 |                 bg=C_ENTRY,
+LINE 352 |                 fg=C_TEXT,
+LINE 353 |                 anchor="w",
+LINE 354 |             ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+LINE 355 | 
+LINE 356 |             ttk.Button(
+LINE 357 |                 row,
+LINE 358 |                 text="🔗 Dependencias",
+LINE 359 |                 command=lambda r=rel: self._analyze(r),
+LINE 360 |             ).pack(side=tk.RIGHT)
+LINE 361 | 
+LINE 362 |         if end_idx < len(matches_subset):
+LINE 363 |             # FIX: 15 ms en lugar de 1 ms para que el mainloop procese eventos
+LINE 364 |             # (redibujado, teclado, ratón) entre tandas.
+LINE 365 |             self._render_timer = self.after(
+LINE 366 |                 RENDER_BATCH_DELAY_MS,
+LINE 367 |                 lambda: self._render_batch(matches_subset, end_idx, total_matches),
+LINE 368 |             )
+LINE 369 |         else:
+LINE 370 |             # Batch complete, display total matches summary if hard limit hit
+LINE 371 |             if total_matches > MAX_RENDER_LIMIT:
+LINE 372 |                 footer = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=6)
+LINE 373 |                 footer.pack(fill=tk.X)
+LINE 374 |                 tk.Label(
+LINE 375 |                     footer,
+LINE 376 |                     text=f"Mostrando {MAX_RENDER_LIMIT} de {total_matches:,} resultados. Afina la búsqueda para ver más.",
+LINE 377 |                     font=("Segoe UI", 8, "italic"),
+LINE 378 |                     bg=C_ENTRY,
+LINE 379 |                     fg=C_TEXT2,
+LINE 380 |                 ).pack(anchor="w")
+LINE 381 | 
+LINE 382 |     def _analyze(self, rel_path: str):
+LINE 383 |         if self.on_analyze_dependencies:
+LINE 384 |             self.on_analyze_dependencies(rel_path)
+LINE 385 | 
+LINE 386 |     def _on_destroy(self, event):
+LINE 387 |         if event.widget == self:
+LINE 388 |             self._cancel_timer("_debounce_timer")
+LINE 389 |             self._cancel_timer("_loading_timer")
+LINE 390 |             self._cancel_timer("_render_timer")
+LINE 391 |             self._cancel_timer("_poll_timer")
+LINE 392 |             self._scan_id += 1  # invalidate any pending scan callbacks
+LINE 393 |             try:
+LINE 394 |                 self.search_var.trace_remove("write", self._trace_id)
+LINE 395 |             except Exception:
+LINE 396 |                 pass
 ```
 
 ==============================================================
@@ -4238,99 +5457,113 @@ LINE 817 |         return sorted(list(dict.fromkeys(recommended)))
 FILE: app/core/project_scanner.py
 ==============================================================
 ```py
-LINE  1 | """Project scanner module for scanning directory structures with caching."""
-LINE  2 | import os
-LINE  3 | import threading
-LINE  4 | from typing import Set, Dict, Any, List, Optional, Tuple
-LINE  5 | from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
-LINE  6 | 
-LINE  7 | _cache_lock = threading.Lock()
-LINE  8 | # Cache mapping: key -> (folder_mtime, valid_files)
-LINE  9 | _SCAN_CACHE: Dict[Tuple, Tuple[float, List[str]]] = {}
-LINE 10 | _MAX_CACHE_ENTRIES = 50
-LINE 11 | 
-LINE 12 | 
-LINE 13 | def clear_scan_cache() -> None:
-LINE 14 |     """Clears the scan directory cache."""
-LINE 15 |     with _cache_lock:
-LINE 16 |         _SCAN_CACHE.clear()
-LINE 17 | 
-LINE 18 | 
-LINE 19 | def is_file_allowed(filename: str, allowed_extensions: Optional[Set[str]], filter_by_ext: bool = True) -> bool:
-LINE 20 |     """Checks if file is allowed (not binary media and matching allowed extensions)."""
-LINE 21 |     ext = os.path.splitext(filename)[1].lower()
-LINE 22 |     if ext in KNOWN_BINARY_EXTENSIONS:
-LINE 23 |         return False
-LINE 24 |     if filter_by_ext and allowed_extensions:
-LINE 25 |         return ext in allowed_extensions
-LINE 26 |     return True
-LINE 27 | 
-LINE 28 | 
-LINE 29 | def scan_directory(
-LINE 30 |     folder_path: str,
-LINE 31 |     excluded_dirs: Optional[Set[str]] = None,
-LINE 32 |     allowed_extensions: Optional[Set[str]] = None,
-LINE 33 |     use_cache: bool = True,
-LINE 34 |     force_refresh: bool = False,
-LINE 35 | ) -> List[str]:
-LINE 36 |     """
-LINE 37 |     Recursively scans folder_path ignoring excluded_dirs and non-allowed file extensions.
-LINE 38 |     Returns sorted list of relative file paths. Uses thread-safe caching with mtime checking.
-LINE 39 |     """
-LINE 40 |     if not folder_path or not os.path.isdir(folder_path):
-LINE 41 |         return []
-LINE 42 | 
-LINE 43 |     abs_folder = os.path.abspath(folder_path)
-LINE 44 |     excluded_set = set(excluded_dirs) if excluded_dirs else set()
-LINE 45 |     allowed_tuple = tuple(sorted(allowed_extensions)) if allowed_extensions else None
-LINE 46 |     cache_key = (abs_folder, tuple(sorted(excluded_set)), allowed_tuple)
-LINE 47 | 
-LINE 48 |     folder_mtime = 0.0
-LINE 49 |     try:
-LINE 50 |         folder_mtime = os.path.getmtime(abs_folder)
-LINE 51 |     except OSError:
-LINE 52 |         pass
-LINE 53 | 
-LINE 54 |     if use_cache and not force_refresh:
-LINE 55 |         with _cache_lock:
-LINE 56 |             if cache_key in _SCAN_CACHE:
-LINE 57 |                 cached_mtime, cached_files = _SCAN_CACHE[cache_key]
-LINE 58 |                 if cached_mtime == folder_mtime:
-LINE 59 |                     return list(cached_files)
-LINE 60 | 
-LINE 61 |     valid_files = []
-LINE 62 | 
-LINE 63 |     def _walk_error(err: OSError):
-LINE 64 |         pass  # Ignore permission/access errors gracefully
-LINE 65 | 
-LINE 66 |     try:
-LINE 67 |         for dirpath, dirnames, filenames in os.walk(abs_folder, onerror=_walk_error):
-LINE 68 |             dirnames[:] = [d for d in dirnames if d not in excluded_set]
-LINE 69 |             rel_dir = os.path.relpath(dirpath, abs_folder)
-LINE 70 | 
-LINE 71 |             for f in filenames:
-LINE 72 |                 try:
-LINE 73 |                     if is_file_allowed(f, allowed_extensions):
-LINE 74 |                         rel_file = f if rel_dir == '.' else os.path.join(rel_dir, f)
-LINE 75 |                         valid_files.append(rel_file.replace("\\", "/"))
-LINE 76 |                 except Exception:
-LINE 77 |                     continue
-LINE 78 |     except Exception:
-LINE 79 |         pass
-LINE 80 | 
-LINE 81 |     valid_files = sorted(valid_files)
-LINE 82 | 
-LINE 83 |     if use_cache:
-LINE 84 |         with _cache_lock:
-LINE 85 |             if len(_SCAN_CACHE) >= _MAX_CACHE_ENTRIES:
-LINE 86 |                 try:
-LINE 87 |                     first_key = next(iter(_SCAN_CACHE))
-LINE 88 |                     del _SCAN_CACHE[first_key]
-LINE 89 |                 except (StopIteration, KeyError):
-LINE 90 |                     pass
-LINE 91 |             _SCAN_CACHE[cache_key] = (folder_mtime, valid_files)
-LINE 92 | 
-LINE 93 |     return valid_files
+LINE   1 | """Project scanner module for scanning directory structures with caching."""
+LINE   2 | import os
+LINE   3 | import threading
+LINE   4 | from typing import Set, Dict, Any, List, Optional, Tuple
+LINE   5 | from app.utils.file_utils import KNOWN_BINARY_EXTENSIONS
+LINE   6 | 
+LINE   7 | _cache_lock = threading.Lock()
+LINE   8 | # Cache mapping: key -> (folder_mtime, valid_files)
+LINE   9 | _SCAN_CACHE: Dict[Tuple, Tuple[float, List[str]]] = {}
+LINE  10 | _MAX_CACHE_ENTRIES = 50
+LINE  11 | 
+LINE  12 | 
+LINE  13 | def clear_scan_cache() -> None:
+LINE  14 |     """Clears the scan directory cache."""
+LINE  15 |     with _cache_lock:
+LINE  16 |         _SCAN_CACHE.clear()
+LINE  17 | 
+LINE  18 | 
+LINE  19 | def is_file_allowed(filename: str, allowed_extensions: Optional[Set[str]], filter_by_ext: bool = True) -> bool:
+LINE  20 |     """Checks if file is allowed (not binary media and matching allowed extensions)."""
+LINE  21 |     ext = os.path.splitext(filename)[1].lower()
+LINE  22 |     if ext in KNOWN_BINARY_EXTENSIONS:
+LINE  23 |         return False
+LINE  24 |     if filter_by_ext and allowed_extensions:
+LINE  25 |         return ext in allowed_extensions
+LINE  26 |     return True
+LINE  27 | 
+LINE  28 | 
+LINE  29 | def scan_directory(
+LINE  30 |     folder_path: str,
+LINE  31 |     excluded_dirs: Optional[Set[str]] = None,
+LINE  32 |     allowed_extensions: Optional[Set[str]] = None,
+LINE  33 |     use_cache: bool = True,
+LINE  34 |     force_refresh: bool = False,
+LINE  35 | ) -> List[str]:
+LINE  36 |     """
+LINE  37 |     Recursively scans folder_path ignoring excluded_dirs and non-allowed file extensions.
+LINE  38 |     Returns sorted list of relative file paths. Uses thread-safe caching with mtime checking.
+LINE  39 |     """
+LINE  40 |     if not folder_path or not os.path.isdir(folder_path):
+LINE  41 |         return []
+LINE  42 | 
+LINE  43 |     abs_folder = os.path.abspath(folder_path)
+LINE  44 |     excluded_set = set(excluded_dirs) if excluded_dirs else set()
+LINE  45 |     allowed_tuple = tuple(sorted(allowed_extensions)) if allowed_extensions else None
+LINE  46 |     cache_key = (abs_folder, tuple(sorted(excluded_set)), allowed_tuple)
+LINE  47 | 
+LINE  48 |     # FIX: firma de invalidación recursiva ligera (raíz + subdirectorios
+LINE  49 |     # inmediatos). No es perfecta, pero evita devolver caché obsoleta cuando
+LINE  50 |     # cambian archivos dentro de subcarpetas de primer nivel, sin coste de
+LINE  51 |     # os.walk completo.
+LINE  52 |     signature = 0.0
+LINE  53 |     try:
+LINE  54 |         signature = os.path.getmtime(abs_folder)
+LINE  55 |         with os.scandir(abs_folder) as it:
+LINE  56 |             for entry in it:
+LINE  57 |                 if entry.is_dir(follow_symlinks=False):
+LINE  58 |                     try:
+LINE  59 |                         signature = max(
+LINE  60 |                             signature,
+LINE  61 |                             entry.stat(follow_symlinks=False).st_mtime,
+LINE  62 |                         )
+LINE  63 |                     except OSError:
+LINE  64 |                         continue
+LINE  65 |     except OSError:
+LINE  66 |         pass
+LINE  67 | 
+LINE  68 |     if use_cache and not force_refresh:
+LINE  69 |         with _cache_lock:
+LINE  70 |             if cache_key in _SCAN_CACHE:
+LINE  71 |                 cached_mtime, cached_files = _SCAN_CACHE[cache_key]
+LINE  72 |                 if cached_mtime == signature:
+LINE  73 |                     return list(cached_files)
+LINE  74 | 
+LINE  75 |     valid_files = []
+LINE  76 | 
+LINE  77 |     def _walk_error(err: OSError):
+LINE  78 |         pass  # Ignore permission/access errors gracefully
+LINE  79 | 
+LINE  80 |     try:
+LINE  81 |         for dirpath, dirnames, filenames in os.walk(abs_folder, onerror=_walk_error):
+LINE  82 |             dirnames[:] = [d for d in dirnames if d not in excluded_set]
+LINE  83 |             rel_dir = os.path.relpath(dirpath, abs_folder)
+LINE  84 | 
+LINE  85 |             for f in filenames:
+LINE  86 |                 try:
+LINE  87 |                     if is_file_allowed(f, allowed_extensions):
+LINE  88 |                         rel_file = f if rel_dir == '.' else os.path.join(rel_dir, f)
+LINE  89 |                         valid_files.append(rel_file.replace("\\", "/"))
+LINE  90 |                 except Exception:
+LINE  91 |                     continue
+LINE  92 |     except Exception:
+LINE  93 |         pass
+LINE  94 | 
+LINE  95 |     valid_files = sorted(valid_files)
+LINE  96 | 
+LINE  97 |     if use_cache:
+LINE  98 |         with _cache_lock:
+LINE  99 |             if len(_SCAN_CACHE) >= _MAX_CACHE_ENTRIES:
+LINE 100 |                 try:
+LINE 101 |                     first_key = next(iter(_SCAN_CACHE))
+LINE 102 |                     del _SCAN_CACHE[first_key]
+LINE 103 |                 except (StopIteration, KeyError):
+LINE 104 |                     pass
+LINE 105 |             _SCAN_CACHE[cache_key] = (signature, valid_files)
+LINE 106 | 
+LINE 107 |     return valid_files
 ```
 
 ==============================================================
@@ -4654,111 +5887,138 @@ LINE 257 |             (project_id,),
 LINE 258 |         )
 LINE 259 |         return [dict(r) for r in cur.fetchall()]
 LINE 260 | 
-LINE 261 |     # === PHASE 2: DELTA SCAN ===
-LINE 262 |     def load_nodes_map(self, project_path: str):
-LINE 263 |         cur = self._conn.cursor()
-LINE 264 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
-LINE 265 |         row = cur.fetchone()
-LINE 266 |         if not row:
-LINE 267 |             return None
-LINE 268 |         project_id = int(row["id"])
-LINE 269 |         cur.execute(
-LINE 270 |             "SELECT id, rel_path, parent_path, is_dir, mtime, lines_count, "
-LINE 271 |             "file_size, is_important, is_checked FROM nodes WHERE project_id = ?",
-LINE 272 |             (project_id,),
+LINE 261 |     def load_file_paths(self, project_path: str):
+LINE 262 |         """Devuelve lista plana de rutas de archivo (is_dir=0) ordenadas.
+LINE 263 | 
+LINE 264 |         Pensado para alimentar el buscador sin pagar el coste de os.walk.
+LINE 265 |         Devuelve:
+LINE 266 |             (files: List[str], last_scanned: Optional[str], exists: bool)
+LINE 267 |         donde `files` es [] si el proyecto existe pero no tiene nodos.
+LINE 268 |         """
+LINE 269 |         cur = self._conn.cursor()
+LINE 270 |         cur.execute(
+LINE 271 |             "SELECT id, last_scanned FROM projects WHERE path = ?",
+LINE 272 |             (project_path,),
 LINE 273 |         )
-LINE 274 |         return {r["rel_path"]: dict(r) for r in cur.fetchall()}
-LINE 275 | 
-LINE 276 |     def apply_delta(self, project_id, to_insert, to_update,
-LINE 277 |                     to_delete_paths, dep_pairs):
-LINE 278 |         if to_delete_paths:
-LINE 279 |             with self._conn:
-LINE 280 |                 self._conn.executemany(
-LINE 281 |                     "DELETE FROM nodes WHERE project_id = ? AND rel_path = ?",
-LINE 282 |                     [(project_id, rp) for rp in to_delete_paths],
-LINE 283 |                 )
-LINE 284 |         if to_update:
-LINE 285 |             with self._conn:
-LINE 286 |                 self._conn.executemany(
-LINE 287 |                     """UPDATE nodes SET mtime=?, lines_count=?, file_size=?,
-LINE 288 |                                        is_important=?
-LINE 289 |                        WHERE project_id=? AND rel_path=?""",
-LINE 290 |                     [(n["mtime"], n["lines_count"], n["file_size"],
-LINE 291 |                       int(bool(n.get("is_important", 0))),
-LINE 292 |                       project_id, n["rel_path"]) for n in to_update],
-LINE 293 |                 )
-LINE 294 |         if to_insert:
-LINE 295 |             with self._conn:
-LINE 296 |                 self._conn.executemany(
-LINE 297 |                     """INSERT INTO nodes
-LINE 298 |                        (project_id, rel_path, parent_path, is_dir, mtime,
-LINE 299 |                         lines_count, file_size, is_important, is_checked)
-LINE 300 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-LINE 301 |                     [(project_id, n["rel_path"], n.get("parent_path"),
-LINE 302 |                       int(bool(n.get("is_dir", 0))),
-LINE 303 |                       float(n.get("mtime", 0.0)),
-LINE 304 |                       int(n.get("lines_count", 0) or 0),
-LINE 305 |                       int(n.get("file_size", 0) or 0),
-LINE 306 |                       int(bool(n.get("is_important", 0))),
-LINE 307 |                       int(bool(n.get("is_checked", 1))))
-LINE 308 |                      for n in to_insert],
-LINE 309 |                 )
-LINE 310 |         if to_update or to_insert or to_delete_paths:
-LINE 311 |             with self._conn:
-LINE 312 |                 pairs = ([(project_id, n["rel_path"]) for n in to_update] +
-LINE 313 |                          [(project_id, n["rel_path"]) for n in to_insert] +
-LINE 314 |                          [(project_id, rp) for rp in to_delete_paths])
-LINE 315 |                 self._conn.executemany(
-LINE 316 |                     """DELETE FROM node_dependencies
-LINE 317 |                        WHERE source_node_id IN
-LINE 318 |                          (SELECT id FROM nodes WHERE project_id=? AND rel_path=?)""",
-LINE 319 |                     pairs,
+LINE 274 |         row = cur.fetchone()
+LINE 275 |         if not row:
+LINE 276 |             return [], None, False
+LINE 277 |         project_id = int(row["id"])
+LINE 278 |         last_scanned = row["last_scanned"]
+LINE 279 |         cur.execute(
+LINE 280 |             "SELECT rel_path FROM nodes "
+LINE 281 |             "WHERE project_id = ? AND is_dir = 0 "
+LINE 282 |             "ORDER BY rel_path",
+LINE 283 |             (project_id,),
+LINE 284 |         )
+LINE 285 |         files = [r["rel_path"] for r in cur.fetchall()]
+LINE 286 |         return files, last_scanned, True
+LINE 287 | 
+LINE 288 |     # === PHASE 2: DELTA SCAN ===
+LINE 289 |     def load_nodes_map(self, project_path: str):
+LINE 290 |         cur = self._conn.cursor()
+LINE 291 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
+LINE 292 |         row = cur.fetchone()
+LINE 293 |         if not row:
+LINE 294 |             return None
+LINE 295 |         project_id = int(row["id"])
+LINE 296 |         cur.execute(
+LINE 297 |             "SELECT id, rel_path, parent_path, is_dir, mtime, lines_count, "
+LINE 298 |             "file_size, is_important, is_checked FROM nodes WHERE project_id = ?",
+LINE 299 |             (project_id,),
+LINE 300 |         )
+LINE 301 |         return {r["rel_path"]: dict(r) for r in cur.fetchall()}
+LINE 302 | 
+LINE 303 |     def apply_delta(self, project_id, to_insert, to_update,
+LINE 304 |                     to_delete_paths, dep_pairs):
+LINE 305 |         if to_delete_paths:
+LINE 306 |             with self._conn:
+LINE 307 |                 self._conn.executemany(
+LINE 308 |                     "DELETE FROM nodes WHERE project_id = ? AND rel_path = ?",
+LINE 309 |                     [(project_id, rp) for rp in to_delete_paths],
+LINE 310 |                 )
+LINE 311 |         if to_update:
+LINE 312 |             with self._conn:
+LINE 313 |                 self._conn.executemany(
+LINE 314 |                     """UPDATE nodes SET mtime=?, lines_count=?, file_size=?,
+LINE 315 |                                        is_important=?
+LINE 316 |                        WHERE project_id=? AND rel_path=?""",
+LINE 317 |                     [(n["mtime"], n["lines_count"], n["file_size"],
+LINE 318 |                       int(bool(n.get("is_important", 0))),
+LINE 319 |                       project_id, n["rel_path"]) for n in to_update],
 LINE 320 |                 )
-LINE 321 |                 if dep_pairs:
-LINE 322 |                     cur = self._conn.cursor()
-LINE 323 |                     cur.execute(
-LINE 324 |                         "SELECT id, rel_path FROM nodes WHERE project_id=?",
-LINE 325 |                         (project_id,))
-LINE 326 |                     id_map = {r["rel_path"]: int(r["id"])
-LINE 327 |                               for r in cur.fetchall()}
-LINE 328 |                     rows = [(id_map[s], t) for s, t in dep_pairs if s in id_map]
-LINE 329 |                     if rows:
-LINE 330 |                         self._conn.executemany(
-LINE 331 |                             "INSERT INTO node_dependencies "
-LINE 332 |                             "(source_node_id, target_path) VALUES (?, ?)",
-LINE 333 |                             rows,
-LINE 334 |                         )
-LINE 335 |         self.update_last_scanned(project_id)
-LINE 336 |     # === END PHASE 2 ===
-LINE 337 | 
-LINE 338 |     def close(self) -> None:
-LINE 339 |         try:
-LINE 340 |             self._conn.close()
-LINE 341 |         except Exception:
-LINE 342 |             pass
-LINE 343 | 
-LINE 344 | 
-LINE 345 | # ---------------------------------------------------------------------------
-LINE 346 | # Singleton accessor
-LINE 347 | # ---------------------------------------------------------------------------
-LINE 348 | 
-LINE 349 | _db_singleton: Optional[Database] = None
-LINE 350 | 
-LINE 351 | 
-LINE 352 | def get_database(db_path: Optional[str] = None) -> Database:
-LINE 353 |     """Return the process-wide Database singleton."""
-LINE 354 |     global _db_singleton
-LINE 355 |     if _db_singleton is None or (db_path and db_path != _db_singleton.db_path):
-LINE 356 |         _db_singleton = Database(db_path)
-LINE 357 |     return _db_singleton
-LINE 358 | 
-LINE 359 | 
-LINE 360 | def reset_database_singleton() -> None:
-LINE 361 |     """For tests: close and drop the current singleton."""
-LINE 362 |     global _db_singleton
-LINE 363 |     if _db_singleton is not None:
-LINE 364 |         _db_singleton.close()
-LINE 365 |     _db_singleton = None
+LINE 321 |         if to_insert:
+LINE 322 |             with self._conn:
+LINE 323 |                 self._conn.executemany(
+LINE 324 |                     """INSERT INTO nodes
+LINE 325 |                        (project_id, rel_path, parent_path, is_dir, mtime,
+LINE 326 |                         lines_count, file_size, is_important, is_checked)
+LINE 327 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+LINE 328 |                     [(project_id, n["rel_path"], n.get("parent_path"),
+LINE 329 |                       int(bool(n.get("is_dir", 0))),
+LINE 330 |                       float(n.get("mtime", 0.0)),
+LINE 331 |                       int(n.get("lines_count", 0) or 0),
+LINE 332 |                       int(n.get("file_size", 0) or 0),
+LINE 333 |                       int(bool(n.get("is_important", 0))),
+LINE 334 |                       int(bool(n.get("is_checked", 1))))
+LINE 335 |                      for n in to_insert],
+LINE 336 |                 )
+LINE 337 |         if to_update or to_insert or to_delete_paths:
+LINE 338 |             with self._conn:
+LINE 339 |                 pairs = ([(project_id, n["rel_path"]) for n in to_update] +
+LINE 340 |                          [(project_id, n["rel_path"]) for n in to_insert] +
+LINE 341 |                          [(project_id, rp) for rp in to_delete_paths])
+LINE 342 |                 self._conn.executemany(
+LINE 343 |                     """DELETE FROM node_dependencies
+LINE 344 |                        WHERE source_node_id IN
+LINE 345 |                          (SELECT id FROM nodes WHERE project_id=? AND rel_path=?)""",
+LINE 346 |                     pairs,
+LINE 347 |                 )
+LINE 348 |                 if dep_pairs:
+LINE 349 |                     cur = self._conn.cursor()
+LINE 350 |                     cur.execute(
+LINE 351 |                         "SELECT id, rel_path FROM nodes WHERE project_id=?",
+LINE 352 |                         (project_id,))
+LINE 353 |                     id_map = {r["rel_path"]: int(r["id"])
+LINE 354 |                               for r in cur.fetchall()}
+LINE 355 |                     rows = [(id_map[s], t) for s, t in dep_pairs if s in id_map]
+LINE 356 |                     if rows:
+LINE 357 |                         self._conn.executemany(
+LINE 358 |                             "INSERT INTO node_dependencies "
+LINE 359 |                             "(source_node_id, target_path) VALUES (?, ?)",
+LINE 360 |                             rows,
+LINE 361 |                         )
+LINE 362 |         self.update_last_scanned(project_id)
+LINE 363 |     # === END PHASE 2 ===
+LINE 364 | 
+LINE 365 |     def close(self) -> None:
+LINE 366 |         try:
+LINE 367 |             self._conn.close()
+LINE 368 |         except Exception:
+LINE 369 |             pass
+LINE 370 | 
+LINE 371 | 
+LINE 372 | # ---------------------------------------------------------------------------
+LINE 373 | # Singleton accessor
+LINE 374 | # ---------------------------------------------------------------------------
+LINE 375 | 
+LINE 376 | _db_singleton: Optional[Database] = None
+LINE 377 | 
+LINE 378 | 
+LINE 379 | def get_database(db_path: Optional[str] = None) -> Database:
+LINE 380 |     """Return the process-wide Database singleton."""
+LINE 381 |     global _db_singleton
+LINE 382 |     if _db_singleton is None or (db_path and db_path != _db_singleton.db_path):
+LINE 383 |         _db_singleton = Database(db_path)
+LINE 384 |     return _db_singleton
+LINE 385 | 
+LINE 386 | 
+LINE 387 | def reset_database_singleton() -> None:
+LINE 388 |     """For tests: close and drop the current singleton."""
+LINE 389 |     global _db_singleton
+LINE 390 |     if _db_singleton is not None:
+LINE 391 |         _db_singleton.close()
+LINE 392 |     _db_singleton = None
 ```
 
 ==============================================================
@@ -5983,329 +7243,388 @@ LINE  16 | C_TEXT2 = "#8b92a8"
 LINE  17 | C_ENTRY = "#2a3148"
 LINE  18 | 
 LINE  19 | MAX_RENDER_LIMIT = 500
-LINE  20 | BATCH_SIZE = 100
+LINE  20 | BATCH_SIZE = 25              # 100 -> 25 : tandas más pequeñas, sin bloquear el mainloop
 LINE  21 | DEBOUNCE_MS = 150
 LINE  22 | LOADING_DELAY_MS = 200
 LINE  23 | QUEUE_CHECK_MS = 20
-LINE  24 | 
+LINE  24 | RENDER_BATCH_DELAY_MS = 15   # 1 -> 15 : cede el hilo entre tandas
 LINE  25 | 
-LINE  26 | class FileSearchDialog(tk.Toplevel):
-LINE  27 |     def __init__(
-LINE  28 |         self,
-LINE  29 |         parent: tk.Tk,
-LINE  30 |         folder_path: str,
-LINE  31 |         excluded_dirs: Optional[Set[str]] = None,
-LINE  32 |         on_analyze_dependencies: Optional[Callable[[str], None]] = None,
-LINE  33 |     ):
-LINE  34 |         super().__init__(parent)
-LINE  35 |         self.folder_path = folder_path
-LINE  36 |         self.excluded_dirs = excluded_dirs or set()
-LINE  37 |         self.on_analyze_dependencies = on_analyze_dependencies
-LINE  38 | 
-LINE  39 |         self.title("🔎 Buscador de archivos")
-LINE  40 |         self.geometry("820x560")
-LINE  41 |         self.minsize(640, 420)
-LINE  42 |         self.configure(bg=C_BG)
-LINE  43 | 
-LINE  44 |         self.transient(parent)
-LINE  45 |         self.grab_set()
-LINE  46 | 
-LINE  47 |         self.search_var = tk.StringVar()
-LINE  48 |         self.all_files: List[str] = []
-LINE  49 |         self._files_indexed: List[Tuple[str, str]] = []  # [(rel_path, rel_path_lower)]
-LINE  50 | 
-LINE  51 |         self._scan_id: int = 0
-LINE  52 |         self._scan_queue: queue.Queue = queue.Queue()
-LINE  53 | 
-LINE  54 |         self._debounce_timer: Optional[str] = None
-LINE  55 |         self._loading_timer: Optional[str] = None
-LINE  56 |         self._render_timer: Optional[str] = None
-LINE  57 |         self._poll_timer: Optional[str] = None
-LINE  58 |         self._last_query: Optional[str] = None
-LINE  59 | 
-LINE  60 |         self.lbl_loading: Optional[tk.Label] = None
-LINE  61 | 
-LINE  62 |         self._build_header()
-LINE  63 |         self._build_results()
-LINE  64 | 
-LINE  65 |         # Bind trace on search_var for debounced searching
-LINE  66 |         self._trace_id = self.search_var.trace_add("write", self._on_query_trace)
-LINE  67 | 
-LINE  68 |         # Cleanup on destroy
-LINE  69 |         self.bind("<Destroy>", self._on_destroy)
-LINE  70 | 
-LINE  71 |         self._load_files()
-LINE  72 | 
-LINE  73 |     def _build_header(self):
-LINE  74 |         hdr = tk.Frame(self, bg=C_PANEL, padx=12, pady=10)
-LINE  75 |         hdr.pack(fill=tk.X)
-LINE  76 | 
-LINE  77 |         header_top = tk.Frame(hdr, bg=C_PANEL)
-LINE  78 |         header_top.pack(fill=tk.X)
-LINE  79 | 
-LINE  80 |         tk.Label(
-LINE  81 |             header_top,
-LINE  82 |             text="🔎 Buscar archivos del proyecto",
-LINE  83 |             font=("Segoe UI", 12, "bold"),
-LINE  84 |             bg=C_PANEL,
-LINE  85 |             fg=C_TEXT,
-LINE  86 |         ).pack(side=tk.LEFT, anchor="w")
-LINE  87 | 
-LINE  88 |         self.lbl_loading = tk.Label(
-LINE  89 |             header_top,
-LINE  90 |             text="⏳ Escaneando...",
-LINE  91 |             font=("Segoe UI", 9, "italic"),
-LINE  92 |             bg=C_PANEL,
-LINE  93 |             fg=C_ACCENT,
-LINE  94 |         )
-LINE  95 | 
-LINE  96 |         row = tk.Frame(hdr, bg=C_PANEL)
-LINE  97 |         row.pack(fill=tk.X, pady=(6, 0))
-LINE  98 | 
-LINE  99 |         self.entry = ttk.Entry(row, textvariable=self.search_var, font=("Consolas", 9))
-LINE 100 |         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
-LINE 101 | 
-LINE 102 |         ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
-LINE 103 |         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
-LINE 104 | 
-LINE 105 |     def _build_results(self):
-LINE 106 |         container = tk.Frame(
-LINE 107 |             self,
-LINE 108 |             bg=C_ENTRY,
-LINE 109 |             bd=1,
-LINE 110 |             relief="flat",
-LINE 111 |             highlightbackground=C_BORDER,
-LINE 112 |             highlightthickness=1,
-LINE 113 |         )
-LINE 114 |         container.pack(fill=tk.BOTH, expand=True, padx=12, pady=8)
-LINE 115 | 
-LINE 116 |         self.canvas = tk.Canvas(container, bg=C_ENTRY, bd=0, highlightthickness=0)
-LINE 117 |         scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL, command=self.canvas.yview)
-LINE 118 |         self.scroll_frame = tk.Frame(self.canvas, bg=C_ENTRY)
-LINE 119 | 
-LINE 120 |         self.scroll_frame.bind(
-LINE 121 |             "<Configure>",
-LINE 122 |             lambda _e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
-LINE 123 |         )
-LINE 124 |         self.canvas_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
+LINE  26 | 
+LINE  27 | class FileSearchDialog(tk.Toplevel):
+LINE  28 |     def __init__(
+LINE  29 |         self,
+LINE  30 |         parent: tk.Tk,
+LINE  31 |         folder_path: str,
+LINE  32 |         excluded_dirs: Optional[Set[str]] = None,
+LINE  33 |         on_analyze_dependencies: Optional[Callable[[str], None]] = None,
+LINE  34 |     ):
+LINE  35 |         super().__init__(parent)
+LINE  36 |         self.folder_path = folder_path
+LINE  37 |         self.excluded_dirs = excluded_dirs or set()
+LINE  38 |         self.on_analyze_dependencies = on_analyze_dependencies
+LINE  39 | 
+LINE  40 |         self.title("🔎 Buscador de archivos")
+LINE  41 |         self.geometry("820x560")
+LINE  42 |         self.minsize(640, 420)
+LINE  43 |         self.configure(bg=C_BG)
+LINE  44 | 
+LINE  45 |         self.transient(parent)
+LINE  46 |         self.grab_set()
+LINE  47 | 
+LINE  48 |         self.search_var = tk.StringVar()
+LINE  49 |         self.all_files: List[str] = []
+LINE  50 |         self._files_indexed: List[Tuple[str, str]] = []  # [(rel_path, rel_path_lower)]
+LINE  51 | 
+LINE  52 |         self._scan_id: int = 0
+LINE  53 |         self._scan_queue: queue.Queue = queue.Queue()
+LINE  54 | 
+LINE  55 |         self._debounce_timer: Optional[str] = None
+LINE  56 |         self._loading_timer: Optional[str] = None
+LINE  57 |         self._render_timer: Optional[str] = None
+LINE  58 |         self._poll_timer: Optional[str] = None
+LINE  59 |         self._last_query: Optional[str] = None
+LINE  60 | 
+LINE  61 |         self.lbl_loading: Optional[tk.Label] = None
+LINE  62 | 
+LINE  63 |         self._build_header()
+LINE  64 |         self._build_results()
+LINE  65 | 
+LINE  66 |         # Bind trace on search_var for debounced searching
+LINE  67 |         self._trace_id = self.search_var.trace_add("write", self._on_query_trace)
+LINE  68 | 
+LINE  69 |         # Cleanup on destroy
+LINE  70 |         self.bind("<Destroy>", self._on_destroy)
+LINE  71 | 
+LINE  72 |         self._load_files()
+LINE  73 | 
+LINE  74 |     def _build_header(self):
+LINE  75 |         hdr = tk.Frame(self, bg=C_PANEL, padx=12, pady=10)
+LINE  76 |         hdr.pack(fill=tk.X)
+LINE  77 | 
+LINE  78 |         header_top = tk.Frame(hdr, bg=C_PANEL)
+LINE  79 |         header_top.pack(fill=tk.X)
+LINE  80 | 
+LINE  81 |         tk.Label(
+LINE  82 |             header_top,
+LINE  83 |             text="🔎 Buscar archivos del proyecto",
+LINE  84 |             font=("Segoe UI", 12, "bold"),
+LINE  85 |             bg=C_PANEL,
+LINE  86 |             fg=C_TEXT,
+LINE  87 |         ).pack(side=tk.LEFT, anchor="w")
+LINE  88 | 
+LINE  89 |         self.lbl_loading = tk.Label(
+LINE  90 |             header_top,
+LINE  91 |             text="⏳ Escaneando...",
+LINE  92 |             font=("Segoe UI", 9, "italic"),
+LINE  93 |             bg=C_PANEL,
+LINE  94 |             fg=C_ACCENT,
+LINE  95 |         )
+LINE  96 | 
+LINE  97 |         row = tk.Frame(hdr, bg=C_PANEL)
+LINE  98 |         row.pack(fill=tk.X, pady=(6, 0))
+LINE  99 | 
+LINE 100 |         self.entry = ttk.Entry(row, textvariable=self.search_var, font=("Consolas", 9))
+LINE 101 |         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
+LINE 102 | 
+LINE 103 |         ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
+LINE 104 |         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
+LINE 105 |         ttk.Button(
+LINE 106 |             row,
+LINE 107 |             text="↻ Refrescar",
+LINE 108 |             command=lambda: self._load_files(force_refresh=True),
+LINE 109 |         ).pack(side=tk.LEFT, padx=(6, 0))
+LINE 110 | 
+LINE 111 |     def _build_results(self):
+LINE 112 |         container = tk.Frame(
+LINE 113 |             self,
+LINE 114 |             bg=C_ENTRY,
+LINE 115 |             bd=1,
+LINE 116 |             relief="flat",
+LINE 117 |             highlightbackground=C_BORDER,
+LINE 118 |             highlightthickness=1,
+LINE 119 |         )
+LINE 120 |         container.pack(fill=tk.BOTH, expand=True, padx=12, pady=8)
+LINE 121 | 
+LINE 122 |         self.canvas = tk.Canvas(container, bg=C_ENTRY, bd=0, highlightthickness=0)
+LINE 123 |         scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL, command=self.canvas.yview)
+LINE 124 |         self.scroll_frame = tk.Frame(self.canvas, bg=C_ENTRY)
 LINE 125 | 
-LINE 126 |         def _on_resize(event):
-LINE 127 |             if self.winfo_exists():
-LINE 128 |                 self.canvas.itemconfig(self.canvas_window, width=event.width)
-LINE 129 | 
-LINE 130 |         self.canvas.bind("<Configure>", _on_resize)
+LINE 126 |         self.scroll_frame.bind(
+LINE 127 |             "<Configure>",
+LINE 128 |             lambda _e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+LINE 129 |         )
+LINE 130 |         self.canvas_window = self.canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw")
 LINE 131 | 
-LINE 132 |         # Scoped mousewheel binding directly to canvas and scroll_frame
-LINE 133 |         def _on_mousewheel(event):
-LINE 134 |             if not self.winfo_exists():
-LINE 135 |                 return
-LINE 136 |             if event.delta:
-LINE 137 |                 self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-LINE 138 |             elif event.num == 4:
-LINE 139 |                 self.canvas.yview_scroll(-1, "units")
-LINE 140 |             elif event.num == 5:
-LINE 141 |                 self.canvas.yview_scroll(1, "units")
-LINE 142 | 
-LINE 143 |         self.canvas.bind("<MouseWheel>", _on_mousewheel)
-LINE 144 |         self.canvas.bind("<Button-4>", _on_mousewheel)
-LINE 145 |         self.canvas.bind("<Button-5>", _on_mousewheel)
-LINE 146 |         self.scroll_frame.bind("<MouseWheel>", _on_mousewheel)
-LINE 147 |         self.scroll_frame.bind("<Button-4>", _on_mousewheel)
-LINE 148 |         self.scroll_frame.bind("<Button-5>", _on_mousewheel)
-LINE 149 | 
-LINE 150 |         self.canvas.configure(yscrollcommand=scrollbar.set)
-LINE 151 |         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-LINE 152 |         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-LINE 153 | 
-LINE 154 |     def _load_files(self):
-LINE 155 |         self._scan_id += 1
-LINE 156 |         current_scan_id = self._scan_id
-LINE 157 | 
-LINE 158 |         # Schedule delayed loading indicator after 200ms
-LINE 159 |         self._cancel_timer("_loading_timer")
-LINE 160 |         self._loading_timer = self.after(
-LINE 161 |             LOADING_DELAY_MS, lambda: self._show_loading(current_scan_id)
-LINE 162 |         )
+LINE 132 |         def _on_resize(event):
+LINE 133 |             if self.winfo_exists():
+LINE 134 |                 self.canvas.itemconfig(self.canvas_window, width=event.width)
+LINE 135 | 
+LINE 136 |         self.canvas.bind("<Configure>", _on_resize)
+LINE 137 | 
+LINE 138 |         # Scoped mousewheel binding directly to canvas and scroll_frame
+LINE 139 |         def _on_mousewheel(event):
+LINE 140 |             if not self.winfo_exists():
+LINE 141 |                 return
+LINE 142 |             if event.delta:
+LINE 143 |                 self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+LINE 144 |             elif event.num == 4:
+LINE 145 |                 self.canvas.yview_scroll(-1, "units")
+LINE 146 |             elif event.num == 5:
+LINE 147 |                 self.canvas.yview_scroll(1, "units")
+LINE 148 | 
+LINE 149 |         self.canvas.bind("<MouseWheel>", _on_mousewheel)
+LINE 150 |         self.canvas.bind("<Button-4>", _on_mousewheel)
+LINE 151 |         self.canvas.bind("<Button-5>", _on_mousewheel)
+LINE 152 |         self.scroll_frame.bind("<MouseWheel>", _on_mousewheel)
+LINE 153 |         self.scroll_frame.bind("<Button-4>", _on_mousewheel)
+LINE 154 |         self.scroll_frame.bind("<Button-5>", _on_mousewheel)
+LINE 155 | 
+LINE 156 |         self.canvas.configure(yscrollcommand=scrollbar.set)
+LINE 157 |         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+LINE 158 |         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+LINE 159 | 
+LINE 160 |     def _load_files(self, force_refresh: bool = False):
+LINE 161 |         self._scan_id += 1
+LINE 162 |         current_scan_id = self._scan_id
 LINE 163 | 
-LINE 164 |         # Launch background scan daemon thread
-LINE 165 |         threading.Thread(
-LINE 166 |             target=self._async_scan_worker,
-LINE 167 |             args=(current_scan_id, self.folder_path, self.excluded_dirs, self._scan_queue),
-LINE 168 |             daemon=True,
-LINE 169 |         ).start()
-LINE 170 | 
-LINE 171 |         # Start queue polling loop on main GUI thread
-LINE 172 |         self._schedule_queue_check()
-LINE 173 | 
-LINE 174 |     def _schedule_queue_check(self):
-LINE 175 |         self._cancel_timer("_poll_timer")
-LINE 176 |         if self.winfo_exists():
-LINE 177 |             self._poll_timer = self.after(QUEUE_CHECK_MS, self._check_scan_queue)
-LINE 178 | 
-LINE 179 |     def _check_scan_queue(self):
-LINE 180 |         if not self.winfo_exists():
-LINE 181 |             return
+LINE 164 |         # Schedule delayed loading indicator after 200ms
+LINE 165 |         self._cancel_timer("_loading_timer")
+LINE 166 |         self._loading_timer = self.after(
+LINE 167 |             LOADING_DELAY_MS, lambda: self._show_loading(current_scan_id)
+LINE 168 |         )
+LINE 169 | 
+LINE 170 |         # FIX: launch background worker: DB-first, os.walk fallback
+LINE 171 |         threading.Thread(
+LINE 172 |             target=self._async_scan_worker,
+LINE 173 |             args=(
+LINE 174 |                 current_scan_id,
+LINE 175 |                 self.folder_path,
+LINE 176 |                 self.excluded_dirs,
+LINE 177 |                 self._scan_queue,
+LINE 178 |                 force_refresh,
+LINE 179 |             ),
+LINE 180 |             daemon=True,
+LINE 181 |         ).start()
 LINE 182 | 
-LINE 183 |         received = False
-LINE 184 |         latest_files = None
+LINE 183 |         # Start queue polling loop on main GUI thread
+LINE 184 |         self._schedule_queue_check()
 LINE 185 | 
-LINE 186 |         while True:
-LINE 187 |             try:
-LINE 188 |                 sid, files = self._scan_queue.get_nowait()
-LINE 189 |                 if sid == self._scan_id:
-LINE 190 |                     latest_files = files
-LINE 191 |                     received = True
-LINE 192 |             except queue.Empty:
-LINE 193 |                 break
+LINE 186 |     def _schedule_queue_check(self):
+LINE 187 |         self._cancel_timer("_poll_timer")
+LINE 188 |         if self.winfo_exists():
+LINE 189 |             self._poll_timer = self.after(QUEUE_CHECK_MS, self._check_scan_queue)
+LINE 190 | 
+LINE 191 |     def _check_scan_queue(self):
+LINE 192 |         if not self.winfo_exists():
+LINE 193 |             return
 LINE 194 | 
-LINE 195 |         if received and latest_files is not None:
-LINE 196 |             self._hide_loading()
-LINE 197 |             self.all_files = latest_files
-LINE 198 |             self._files_indexed = [(f, f.lower()) for f in latest_files]
-LINE 199 |             self._refresh_results(force=True)
-LINE 200 |         else:
-LINE 201 |             # Reschedule queue check
-LINE 202 |             self._schedule_queue_check()
-LINE 203 | 
-LINE 204 |     @staticmethod
-LINE 205 |     def _async_scan_worker(scan_id: int, folder_path: str, excluded_dirs: Set[str], res_queue: queue.Queue):
-LINE 206 |         """Worker thread entry point: purely python I/O, no Tkinter calls."""
-LINE 207 |         try:
-LINE 208 |             files = scan_directory(folder_path, excluded_dirs, allowed_extensions=None)
-LINE 209 |         except Exception:
-LINE 210 |             files = []
-LINE 211 |         res_queue.put((scan_id, files))
-LINE 212 | 
-LINE 213 |     def _show_loading(self, scan_id: int):
-LINE 214 |         if not self.winfo_exists():
-LINE 215 |             return
-LINE 216 |         if scan_id == self._scan_id and self.lbl_loading:
-LINE 217 |             self.lbl_loading.pack(side=tk.RIGHT)
-LINE 218 | 
-LINE 219 |     def _hide_loading(self):
-LINE 220 |         self._cancel_timer("_loading_timer")
-LINE 221 |         if self.winfo_exists() and self.lbl_loading:
-LINE 222 |             self.lbl_loading.pack_forget()
-LINE 223 | 
-LINE 224 |     def _on_query_trace(self, *args):
-LINE 225 |         self._cancel_timer("_debounce_timer")
-LINE 226 |         self._debounce_timer = self.after(DEBOUNCE_MS, self._refresh_results)
-LINE 227 | 
-LINE 228 |     def _force_refresh_results(self):
-LINE 229 |         self._cancel_timer("_debounce_timer")
-LINE 230 |         self._refresh_results(force=True)
-LINE 231 | 
-LINE 232 |     def _clear_search(self):
-LINE 233 |         self.search_var.set("")
-LINE 234 |         self._force_refresh_results()
-LINE 235 | 
-LINE 236 |     def _cancel_timer(self, attr_name: str):
-LINE 237 |         timer_id = getattr(self, attr_name, None)
-LINE 238 |         if timer_id:
-LINE 239 |             try:
-LINE 240 |                 self.after_cancel(timer_id)
-LINE 241 |             except Exception:
-LINE 242 |                 pass
-LINE 243 |             setattr(self, attr_name, None)
-LINE 244 | 
-LINE 245 |     def _cancel_render_task(self):
-LINE 246 |         self._cancel_timer("_render_timer")
-LINE 247 | 
-LINE 248 |     def _refresh_results(self, force: bool = False):
-LINE 249 |         if not self.winfo_exists():
-LINE 250 |             return
-LINE 251 | 
-LINE 252 |         query = self.search_var.get().strip().lower()
-LINE 253 |         if not force and self._last_query == query:
-LINE 254 |             return
-LINE 255 |         self._last_query = query
-LINE 256 | 
-LINE 257 |         self._cancel_render_task()
-LINE 258 | 
-LINE 259 |         # Clear existing scroll_frame children
-LINE 260 |         for child in self.scroll_frame.winfo_children():
-LINE 261 |             child.destroy()
-LINE 262 | 
-LINE 263 |         matches = [
-LINE 264 |             rel for rel, rel_lower in self._files_indexed
-LINE 265 |             if not query or query in rel_lower
-LINE 266 |         ]
-LINE 267 | 
-LINE 268 |         if not matches:
-LINE 269 |             tk.Label(
-LINE 270 |                 self.scroll_frame,
-LINE 271 |                 text="(Sin resultados)",
-LINE 272 |                 font=("Segoe UI", 9, "italic"),
-LINE 273 |                 bg=C_ENTRY,
-LINE 274 |                 fg=C_TEXT2,
-LINE 275 |             ).pack(anchor="w", padx=10, pady=10)
-LINE 276 |             return
-LINE 277 | 
-LINE 278 |         total_matches = len(matches)
-LINE 279 |         matches_to_render = matches[:MAX_RENDER_LIMIT]
+LINE 195 |         received = False
+LINE 196 |         latest_files = None
+LINE 197 |         source = None
+LINE 198 | 
+LINE 199 |         while True:
+LINE 200 |             try:
+LINE 201 |                 sid, files, src = self._scan_queue.get_nowait()
+LINE 202 |                 if sid == self._scan_id:
+LINE 203 |                     latest_files = files
+LINE 204 |                     source = src
+LINE 205 |                     received = True
+LINE 206 |             except queue.Empty:
+LINE 207 |                 break
+LINE 208 | 
+LINE 209 |         if received and latest_files is not None:
+LINE 210 |             self._hide_loading()
+LINE 211 |             self.all_files = latest_files
+LINE 212 |             self._files_indexed = [(f, f.lower()) for f in latest_files]
+LINE 213 |             if self.lbl_loading is not None and self.winfo_exists():
+LINE 214 |                 tag = "caché DB" if source == "db" else "escaneo"
+LINE 215 |                 self.lbl_loading.config(
+LINE 216 |                     text=f"✓ {len(latest_files)} archivos ({tag})"
+LINE 217 |                 )
+LINE 218 |             self._refresh_results(force=True)
+LINE 219 |         else:
+LINE 220 |             # Reschedule queue check
+LINE 221 |             self._schedule_queue_check()
+LINE 222 | 
+LINE 223 |     @staticmethod
+LINE 224 |     def _async_scan_worker(
+LINE 225 |         scan_id: int,
+LINE 226 |         folder_path: str,
+LINE 227 |         excluded_dirs: Set[str],
+LINE 228 |         res_queue: queue.Queue,
+LINE 229 |         force_refresh: bool = False,
+LINE 230 |     ):
+LINE 231 |         """Worker thread entry point: DB-first con fallback a os.walk.
+LINE 232 | 
+LINE 233 |         Estrategia:
+LINE 234 |           1) Si !force_refresh, consultar SQLite (project_cache.db). ~1 ms.
+LINE 235 |           2) Si la DB no tiene filas o el usuario forzó refresco, os.walk.
+LINE 236 |         """
+LINE 237 |         files: List[str] = []
+LINE 238 |         source = "scan"
+LINE 239 |         try:
+LINE 240 |             from app.core.storage.database import get_database
+LINE 241 | 
+LINE 242 |             if not force_refresh:
+LINE 243 |                 db = get_database()
+LINE 244 |                 db_files, _last_scanned, exists = db.load_file_paths(folder_path)
+LINE 245 |                 if exists and db_files:
+LINE 246 |                     files = db_files
+LINE 247 |                     source = "db"
+LINE 248 | 
+LINE 249 |             if not files:
+LINE 250 |                 files = scan_directory(
+LINE 251 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 252 |                 )
+LINE 253 |                 source = "scan"
+LINE 254 |         except Exception:
+LINE 255 |             # Ante cualquier fallo, caer a escaneo directo
+LINE 256 |             try:
+LINE 257 |                 files = scan_directory(
+LINE 258 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 259 |                 )
+LINE 260 |             except Exception:
+LINE 261 |                 files = []
+LINE 262 |             source = "scan"
+LINE 263 | 
+LINE 264 |         res_queue.put((scan_id, files, source))
+LINE 265 | 
+LINE 266 |     def _show_loading(self, scan_id: int):
+LINE 267 |         if not self.winfo_exists():
+LINE 268 |             return
+LINE 269 |         if scan_id == self._scan_id and self.lbl_loading:
+LINE 270 |             self.lbl_loading.pack(side=tk.RIGHT)
+LINE 271 | 
+LINE 272 |     def _hide_loading(self):
+LINE 273 |         self._cancel_timer("_loading_timer")
+LINE 274 |         if self.winfo_exists() and self.lbl_loading:
+LINE 275 |             self.lbl_loading.pack_forget()
+LINE 276 | 
+LINE 277 |     def _on_query_trace(self, *args):
+LINE 278 |         self._cancel_timer("_debounce_timer")
+LINE 279 |         self._debounce_timer = self.after(DEBOUNCE_MS, self._refresh_results)
 LINE 280 | 
-LINE 281 |         # Render first batch synchronously
-LINE 282 |         self._render_batch(matches_to_render, start_idx=0, total_matches=total_matches)
-LINE 283 | 
-LINE 284 |     def _render_batch(self, matches_subset: List[str], start_idx: int, total_matches: int):
-LINE 285 |         if not self.winfo_exists():
-LINE 286 |             return
-LINE 287 | 
-LINE 288 |         end_idx = min(start_idx + BATCH_SIZE, len(matches_subset))
-LINE 289 | 
-LINE 290 |         for idx in range(start_idx, end_idx):
-LINE 291 |             rel = matches_subset[idx]
-LINE 292 |             row = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=3)
-LINE 293 |             row.pack(fill=tk.X)
-LINE 294 | 
-LINE 295 |             tk.Label(
-LINE 296 |                 row,
-LINE 297 |                 text=rel,
-LINE 298 |                 font=("Consolas", 9),
-LINE 299 |                 bg=C_ENTRY,
-LINE 300 |                 fg=C_TEXT,
-LINE 301 |                 anchor="w",
-LINE 302 |             ).pack(side=tk.LEFT, fill=tk.X, expand=True)
-LINE 303 | 
-LINE 304 |             ttk.Button(
-LINE 305 |                 row,
-LINE 306 |                 text="🔗 Dependencias",
-LINE 307 |                 command=lambda r=rel: self._analyze(r),
-LINE 308 |             ).pack(side=tk.RIGHT)
+LINE 281 |     def _force_refresh_results(self):
+LINE 282 |         self._cancel_timer("_debounce_timer")
+LINE 283 |         self._refresh_results(force=True)
+LINE 284 | 
+LINE 285 |     def _clear_search(self):
+LINE 286 |         self.search_var.set("")
+LINE 287 |         self._force_refresh_results()
+LINE 288 | 
+LINE 289 |     def _cancel_timer(self, attr_name: str):
+LINE 290 |         timer_id = getattr(self, attr_name, None)
+LINE 291 |         if timer_id:
+LINE 292 |             try:
+LINE 293 |                 self.after_cancel(timer_id)
+LINE 294 |             except Exception:
+LINE 295 |                 pass
+LINE 296 |             setattr(self, attr_name, None)
+LINE 297 | 
+LINE 298 |     def _cancel_render_task(self):
+LINE 299 |         self._cancel_timer("_render_timer")
+LINE 300 | 
+LINE 301 |     def _refresh_results(self, force: bool = False):
+LINE 302 |         if not self.winfo_exists():
+LINE 303 |             return
+LINE 304 | 
+LINE 305 |         query = self.search_var.get().strip().lower()
+LINE 306 |         if not force and self._last_query == query:
+LINE 307 |             return
+LINE 308 |         self._last_query = query
 LINE 309 | 
-LINE 310 |         if end_idx < len(matches_subset):
-LINE 311 |             # Schedule next batch
-LINE 312 |             self._render_timer = self.after(
-LINE 313 |                 1, lambda: self._render_batch(matches_subset, end_idx, total_matches)
-LINE 314 |             )
-LINE 315 |         else:
-LINE 316 |             # Batch complete, display total matches summary if hard limit hit
-LINE 317 |             if total_matches > MAX_RENDER_LIMIT:
-LINE 318 |                 footer = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=6)
-LINE 319 |                 footer.pack(fill=tk.X)
-LINE 320 |                 tk.Label(
-LINE 321 |                     footer,
-LINE 322 |                     text=f"Mostrando {MAX_RENDER_LIMIT} de {total_matches:,} resultados. Afina la búsqueda para ver más.",
-LINE 323 |                     font=("Segoe UI", 8, "italic"),
-LINE 324 |                     bg=C_ENTRY,
-LINE 325 |                     fg=C_TEXT2,
-LINE 326 |                 ).pack(anchor="w")
-LINE 327 | 
-LINE 328 |     def _analyze(self, rel_path: str):
-LINE 329 |         if self.on_analyze_dependencies:
-LINE 330 |             self.on_analyze_dependencies(rel_path)
-LINE 331 | 
-LINE 332 |     def _on_destroy(self, event):
-LINE 333 |         if event.widget == self:
-LINE 334 |             self._cancel_timer("_debounce_timer")
-LINE 335 |             self._cancel_timer("_loading_timer")
-LINE 336 |             self._cancel_timer("_render_timer")
-LINE 337 |             self._cancel_timer("_poll_timer")
-LINE 338 |             self._scan_id += 1  # invalidate any pending scan callbacks
-LINE 339 |             try:
-LINE 340 |                 self.search_var.trace_remove("write", self._trace_id)
-LINE 341 |             except Exception:
-LINE 342 |                 pass
+LINE 310 |         self._cancel_render_task()
+LINE 311 | 
+LINE 312 |         # Clear existing scroll_frame children
+LINE 313 |         for child in self.scroll_frame.winfo_children():
+LINE 314 |             child.destroy()
+LINE 315 | 
+LINE 316 |         matches = [
+LINE 317 |             rel for rel, rel_lower in self._files_indexed
+LINE 318 |             if not query or query in rel_lower
+LINE 319 |         ]
+LINE 320 | 
+LINE 321 |         if not matches:
+LINE 322 |             tk.Label(
+LINE 323 |                 self.scroll_frame,
+LINE 324 |                 text="(Sin resultados)",
+LINE 325 |                 font=("Segoe UI", 9, "italic"),
+LINE 326 |                 bg=C_ENTRY,
+LINE 327 |                 fg=C_TEXT2,
+LINE 328 |             ).pack(anchor="w", padx=10, pady=10)
+LINE 329 |             return
+LINE 330 | 
+LINE 331 |         total_matches = len(matches)
+LINE 332 |         matches_to_render = matches[:MAX_RENDER_LIMIT]
+LINE 333 | 
+LINE 334 |         # FIX: incluso la primera tanda se agenda con after(0, ...) para no
+LINE 335 |         # bloquear el hilo de la GUI dentro de _refresh_results.
+LINE 336 |         self._render_timer = self.after(
+LINE 337 |             0,
+LINE 338 |             lambda: self._render_batch(matches_to_render, 0, total_matches),
+LINE 339 |         )
+LINE 340 | 
+LINE 341 |     def _render_batch(self, matches_subset: List[str], start_idx: int, total_matches: int):
+LINE 342 |         if not self.winfo_exists():
+LINE 343 |             return
+LINE 344 | 
+LINE 345 |         end_idx = min(start_idx + BATCH_SIZE, len(matches_subset))
+LINE 346 | 
+LINE 347 |         for idx in range(start_idx, end_idx):
+LINE 348 |             rel = matches_subset[idx]
+LINE 349 |             row = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=3)
+LINE 350 |             row.pack(fill=tk.X)
+LINE 351 | 
+LINE 352 |             tk.Label(
+LINE 353 |                 row,
+LINE 354 |                 text=rel,
+LINE 355 |                 font=("Consolas", 9),
+LINE 356 |                 bg=C_ENTRY,
+LINE 357 |                 fg=C_TEXT,
+LINE 358 |                 anchor="w",
+LINE 359 |             ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+LINE 360 | 
+LINE 361 |             ttk.Button(
+LINE 362 |                 row,
+LINE 363 |                 text="🔗 Dependencias",
+LINE 364 |                 command=lambda r=rel: self._analyze(r),
+LINE 365 |             ).pack(side=tk.RIGHT)
+LINE 366 | 
+LINE 367 |         if end_idx < len(matches_subset):
+LINE 368 |             # FIX: 15 ms en lugar de 1 ms para que el mainloop procese eventos
+LINE 369 |             # (redibujado, teclado, ratón) entre tandas.
+LINE 370 |             self._render_timer = self.after(
+LINE 371 |                 RENDER_BATCH_DELAY_MS,
+LINE 372 |                 lambda: self._render_batch(matches_subset, end_idx, total_matches),
+LINE 373 |             )
+LINE 374 |         else:
+LINE 375 |             # Batch complete, display total matches summary if hard limit hit
+LINE 376 |             if total_matches > MAX_RENDER_LIMIT:
+LINE 377 |                 footer = tk.Frame(self.scroll_frame, bg=C_ENTRY, padx=8, pady=6)
+LINE 378 |                 footer.pack(fill=tk.X)
+LINE 379 |                 tk.Label(
+LINE 380 |                     footer,
+LINE 381 |                     text=f"Mostrando {MAX_RENDER_LIMIT} de {total_matches:,} resultados. Afina la búsqueda para ver más.",
+LINE 382 |                     font=("Segoe UI", 8, "italic"),
+LINE 383 |                     bg=C_ENTRY,
+LINE 384 |                     fg=C_TEXT2,
+LINE 385 |                 ).pack(anchor="w")
+LINE 386 | 
+LINE 387 |     def _analyze(self, rel_path: str):
+LINE 388 |         if self.on_analyze_dependencies:
+LINE 389 |             self.on_analyze_dependencies(rel_path)
+LINE 390 | 
+LINE 391 |     def _on_destroy(self, event):
+LINE 392 |         if event.widget == self:
+LINE 393 |             self._cancel_timer("_debounce_timer")
+LINE 394 |             self._cancel_timer("_loading_timer")
+LINE 395 |             self._cancel_timer("_render_timer")
+LINE 396 |             self._cancel_timer("_poll_timer")
+LINE 397 |             self._scan_id += 1  # invalidate any pending scan callbacks
+LINE 398 |             try:
+LINE 399 |                 self.search_var.trace_remove("write", self._trace_id)
+LINE 400 |             except Exception:
+LINE 401 |                 pass
 ```
 
 ==============================================================
@@ -10706,6 +12025,955 @@ LINE 911 |     sys.exit(main())
 ```
 
 ==============================================================
+FILE: apply_phase2_delta_scan.py
+==============================================================
+```py
+LINE   1 | #!/usr/bin/env python3
+LINE   2 | # -*- coding: utf-8 -*-
+LINE   3 | """
+LINE   4 | apply_phase2_delta_scan.py — Aplica Fase 2 (Delta Scan + caché) sobre el
+LINE   5 | proyecto "agente".
+LINE   6 | 
+LINE   7 | Uso:
+LINE   8 |     python3 apply_phase2_delta_scan.py /ruta/al/proyecto
+LINE   9 | 
+LINE  10 | Idempotente. Backups en .backup/. Valida sintaxis con py_compile.
+LINE  11 | """
+LINE  12 | import argparse, py_compile, shutil, sys
+LINE  13 | from datetime import datetime
+LINE  14 | from pathlib import Path
+LINE  15 | 
+LINE  16 | BACKUP = ".backup"
+LINE  17 | ROOT_FILES = [
+LINE  18 |     "app/__init__.py",
+LINE  19 |     "app/core/project_analyzer.py",
+LINE  20 |     "app/core/storage/database.py",
+LINE  21 |     "app/gui/main_window.py",
+LINE  22 | ]
+LINE  23 | 
+LINE  24 | def log(lvl, msg): print(f"[{lvl}] {msg}")
+LINE  25 | def backup(root: Path, rel: str) -> None:
+LINE  26 |     src = root / rel
+LINE  27 |     if not src.is_file(): return
+LINE  28 |     dst = root / BACKUP / rel
+LINE  29 |     dst.parent.mkdir(parents=True, exist_ok=True)
+LINE  30 |     shutil.copy2(src, dst)
+LINE  31 |     log("INFO", f"Backup creado: {dst.relative_to(root)}")
+LINE  32 | 
+LINE  33 | def insert_after(root: Path, rel: str, anchor: str, block: str, marker: str):
+LINE  34 |     p = root / rel
+LINE  35 |     txt = p.read_text(encoding="utf-8")
+LINE  36 |     if marker in txt:
+LINE  37 |         log("SKIP", f"Ya aplicado: {rel} ({marker.strip()})"); return
+LINE  38 |     i = txt.find(anchor)
+LINE  39 |     if i == -1:
+LINE  40 |         raise RuntimeError(f"Ancla no encontrada en {rel}:\n  {anchor!r}")
+LINE  41 |     e = i + len(anchor)
+LINE  42 |     backup(root, rel)
+LINE  43 |     p.write_text(txt[:e] + "\n" + block + txt[e:], encoding="utf-8")
+LINE  44 |     log("OK", f"Cambio aplicado: {rel}  ({marker.strip()})")
+LINE  45 | 
+LINE  46 | def insert_before(root: Path, rel: str, anchor: str, block: str, marker: str):
+LINE  47 |     p = root / rel
+LINE  48 |     txt = p.read_text(encoding="utf-8")
+LINE  49 |     if marker in txt:
+LINE  50 |         log("SKIP", f"Ya aplicado: {rel} ({marker.strip()})"); return
+LINE  51 |     i = txt.find(anchor)
+LINE  52 |     if i == -1:
+LINE  53 |         raise RuntimeError(f"Ancla no encontrada en {rel}:\n  {anchor!r}")
+LINE  54 |     backup(root, rel)
+LINE  55 |     p.write_text(txt[:i] + block + "\n" + txt[i:], encoding="utf-8")
+LINE  56 |     log("OK", f"Cambio aplicado: {rel}  ({marker.strip()})")
+LINE  57 | 
+LINE  58 | # --- bloques ---
+LINE  59 | 
+LINE  60 | DB_WAL_OLD = '''        self._conn = sqlite3.connect(self.db_path)
+LINE  61 |         self._conn.row_factory = sqlite3.Row
+LINE  62 |         self._conn.execute("PRAGMA foreign_keys = ON")
+LINE  63 |         self._init_schema()'''
+LINE  64 | 
+LINE  65 | DB_WAL_NEW = '''        self._conn = sqlite3.connect(self.db_path, timeout=10.0)
+LINE  66 |         self._conn.row_factory = sqlite3.Row
+LINE  67 |         self._conn.execute("PRAGMA foreign_keys = ON")
+LINE  68 |         self._conn.execute("PRAGMA journal_mode = WAL")
+LINE  69 |         self._conn.execute("PRAGMA synchronous = NORMAL")
+LINE  70 |         self._init_schema()'''
+LINE  71 | 
+LINE  72 | DB_DELTA_BLOCK = '''    # === PHASE 2: DELTA SCAN ===
+LINE  73 |     def load_nodes_map(self, project_path: str):
+LINE  74 |         cur = self._conn.cursor()
+LINE  75 |         cur.execute("SELECT id FROM projects WHERE path = ?", (project_path,))
+LINE  76 |         row = cur.fetchone()
+LINE  77 |         if not row:
+LINE  78 |             return None
+LINE  79 |         project_id = int(row["id"])
+LINE  80 |         cur.execute(
+LINE  81 |             "SELECT id, rel_path, parent_path, is_dir, mtime, lines_count, "
+LINE  82 |             "file_size, is_important, is_checked FROM nodes WHERE project_id = ?",
+LINE  83 |             (project_id,),
+LINE  84 |         )
+LINE  85 |         return {r["rel_path"]: dict(r) for r in cur.fetchall()}
+LINE  86 | 
+LINE  87 |     def apply_delta(self, project_id, to_insert, to_update,
+LINE  88 |                     to_delete_paths, dep_pairs):
+LINE  89 |         if to_delete_paths:
+LINE  90 |             with self._conn:
+LINE  91 |                 self._conn.executemany(
+LINE  92 |                     "DELETE FROM nodes WHERE project_id = ? AND rel_path = ?",
+LINE  93 |                     [(project_id, rp) for rp in to_delete_paths],
+LINE  94 |                 )
+LINE  95 |         if to_update:
+LINE  96 |             with self._conn:
+LINE  97 |                 self._conn.executemany(
+LINE  98 |                     """UPDATE nodes SET mtime=?, lines_count=?, file_size=?,
+LINE  99 |                                        is_important=?
+LINE 100 |                        WHERE project_id=? AND rel_path=?""",
+LINE 101 |                     [(n["mtime"], n["lines_count"], n["file_size"],
+LINE 102 |                       int(bool(n.get("is_important", 0))),
+LINE 103 |                       project_id, n["rel_path"]) for n in to_update],
+LINE 104 |                 )
+LINE 105 |         if to_insert:
+LINE 106 |             with self._conn:
+LINE 107 |                 self._conn.executemany(
+LINE 108 |                     """INSERT INTO nodes
+LINE 109 |                        (project_id, rel_path, parent_path, is_dir, mtime,
+LINE 110 |                         lines_count, file_size, is_important, is_checked)
+LINE 111 |                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+LINE 112 |                     [(project_id, n["rel_path"], n.get("parent_path"),
+LINE 113 |                       int(bool(n.get("is_dir", 0))),
+LINE 114 |                       float(n.get("mtime", 0.0)),
+LINE 115 |                       int(n.get("lines_count", 0) or 0),
+LINE 116 |                       int(n.get("file_size", 0) or 0),
+LINE 117 |                       int(bool(n.get("is_important", 0))),
+LINE 118 |                       int(bool(n.get("is_checked", 1))))
+LINE 119 |                      for n in to_insert],
+LINE 120 |                 )
+LINE 121 |         if to_update or to_insert or to_delete_paths:
+LINE 122 |             with self._conn:
+LINE 123 |                 pairs = ([(project_id, n["rel_path"]) for n in to_update] +
+LINE 124 |                          [(project_id, n["rel_path"]) for n in to_insert] +
+LINE 125 |                          [(project_id, rp) for rp in to_delete_paths])
+LINE 126 |                 self._conn.executemany(
+LINE 127 |                     """DELETE FROM node_dependencies
+LINE 128 |                        WHERE source_node_id IN
+LINE 129 |                          (SELECT id FROM nodes WHERE project_id=? AND rel_path=?)""",
+LINE 130 |                     pairs,
+LINE 131 |                 )
+LINE 132 |                 if dep_pairs:
+LINE 133 |                     cur = self._conn.cursor()
+LINE 134 |                     cur.execute(
+LINE 135 |                         "SELECT id, rel_path FROM nodes WHERE project_id=?",
+LINE 136 |                         (project_id,))
+LINE 137 |                     id_map = {r["rel_path"]: int(r["id"])
+LINE 138 |                               for r in cur.fetchall()}
+LINE 139 |                     rows = [(id_map[s], t) for s, t in dep_pairs if s in id_map]
+LINE 140 |                     if rows:
+LINE 141 |                         self._conn.executemany(
+LINE 142 |                             "INSERT INTO node_dependencies "
+LINE 143 |                             "(source_node_id, target_path) VALUES (?, ?)",
+LINE 144 |                             rows,
+LINE 145 |                         )
+LINE 146 |         self.update_last_scanned(project_id)
+LINE 147 |     # === END PHASE 2 ===
+LINE 148 | '''
+LINE 149 | 
+LINE 150 | MW_DEBOUNCE_INIT = '''        # === PHASE 2: DEBOUNCE CHECKBOX ===
+LINE 151 |         self._pending_checks = {}
+LINE 152 |         self._flush_timer = None
+LINE 153 |         # === END PHASE 2 ===
+LINE 154 | '''
+LINE 155 | 
+LINE 156 | MW_DEBOUNCE_METHOD = '''    # === PHASE 2: DEBOUNCE CHECKBOX ===
+LINE 157 |     def _flush_pending_checks(self):
+LINE 158 |         self._flush_timer = None
+LINE 159 |         if not self._pending_checks or self._persist_db is None:
+LINE 160 |             return
+LINE 161 |         folder = self.var_folder.get()
+LINE 162 |         if not folder:
+LINE 163 |             self._pending_checks.clear(); return
+LINE 164 |         try:
+LINE 165 |             pid = self._persist_db.get_or_create_project(folder)
+LINE 166 |             self._persist_db.update_is_checked_batch(
+LINE 167 |                 pid, list(self._pending_checks.items()))
+LINE 168 |         except Exception:
+LINE 169 |             pass
+LINE 170 |         self._pending_checks.clear()
+LINE 171 |     # === END PHASE 2 ===
+LINE 172 | '''
+LINE 173 | 
+LINE 174 | def main() -> int:
+LINE 175 |     ap = argparse.ArgumentParser()
+LINE 176 |     ap.add_argument("root", nargs="?", default=".")
+LINE 177 |     args = ap.parse_args()
+LINE 178 |     root = Path(args.root).resolve()
+LINE 179 | 
+LINE 180 |     missing = [f for f in ROOT_FILES if not (root / f).is_file()]
+LINE 181 |     if missing:
+LINE 182 |         for m in missing: log("ERROR", f"Falta {m}")
+LINE 183 |         return 1
+LINE 184 | 
+LINE 185 |     log("INFO", f"Proyecto detectado: {root}")
+LINE 186 |     log("INFO", f"Inicio: {datetime.now():%Y-%m-%d %H:%M:%S}")
+LINE 187 |     print()
+LINE 188 | 
+LINE 189 |     try:
+LINE 190 |         # 1) WAL + timeout en database.py
+LINE 191 |         db = root / "app/core/storage/database.py"
+LINE 192 |         txt = db.read_text(encoding="utf-8")
+LINE 193 |         if "journal_mode = WAL" in txt:
+LINE 194 |             log("SKIP", "WAL ya aplicado")
+LINE 195 |         else:
+LINE 196 |             if DB_WAL_OLD not in txt:
+LINE 197 |                 raise RuntimeError("Ancla WAL no encontrada en database.py")
+LINE 198 |             backup(root, "app/core/storage/database.py")
+LINE 199 |             db.write_text(txt.replace(DB_WAL_OLD, DB_WAL_NEW, 1),
+LINE 200 |                           encoding="utf-8")
+LINE 201 |             log("OK", "WAL + timeout aplicados")
+LINE 202 | 
+LINE 203 |         # 2) apply_delta + load_nodes_map
+LINE 204 |         insert_before(
+LINE 205 |             root, "app/core/storage/database.py",
+LINE 206 |             anchor="    def close(self) -> None:",
+LINE 207 |             block=DB_DELTA_BLOCK,
+LINE 208 |             marker="# === PHASE 2: DELTA SCAN ===",
+LINE 209 |         )
+LINE 210 | 
+LINE 211 |         # 3) main_window.py — debounce
+LINE 212 |         insert_after(
+LINE 213 |             root, "app/gui/main_window.py",
+LINE 214 |             anchor=("        self.config     = ExportConfig()\n"
+LINE 215 |                     "        # === PERSISTENCE: PHASE1 (init) ===\n"
+LINE 216 |                     "        self._persist_db = None\n"
+LINE 217 |                     "        try:\n"
+LINE 218 |                     "            self._persist_db = get_database()\n"
+LINE 219 |                     "        except Exception:\n"
+LINE 220 |                     "            self._persist_db = None\n"
+LINE 221 |                     "        # === END PERSISTENCE: PHASE1 (init) ==="),
+LINE 222 |             block=MW_DEBOUNCE_INIT,
+LINE 223 |             marker="# === PHASE 2: DEBOUNCE CHECKBOX ===",
+LINE 224 |         )
+LINE 225 |         insert_before(
+LINE 226 |             root, "app/gui/main_window.py",
+LINE 227 |             anchor="    def on_select_folder(self):",
+LINE 228 |             block=MW_DEBOUNCE_METHOD,
+LINE 229 |             marker="# === PHASE 2: DEBOUNCE CHECKBOX ===",
+LINE 230 |         )
+LINE 231 | 
+LINE 232 |         # 4) Cambio en analyze_incremental y _on_tree_check_change
+LINE 233 |         #    (se aplica manualmente por la complejidad del bloque).
+LINE 234 |         log("INFO", "Recuerda reemplazar en main_window.py:")
+LINE 235 |         log("INFO", "  - analyzer.analyze(...) → analyzer.analyze_incremental(...)")
+LINE 236 |         log("INFO", "  - Cuerpo de _on_tree_check_change (debounce)")
+LINE 237 | 
+LINE 238 |     except Exception as exc:
+LINE 239 |         log("ERROR", str(exc))
+LINE 240 |         return 1
+LINE 241 | 
+LINE 242 |     print()
+LINE 243 |     log("INFO", "--- Validando sintaxis ---")
+LINE 244 |     for rel in ["app/core/storage/database.py",
+LINE 245 |                 "app/gui/main_window.py"]:
+LINE 246 |         try:
+LINE 247 |             py_compile.compile(str(root / rel), doraise=True)
+LINE 248 |             log("OK", f"Sintaxis OK: {rel}")
+LINE 249 |         except py_compile.PyCompileError as e:
+LINE 250 |             log("ERROR", f"{rel}: {e}")
+LINE 251 |             return 1
+LINE 252 | 
+LINE 253 |     print()
+LINE 254 |     log("INFO", "Fase 2 aplicada. Reinicia la aplicación.")
+LINE 255 |     return 0
+LINE 256 | 
+LINE 257 | if __name__ == "__main__":
+LINE 258 |     sys.exit(main())
+```
+
+==============================================================
+FILE: apply_search_perf.py
+==============================================================
+```py
+LINE   1 | #!/usr/bin/env python3
+LINE   2 | # -*- coding: utf-8 -*-
+LINE   3 | """
+LINE   4 | apply_search_perf.py
+LINE   5 | 
+LINE   6 | Aplica las optimizaciones de rendimiento del buscador de archivos sobre el
+LINE   7 | proyecto "agente" (DeepSeek Code Packager).
+LINE   8 | 
+LINE   9 | Cambios aplicados
+LINE  10 | -----------------
+LINE  11 |   1. app/core/project_scanner.py
+LINE  12 |      - Firma de invalidación recursiva (raíz + subdirectorios de primer nivel)
+LINE  13 |        para evitar devolver caché obsoleta cuando cambian archivos en subcarpetas.
+LINE  14 | 
+LINE  15 |   2. app/core/storage/database.py
+LINE  16 |      - Nuevo método `load_file_paths()` para lectura ligera desde SQLite.
+LINE  17 | 
+LINE  18 |   3. app/gui/file_search_dialog.py
+LINE  19 |      - BATCH_SIZE reducido de 100 → 25.
+LINE  20 |      - Nuevo RENDER_BATCH_DELAY_MS = 15 (antes 1 ms).
+LINE  21 |      - `_refresh_results` agenda la primera tanda con `after(0, ...)` en vez de
+LINE  22 |        renderizar sincrónicamente.
+LINE  23 |      - `_render_batch` usa RENDER_BATCH_DELAY_MS entre tandas.
+LINE  24 |      - `_load_files` y `_async_scan_worker` ahora consultan SQLite primero
+LINE  25 |        (DB-first) y caen a `os.walk` sólo si la DB no tiene datos.
+LINE  26 |      - `_check_scan_queue` maneja la tupla de 3 elementos (sid, files, source).
+LINE  27 |      - Nuevo botón "↻ Refrescar" para forzar reescaneo desde disco.
+LINE  28 | 
+LINE  29 | Uso:
+LINE  30 |     python3 apply_search_perf.py /ruta/al/proyecto
+LINE  31 |     python3 apply_search_perf.py                 # directorio actual
+LINE  32 |     python3 apply_search_perf.py --dry-run       # sólo muestra
+LINE  33 | 
+LINE  34 | Idempotente: ejecutarlo varias veces no duplica cambios.
+LINE  35 | Sólo usa la biblioteca estándar de Python.
+LINE  36 | """
+LINE  37 | 
+LINE  38 | import argparse
+LINE  39 | import os
+LINE  40 | import shutil
+LINE  41 | import sys
+LINE  42 | import py_compile
+LINE  43 | from datetime import datetime
+LINE  44 | from pathlib import Path
+LINE  45 | 
+LINE  46 | 
+LINE  47 | # ---------------------------------------------------------------------------
+LINE  48 | # Constantes
+LINE  49 | # ---------------------------------------------------------------------------
+LINE  50 | 
+LINE  51 | BACKUP_DIRNAME = ".backup_search_perf"
+LINE  52 | 
+LINE  53 | STATS = {
+LINE  54 |     "modified": 0,
+LINE  55 |     "skipped":  0,
+LINE  56 |     "backups":  0,
+LINE  57 |     "errors":   0,
+LINE  58 | }
+LINE  59 | 
+LINE  60 | REQUIRED_FILES = [
+LINE  61 |     "app/__init__.py",
+LINE  62 |     "app/core/__init__.py",
+LINE  63 |     "app/core/project_scanner.py",
+LINE  64 |     "app/core/storage/__init__.py",
+LINE  65 |     "app/core/storage/database.py",
+LINE  66 |     "app/gui/file_search_dialog.py",
+LINE  67 |     "app/gui/main_window.py",
+LINE  68 | ]
+LINE  69 | 
+LINE  70 | 
+LINE  71 | # ---------------------------------------------------------------------------
+LINE  72 | # Logging
+LINE  73 | # ---------------------------------------------------------------------------
+LINE  74 | 
+LINE  75 | def info(msg):  print(f"[INFO] {msg}")
+LINE  76 | def ok(msg):    print(f"[ OK ] {msg}");  STATS["modified"] += 1
+LINE  77 | def skip(msg):  print(f"[SKIP] {msg}");  STATS["skipped"] += 1
+LINE  78 | def warn(msg):  print(f"[WARN] {msg}")
+LINE  79 | def error(msg): print(f"[FAIL] {msg}");  STATS["errors"] += 1
+LINE  80 | 
+LINE  81 | 
+LINE  82 | # ---------------------------------------------------------------------------
+LINE  83 | # Helpers de I/O
+LINE  84 | # ---------------------------------------------------------------------------
+LINE  85 | 
+LINE  86 | def ensure_target_exists(root: Path, rel_path: str) -> Path:
+LINE  87 |     p = root / rel_path
+LINE  88 |     if not p.is_file():
+LINE  89 |         raise RuntimeError(f"Archivo objetivo no encontrado: {p}")
+LINE  90 |     return p
+LINE  91 | 
+LINE  92 | 
+LINE  93 | def backup_file(root: Path, rel_path: str) -> None:
+LINE  94 |     src = root / rel_path
+LINE  95 |     if not src.is_file():
+LINE  96 |         return
+LINE  97 |     dst = root / BACKUP_DIRNAME / rel_path
+LINE  98 |     dst.parent.mkdir(parents=True, exist_ok=True)
+LINE  99 |     shutil.copy2(src, dst)
+LINE 100 |     STATS["backups"] += 1
+LINE 101 |     info(f"Backup creado: {dst.relative_to(root)}")
+LINE 102 | 
+LINE 103 | 
+LINE 104 | def _apply_change(root: Path, rel_path: str, new_content: str) -> None:
+LINE 105 |     backup_file(root, rel_path)
+LINE 106 |     (root / rel_path).write_text(new_content, encoding="utf-8")
+LINE 107 |     ok(f"Cambio aplicado: {rel_path}")
+LINE 108 | 
+LINE 109 | 
+LINE 110 | def replace_exact(root: Path, rel_path: str, old: str, new: str,
+LINE 111 |                   marker_check: str = None) -> None:
+LINE 112 |     """Reemplaza `old` por `new` si `old` está presente.
+LINE 113 | 
+LINE 114 |     `marker_check`: subcadena que, si ya está presente en el archivo,
+LINE 115 |     indica que el cambio ya fue aplicado (idempotencia).
+LINE 116 |     """
+LINE 117 |     path = root / rel_path
+LINE 118 |     content = path.read_text(encoding="utf-8")
+LINE 119 | 
+LINE 120 |     if marker_check and marker_check in content:
+LINE 121 |         skip(f"{rel_path}: cambio ya aplicado (marcador presente)")
+LINE 122 |         return
+LINE 123 | 
+LINE 124 |     if old not in content:
+LINE 125 |         warn(f"{rel_path}: patrón no encontrado (posible versión distinta)")
+LINE 126 |         STATS["skipped"] += 1
+LINE 127 |         return
+LINE 128 | 
+LINE 129 |     new_content = content.replace(old, new, 1)
+LINE 130 |     _apply_change(root, rel_path, new_content)
+LINE 131 | 
+LINE 132 | 
+LINE 133 | def insert_before(root: Path, rel_path: str, anchor: str,
+LINE 134 |                   block: str, marker_check: str) -> None:
+LINE 135 |     """Inserta `block` antes de `anchor` en el archivo."""
+LINE 136 |     path = root / rel_path
+LINE 137 |     content = path.read_text(encoding="utf-8")
+LINE 138 | 
+LINE 139 |     if marker_check and marker_check in content:
+LINE 140 |         skip(f"{rel_path}: cambio ya aplicado (marcador presente)")
+LINE 141 |         return
+LINE 142 | 
+LINE 143 |     idx = content.find(anchor)
+LINE 144 |     if idx == -1:
+LINE 145 |         raise RuntimeError(f"Ancla no encontrada en {rel_path}:\n  {anchor!r}")
+LINE 146 | 
+LINE 147 |     new_content = content[:idx] + block + content[idx:]
+LINE 148 |     _apply_change(root, rel_path, new_content)
+LINE 149 | 
+LINE 150 | 
+LINE 151 | def append_if_missing(root: Path, rel_path: str, block: str,
+LINE 152 |                       marker_check: str) -> None:
+LINE 153 |     """Añade `block` al final del archivo si `marker_check` no está presente."""
+LINE 154 |     path = root / rel_path
+LINE 155 |     content = path.read_text(encoding="utf-8")
+LINE 156 | 
+LINE 157 |     if marker_check and marker_check in content:
+LINE 158 |         skip(f"{rel_path}: cambio ya aplicado (marcador presente)")
+LINE 159 |         return
+LINE 160 | 
+LINE 161 |     if not content.endswith("\n"):
+LINE 162 |         content += "\n"
+LINE 163 |     new_content = content + block
+LINE 164 |     _apply_change(root, rel_path, new_content)
+LINE 165 | 
+LINE 166 | 
+LINE 167 | # ---------------------------------------------------------------------------
+LINE 168 | # ---------------------------------------------------------------------------
+LINE 169 | # Contenido: PATCH 1 — app/core/project_scanner.py
+LINE 170 | # ---------------------------------------------------------------------------
+LINE 171 | # ---------------------------------------------------------------------------
+LINE 172 | 
+LINE 173 | SCANNER_OLD_SIGNATURE = '''    folder_mtime = 0.0
+LINE 174 |     try:
+LINE 175 |         folder_mtime = os.path.getmtime(abs_folder)
+LINE 176 |     except OSError:
+LINE 177 |         pass
+LINE 178 | 
+LINE 179 |     if use_cache and not force_refresh:
+LINE 180 |         with _cache_lock:
+LINE 181 |             if cache_key in _SCAN_CACHE:
+LINE 182 |                 cached_mtime, cached_files = _SCAN_CACHE[cache_key]
+LINE 183 |                 if cached_mtime == folder_mtime:
+LINE 184 |                     return list(cached_files)
+LINE 185 | '''
+LINE 186 | 
+LINE 187 | SCANNER_NEW_SIGNATURE = '''    # FIX: firma de invalidación recursiva ligera (raíz + subdirectorios
+LINE 188 |     # inmediatos). No es perfecta, pero evita devolver caché obsoleta cuando
+LINE 189 |     # cambian archivos dentro de subcarpetas de primer nivel, sin coste de
+LINE 190 |     # os.walk completo.
+LINE 191 |     signature = 0.0
+LINE 192 |     try:
+LINE 193 |         signature = os.path.getmtime(abs_folder)
+LINE 194 |         with os.scandir(abs_folder) as it:
+LINE 195 |             for entry in it:
+LINE 196 |                 if entry.is_dir(follow_symlinks=False):
+LINE 197 |                     try:
+LINE 198 |                         signature = max(
+LINE 199 |                             signature,
+LINE 200 |                             entry.stat(follow_symlinks=False).st_mtime,
+LINE 201 |                         )
+LINE 202 |                     except OSError:
+LINE 203 |                         continue
+LINE 204 |     except OSError:
+LINE 205 |         pass
+LINE 206 | 
+LINE 207 |     if use_cache and not force_refresh:
+LINE 208 |         with _cache_lock:
+LINE 209 |             if cache_key in _SCAN_CACHE:
+LINE 210 |                 cached_mtime, cached_files = _SCAN_CACHE[cache_key]
+LINE 211 |                 if cached_mtime == signature:
+LINE 212 |                     return list(cached_files)
+LINE 213 | '''
+LINE 214 | 
+LINE 215 | SCANNER_OLD_STORE = "            _SCAN_CACHE[cache_key] = (folder_mtime, valid_files)"
+LINE 216 | SCANNER_NEW_STORE = "            _SCAN_CACHE[cache_key] = (signature, valid_files)"
+LINE 217 | 
+LINE 218 | 
+LINE 219 | # ---------------------------------------------------------------------------
+LINE 220 | # ---------------------------------------------------------------------------
+LINE 221 | # Contenido: PATCH 2 — app/core/storage/database.py
+LINE 222 | # ---------------------------------------------------------------------------
+LINE 223 | # ---------------------------------------------------------------------------
+LINE 224 | 
+LINE 225 | DATABASE_ANCHOR = "    # === PHASE 2: DELTA SCAN ==="
+LINE 226 | 
+LINE 227 | DATABASE_NEW_METHOD = '''    def load_file_paths(self, project_path: str):
+LINE 228 |         """Devuelve lista plana de rutas de archivo (is_dir=0) ordenadas.
+LINE 229 | 
+LINE 230 |         Pensado para alimentar el buscador sin pagar el coste de os.walk.
+LINE 231 |         Devuelve:
+LINE 232 |             (files: List[str], last_scanned: Optional[str], exists: bool)
+LINE 233 |         donde `files` es [] si el proyecto existe pero no tiene nodos.
+LINE 234 |         """
+LINE 235 |         cur = self._conn.cursor()
+LINE 236 |         cur.execute(
+LINE 237 |             "SELECT id, last_scanned FROM projects WHERE path = ?",
+LINE 238 |             (project_path,),
+LINE 239 |         )
+LINE 240 |         row = cur.fetchone()
+LINE 241 |         if not row:
+LINE 242 |             return [], None, False
+LINE 243 |         project_id = int(row["id"])
+LINE 244 |         last_scanned = row["last_scanned"]
+LINE 245 |         cur.execute(
+LINE 246 |             "SELECT rel_path FROM nodes "
+LINE 247 |             "WHERE project_id = ? AND is_dir = 0 "
+LINE 248 |             "ORDER BY rel_path",
+LINE 249 |             (project_id,),
+LINE 250 |         )
+LINE 251 |         files = [r["rel_path"] for r in cur.fetchall()]
+LINE 252 |         return files, last_scanned, True
+LINE 253 | 
+LINE 254 | '''
+LINE 255 | 
+LINE 256 | 
+LINE 257 | # ---------------------------------------------------------------------------
+LINE 258 | # ---------------------------------------------------------------------------
+LINE 259 | # Contenido: PATCH 3 — app/gui/file_search_dialog.py
+LINE 260 | # ---------------------------------------------------------------------------
+LINE 261 | # ---------------------------------------------------------------------------
+LINE 262 | 
+LINE 263 | FSD_OLD_CONSTANTS = '''MAX_RENDER_LIMIT = 500
+LINE 264 | BATCH_SIZE = 100
+LINE 265 | DEBOUNCE_MS = 150
+LINE 266 | LOADING_DELAY_MS = 200
+LINE 267 | QUEUE_CHECK_MS = 20
+LINE 268 | '''
+LINE 269 | 
+LINE 270 | FSD_NEW_CONSTANTS = '''MAX_RENDER_LIMIT = 500
+LINE 271 | BATCH_SIZE = 25              # 100 -> 25 : tandas más pequeñas, sin bloquear el mainloop
+LINE 272 | DEBOUNCE_MS = 150
+LINE 273 | LOADING_DELAY_MS = 200
+LINE 274 | QUEUE_CHECK_MS = 20
+LINE 275 | RENDER_BATCH_DELAY_MS = 15   # 1 -> 15 : cede el hilo entre tandas
+LINE 276 | '''
+LINE 277 | 
+LINE 278 | 
+LINE 279 | FSD_OLD_REFRESH_TAIL = '''        # Render first batch synchronously
+LINE 280 |         self._render_batch(matches_to_render, start_idx=0, total_matches=total_matches)
+LINE 281 | '''
+LINE 282 | 
+LINE 283 | FSD_NEW_REFRESH_TAIL = '''        # FIX: incluso la primera tanda se agenda con after(0, ...) para no
+LINE 284 |         # bloquear el hilo de la GUI dentro de _refresh_results.
+LINE 285 |         self._render_timer = self.after(
+LINE 286 |             0,
+LINE 287 |             lambda: self._render_batch(matches_to_render, 0, total_matches),
+LINE 288 |         )
+LINE 289 | '''
+LINE 290 | 
+LINE 291 | 
+LINE 292 | FSD_OLD_RENDER_TAIL = '''        if end_idx < len(matches_subset):
+LINE 293 |             # Schedule next batch
+LINE 294 |             self._render_timer = self.after(
+LINE 295 |                 1, lambda: self._render_batch(matches_subset, end_idx, total_matches)
+LINE 296 |             )
+LINE 297 | '''
+LINE 298 | 
+LINE 299 | FSD_NEW_RENDER_TAIL = '''        if end_idx < len(matches_subset):
+LINE 300 |             # FIX: 15 ms en lugar de 1 ms para que el mainloop procese eventos
+LINE 301 |             # (redibujado, teclado, ratón) entre tandas.
+LINE 302 |             self._render_timer = self.after(
+LINE 303 |                 RENDER_BATCH_DELAY_MS,
+LINE 304 |                 lambda: self._render_batch(matches_subset, end_idx, total_matches),
+LINE 305 |             )
+LINE 306 | '''
+LINE 307 | 
+LINE 308 | 
+LINE 309 | FSD_OLD_LOAD_FILES = '''    def _load_files(self):
+LINE 310 |         self._scan_id += 1
+LINE 311 |         current_scan_id = self._scan_id
+LINE 312 | 
+LINE 313 |         # Schedule delayed loading indicator after 200ms
+LINE 314 |         self._cancel_timer("_loading_timer")
+LINE 315 |         self._loading_timer = self.after(
+LINE 316 |             LOADING_DELAY_MS, lambda: self._show_loading(current_scan_id)
+LINE 317 |         )
+LINE 318 | 
+LINE 319 |         # Launch background scan daemon thread
+LINE 320 |         threading.Thread(
+LINE 321 |             target=self._async_scan_worker,
+LINE 322 |             args=(current_scan_id, self.folder_path, self.excluded_dirs, self._scan_queue),
+LINE 323 |             daemon=True,
+LINE 324 |         ).start()
+LINE 325 | 
+LINE 326 |         # Start queue polling loop on main GUI thread
+LINE 327 |         self._schedule_queue_check()
+LINE 328 | '''
+LINE 329 | 
+LINE 330 | FSD_NEW_LOAD_FILES = '''    def _load_files(self, force_refresh: bool = False):
+LINE 331 |         self._scan_id += 1
+LINE 332 |         current_scan_id = self._scan_id
+LINE 333 | 
+LINE 334 |         # Schedule delayed loading indicator after 200ms
+LINE 335 |         self._cancel_timer("_loading_timer")
+LINE 336 |         self._loading_timer = self.after(
+LINE 337 |             LOADING_DELAY_MS, lambda: self._show_loading(current_scan_id)
+LINE 338 |         )
+LINE 339 | 
+LINE 340 |         # FIX: launch background worker: DB-first, os.walk fallback
+LINE 341 |         threading.Thread(
+LINE 342 |             target=self._async_scan_worker,
+LINE 343 |             args=(
+LINE 344 |                 current_scan_id,
+LINE 345 |                 self.folder_path,
+LINE 346 |                 self.excluded_dirs,
+LINE 347 |                 self._scan_queue,
+LINE 348 |                 force_refresh,
+LINE 349 |             ),
+LINE 350 |             daemon=True,
+LINE 351 |         ).start()
+LINE 352 | 
+LINE 353 |         # Start queue polling loop on main GUI thread
+LINE 354 |         self._schedule_queue_check()
+LINE 355 | '''
+LINE 356 | 
+LINE 357 | 
+LINE 358 | FSD_OLD_CHECK_QUEUE_HEAD = '''        received = False
+LINE 359 |         latest_files = None
+LINE 360 | 
+LINE 361 |         while True:
+LINE 362 |             try:
+LINE 363 |                 sid, files = self._scan_queue.get_nowait()
+LINE 364 |                 if sid == self._scan_id:
+LINE 365 |                     latest_files = files
+LINE 366 |                     received = True
+LINE 367 |             except queue.Empty:
+LINE 368 |                 break
+LINE 369 | 
+LINE 370 |         if received and latest_files is not None:
+LINE 371 |             self._hide_loading()
+LINE 372 |             self.all_files = latest_files
+LINE 373 |             self._files_indexed = [(f, f.lower()) for f in latest_files]
+LINE 374 |             self._refresh_results(force=True)
+LINE 375 | '''
+LINE 376 | 
+LINE 377 | FSD_NEW_CHECK_QUEUE_HEAD = '''        received = False
+LINE 378 |         latest_files = None
+LINE 379 |         source = None
+LINE 380 | 
+LINE 381 |         while True:
+LINE 382 |             try:
+LINE 383 |                 sid, files, src = self._scan_queue.get_nowait()
+LINE 384 |                 if sid == self._scan_id:
+LINE 385 |                     latest_files = files
+LINE 386 |                     source = src
+LINE 387 |                     received = True
+LINE 388 |             except queue.Empty:
+LINE 389 |                 break
+LINE 390 | 
+LINE 391 |         if received and latest_files is not None:
+LINE 392 |             self._hide_loading()
+LINE 393 |             self.all_files = latest_files
+LINE 394 |             self._files_indexed = [(f, f.lower()) for f in latest_files]
+LINE 395 |             if self.lbl_loading is not None and self.winfo_exists():
+LINE 396 |                 tag = "caché DB" if source == "db" else "escaneo"
+LINE 397 |                 self.lbl_loading.config(
+LINE 398 |                     text=f"✓ {len(latest_files)} archivos ({tag})"
+LINE 399 |                 )
+LINE 400 |             self._refresh_results(force=True)
+LINE 401 | '''
+LINE 402 | 
+LINE 403 | 
+LINE 404 | FSD_OLD_SCAN_WORKER = '''    @staticmethod
+LINE 405 |     def _async_scan_worker(scan_id: int, folder_path: str, excluded_dirs: Set[str], res_queue: queue.Queue):
+LINE 406 |         """Worker thread entry point: purely python I/O, no Tkinter calls."""
+LINE 407 |         try:
+LINE 408 |             files = scan_directory(folder_path, excluded_dirs, allowed_extensions=None)
+LINE 409 |         except Exception:
+LINE 410 |             files = []
+LINE 411 |         res_queue.put((scan_id, files))
+LINE 412 | '''
+LINE 413 | 
+LINE 414 | FSD_NEW_SCAN_WORKER = '''    @staticmethod
+LINE 415 |     def _async_scan_worker(
+LINE 416 |         scan_id: int,
+LINE 417 |         folder_path: str,
+LINE 418 |         excluded_dirs: Set[str],
+LINE 419 |         res_queue: queue.Queue,
+LINE 420 |         force_refresh: bool = False,
+LINE 421 |     ):
+LINE 422 |         """Worker thread entry point: DB-first con fallback a os.walk.
+LINE 423 | 
+LINE 424 |         Estrategia:
+LINE 425 |           1) Si !force_refresh, consultar SQLite (project_cache.db). ~1 ms.
+LINE 426 |           2) Si la DB no tiene filas o el usuario forzó refresco, os.walk.
+LINE 427 |         """
+LINE 428 |         files: List[str] = []
+LINE 429 |         source = "scan"
+LINE 430 |         try:
+LINE 431 |             from app.core.storage.database import get_database
+LINE 432 | 
+LINE 433 |             if not force_refresh:
+LINE 434 |                 db = get_database()
+LINE 435 |                 db_files, _last_scanned, exists = db.load_file_paths(folder_path)
+LINE 436 |                 if exists and db_files:
+LINE 437 |                     files = db_files
+LINE 438 |                     source = "db"
+LINE 439 | 
+LINE 440 |             if not files:
+LINE 441 |                 files = scan_directory(
+LINE 442 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 443 |                 )
+LINE 444 |                 source = "scan"
+LINE 445 |         except Exception:
+LINE 446 |             # Ante cualquier fallo, caer a escaneo directo
+LINE 447 |             try:
+LINE 448 |                 files = scan_directory(
+LINE 449 |                     folder_path, excluded_dirs, allowed_extensions=None
+LINE 450 |                 )
+LINE 451 |             except Exception:
+LINE 452 |                 files = []
+LINE 453 |             source = "scan"
+LINE 454 | 
+LINE 455 |         res_queue.put((scan_id, files, source))
+LINE 456 | '''
+LINE 457 | 
+LINE 458 | 
+LINE 459 | FSD_OLD_HEADER_BUTTONS = '''        ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
+LINE 460 |         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
+LINE 461 | '''
+LINE 462 | 
+LINE 463 | FSD_NEW_HEADER_BUTTONS = '''        ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
+LINE 464 |         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
+LINE 465 |         ttk.Button(
+LINE 466 |             row,
+LINE 467 |             text="↻ Refrescar",
+LINE 468 |             command=lambda: self._load_files(force_refresh=True),
+LINE 469 |         ).pack(side=tk.LEFT, padx=(6, 0))
+LINE 470 | '''
+LINE 471 | 
+LINE 472 | 
+LINE 473 | # ---------------------------------------------------------------------------
+LINE 474 | # Estructura del proyecto
+LINE 475 | # ---------------------------------------------------------------------------
+LINE 476 | 
+LINE 477 | def verify_structure(root: Path) -> None:
+LINE 478 |     info(f"Proyecto detectado: {root}")
+LINE 479 |     missing = [rel for rel in REQUIRED_FILES if not (root / rel).is_file()]
+LINE 480 |     if missing:
+LINE 481 |         for m in missing:
+LINE 482 |             error(f"Falta archivo requerido: {m}")
+LINE 483 |         raise RuntimeError(
+LINE 484 |             "La estructura del proyecto no coincide con la esperada. "
+LINE 485 |             "Abortando sin modificar archivos."
+LINE 486 |         )
+LINE 487 | 
+LINE 488 | 
+LINE 489 | # ---------------------------------------------------------------------------
+LINE 490 | # Aplicación de cambios
+LINE 491 | # ---------------------------------------------------------------------------
+LINE 492 | 
+LINE 493 | def apply_all(root: Path, dry_run: bool) -> None:
+LINE 494 |     info("--- Verificando estructura del proyecto ---")
+LINE 495 |     verify_structure(root)
+LINE 496 | 
+LINE 497 |     # ---------------------------------------------------------------------
+LINE 498 |     # PATCH 1 — app/core/project_scanner.py
+LINE 499 |     # ---------------------------------------------------------------------
+LINE 500 |     info("--- [1/4] Optimizando caché de project_scanner.py ---")
+LINE 501 |     ensure_target_exists(root, "app/core/project_scanner.py")
+LINE 502 | 
+LINE 503 |     replace_exact(
+LINE 504 |         root, "app/core/project_scanner.py",
+LINE 505 |         old=SCANNER_OLD_SIGNATURE,
+LINE 506 |         new=SCANNER_NEW_SIGNATURE,
+LINE 507 |         marker_check="signature = max(",
+LINE 508 |     )
+LINE 509 |     replace_exact(
+LINE 510 |         root, "app/core/project_scanner.py",
+LINE 511 |         old=SCANNER_OLD_STORE,
+LINE 512 |         new=SCANNER_NEW_STORE,
+LINE 513 |         marker_check="(signature, valid_files)",
+LINE 514 |     )
+LINE 515 | 
+LINE 516 |     # ---------------------------------------------------------------------
+LINE 517 |     # PATCH 2 — app/core/storage/database.py
+LINE 518 |     # ---------------------------------------------------------------------
+LINE 519 |     info("--- [2/4] Añadiendo load_file_paths() a database.py ---")
+LINE 520 |     ensure_target_exists(root, "app/core/storage/database.py")
+LINE 521 | 
+LINE 522 |     insert_before(
+LINE 523 |         root, "app/core/storage/database.py",
+LINE 524 |         anchor=DATABASE_ANCHOR,
+LINE 525 |         block=DATABASE_NEW_METHOD,
+LINE 526 |         marker_check="def load_file_paths(self, project_path",
+LINE 527 |     )
+LINE 528 | 
+LINE 529 |     # ---------------------------------------------------------------------
+LINE 530 |     # PATCH 3 — app/gui/file_search_dialog.py (render)
+LINE 531 |     # ---------------------------------------------------------------------
+LINE 532 |     info("--- [3/4] Optimizando render de file_search_dialog.py ---")
+LINE 533 |     ensure_target_exists(root, "app/gui/file_search_dialog.py")
+LINE 534 | 
+LINE 535 |     replace_exact(
+LINE 536 |         root, "app/gui/file_search_dialog.py",
+LINE 537 |         old=FSD_OLD_CONSTANTS,
+LINE 538 |         new=FSD_NEW_CONSTANTS,
+LINE 539 |         marker_check="RENDER_BATCH_DELAY_MS",
+LINE 540 |     )
+LINE 541 |     replace_exact(
+LINE 542 |         root, "app/gui/file_search_dialog.py",
+LINE 543 |         old=FSD_OLD_REFRESH_TAIL,
+LINE 544 |         new=FSD_NEW_REFRESH_TAIL,
+LINE 545 |         marker_check="# FIX: incluso la primera tanda se agenda con after(0, ...)",
+LINE 546 |     )
+LINE 547 |     replace_exact(
+LINE 548 |         root, "app/gui/file_search_dialog.py",
+LINE 549 |         old=FSD_OLD_RENDER_TAIL,
+LINE 550 |         new=FSD_NEW_RENDER_TAIL,
+LINE 551 |         marker_check="# FIX: 15 ms en lugar de 1 ms",
+LINE 552 |     )
+LINE 553 | 
+LINE 554 |     # ---------------------------------------------------------------------
+LINE 555 |     # PATCH 4 — app/gui/file_search_dialog.py (DB-first scan)
+LINE 556 |     # ---------------------------------------------------------------------
+LINE 557 |     info("--- [4/4] DB-first scan + botón Refrescar en file_search_dialog.py ---")
+LINE 558 | 
+LINE 559 |     replace_exact(
+LINE 560 |         root, "app/gui/file_search_dialog.py",
+LINE 561 |         old=FSD_OLD_LOAD_FILES,
+LINE 562 |         new=FSD_NEW_LOAD_FILES,
+LINE 563 |         marker_check="def _load_files(self, force_refresh: bool = False):",
+LINE 564 |     )
+LINE 565 |     replace_exact(
+LINE 566 |         root, "app/gui/file_search_dialog.py",
+LINE 567 |         old=FSD_OLD_CHECK_QUEUE_HEAD,
+LINE 568 |         new=FSD_NEW_CHECK_QUEUE_HEAD,
+LINE 569 |         marker_check="sid, files, src = self._scan_queue.get_nowait()",
+LINE 570 |     )
+LINE 571 |     replace_exact(
+LINE 572 |         root, "app/gui/file_search_dialog.py",
+LINE 573 |         old=FSD_OLD_SCAN_WORKER,
+LINE 574 |         new=FSD_NEW_SCAN_WORKER,
+LINE 575 |         marker_check='db.load_file_paths(folder_path)',
+LINE 576 |     )
+LINE 577 |     replace_exact(
+LINE 578 |         root, "app/gui/file_search_dialog.py",
+LINE 579 |         old=FSD_OLD_HEADER_BUTTONS,
+LINE 580 |         new=FSD_NEW_HEADER_BUTTONS,
+LINE 581 |         marker_check='text="↻ Refrescar"',
+LINE 582 |     )
+LINE 583 | 
+LINE 584 | 
+LINE 585 | # ---------------------------------------------------------------------------
+LINE 586 | # Validación final
+LINE 587 | # ---------------------------------------------------------------------------
+LINE 588 | 
+LINE 589 | def validate_syntax(root: Path) -> None:
+LINE 590 |     info("--- Validando sintaxis (py_compile) ---")
+LINE 591 |     for rel in [
+LINE 592 |         "app/core/project_scanner.py",
+LINE 593 |         "app/core/storage/database.py",
+LINE 594 |         "app/gui/file_search_dialog.py",
+LINE 595 |     ]:
+LINE 596 |         full = root / rel
+LINE 597 |         if not full.is_file():
+LINE 598 |             continue
+LINE 599 |         try:
+LINE 600 |             py_compile.compile(str(full), doraise=True)
+LINE 601 |             info(f"Sintaxis OK: {rel}")
+LINE 602 |         except py_compile.PyCompileError as exc:
+LINE 603 |             error(f"Sintaxis inválida en {rel}: {exc}")
+LINE 604 | 
+LINE 605 | 
+LINE 606 | def print_summary() -> None:
+LINE 607 |     print()
+LINE 608 |     print(f"Archivos modificados: {STATS['modified']}")
+LINE 609 |     print(f"Archivos omitidos:    {STATS['skipped']}")
+LINE 610 |     print(f"Backups creados:      {STATS['backups']}")
+LINE 611 |     print(f"Errores:              {STATS['errors']}")
+LINE 612 | 
+LINE 613 | 
+LINE 614 | # ---------------------------------------------------------------------------
+LINE 615 | # CLI
+LINE 616 | # ---------------------------------------------------------------------------
+LINE 617 | 
+LINE 618 | def build_parser() -> argparse.ArgumentParser:
+LINE 619 |     p = argparse.ArgumentParser(
+LINE 620 |         description="Aplica las optimizaciones de rendimiento del buscador."
+LINE 621 |     )
+LINE 622 |     p.add_argument(
+LINE 623 |         "project_root", nargs="?", default=".",
+LINE 624 |         help="Ruta raíz del proyecto (por defecto: directorio actual).",
+LINE 625 |     )
+LINE 626 |     p.add_argument("--dry-run", action="store_true",
+LINE 627 |                    help="Sólo muestra, no modifica archivos.")
+LINE 628 |     return p
+LINE 629 | 
+LINE 630 | 
+LINE 631 | def main() -> int:
+LINE 632 |     parser = build_parser()
+LINE 633 |     args = parser.parse_args()
+LINE 634 | 
+LINE 635 |     try:
+LINE 636 |         root = Path(args.project_root).resolve()
+LINE 637 |     except Exception as exc:
+LINE 638 |         error(f"Ruta inválida: {exc}")
+LINE 639 |         return 1
+LINE 640 | 
+LINE 641 |     if not root.is_dir():
+LINE 642 |         error(f"El directorio no existe: {root}")
+LINE 643 |         return 1
+LINE 644 | 
+LINE 645 |     print(f"[INFO] Proyecto detectado: {root}")
+LINE 646 |     print(f"[INFO] Inicio: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+LINE 647 |     print(f"[INFO] Dry-run: {args.dry_run}")
+LINE 648 |     print()
+LINE 649 | 
+LINE 650 |     if args.dry_run:
+LINE 651 |         info("Modo dry-run: se aplicarán los cambios en memoria y se reportará "
+LINE 652 |              "qué haría cada uno sin escribir nada.")
+LINE 653 |         print()
+LINE 654 | 
+LINE 655 |     try:
+LINE 656 |         apply_all(root, dry_run=args.dry_run)
+LINE 657 |     except Exception as exc:
+LINE 658 |         error(str(exc))
+LINE 659 |         print()
+LINE 660 |         info("Proceso detenido. No se continúan aplicando cambios.")
+LINE 661 |         print_summary()
+LINE 662 |         return 1
+LINE 663 | 
+LINE 664 |     print()
+LINE 665 |     info("--- Resumen final ---")
+LINE 666 |     print_summary()
+LINE 667 | 
+LINE 668 |     if not args.dry_run:
+LINE 669 |         validate_syntax(root)
+LINE 670 | 
+LINE 671 |     print()
+LINE 672 |     if STATS["errors"] == 0:
+LINE 673 |         info("Optimizaciones aplicadas. Reinicia la aplicación para probar.")
+LINE 674 |         return 0
+LINE 675 |     return 1
+LINE 676 | 
+LINE 677 | 
+LINE 678 | if __name__ == "__main__":
+LINE 679 |     sys.exit(main())
+```
+
+==============================================================
 FILE: deepseek_gui.py
 ==============================================================
 ```py
@@ -11799,87 +14067,3858 @@ LINE 911 |     sys.exit(main())
 ```
 
 ==============================================================
+FILE: output/deepseek_project_context.md
+==============================================================
+```md
+LINE    1 | ==============================================================
+LINE    2 | REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO
+LINE    3 | ==============================================================
+LINE    4 | generar el codigo en python para hacer el cambio el codigo se creara en la raiz del archivo 
+LINE    5 | agregar las columnas a la tabla de producto medida, estadoProducto, unidad, caracteristica 
+LINE    6 | la api listaProducto devuelve estos datos 
+LINE    7 | [
+LINE    8 |     {
+LINE    9 |         "id": "4004",
+LINE   10 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   11 |         "codigo": "IND-BOT-T-M-P",
+LINE   12 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   13 |         "codigobarras": "",
+LINE   14 |         "fecha": "2026-09-03",
+LINE   15 |         "imagen": "",
+LINE   16 |         "idcategoria": "0",
+LINE   17 |         "categoria": null,
+LINE   18 |         "subcategoria": "",
+LINE   19 |         "idmedida": "234",
+LINE   20 |         "medida": "general",
+LINE   21 |         "idestadoproducto": "275",
+LINE   22 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE   23 |         "idunidad": "250",
+LINE   24 |         "unidad": "Rollo",
+LINE   25 |         "caracteristica": ""{
+LINE   26 |         "id": "4004",
+LINE   27 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   28 |         "codigo": "IND-BOT-T-M-P",
+LINE   29 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   30 |         "codigobarras": "",
+LINE   31 |         "imagen": "",
+LINE   32 |         "idcategoria": "0",
+LINE   33 |         "categoria": null,
+LINE   34 |         "subcategoria": "",
+LINE   35 |         "idmedida": "234",
+LINE   36 |         "medida": "general",
+LINE   37 |         "idestadoproducto": "275",
+LINE   38 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE   39 |         "idunidad": "250",
+LINE   40 |         "unidad": "Rollo",
+LINE   41 |         "caracteristica": ""
+LINE   42 |     },...
+LINE   43 | ]
+LINE   44 | 
+LINE   45 | 
+LINE   46 | ==============================================================
+LINE   47 | SELECTED ANALYSIS PROFILE / PERFIL DE ANÁLISIS: 🐞 Detect errors
+LINE   48 | ==============================================================
+LINE   49 | • Objetivo: Identificar errores de sintaxis, bugs lógicos, excepciones no controladas, condiciones de carrera y fallos de tipo en el código.
+LINE   50 | • Enfoque: Detección exhaustiva de bugs, casos límite (edge cases), seguridad de nulos/undefined, control de flujo y manejo robusto de excepciones.
+LINE   51 | • Prioridades: 1. Crashes y errores que detienen la ejecución. 2. Fallos silenciosos y corrupción de estado. 3. Manejo deficiente de excepciones. 4. Regresiones potenciales.
+LINE   52 | • Resultado esperado: Localización exacta de cada error (archivo y línea), causa raíz técnica, código corregido listo para copiar/pegar y caso de prueba de verificación.
+LINE   53 | 
+LINE   54 | ⚠️ REGLA DE CONCRECIÓN TÉCNICA: El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
+LINE   55 | 
+LINE   56 | ==============================================================
+LINE   57 | PROJECT CONTEXT / CONTEXTO DEL PROYECTO
+LINE   58 | ==============================================================
+LINE   59 | • Nombre del Proyecto: cm-oficial
+LINE   60 | • Ruta Base: /media/richard/Nuevo vol/quasar/dess/comercial/cm-oficial
+LINE   61 | • Fecha de Generación: 2026-09-28 15:15:32
+LINE   62 | 
+LINE   63 | --------------------------------------------------------------
+LINE   64 | PROJECT SUMMARY
+LINE   65 | --------------------------------------------------------------
+LINE   66 | Selected files: 4
+LINE   67 | File extensions:
+LINE   68 |   .vue: 3
+LINE   69 |   .js: 1
+LINE   70 | 
+LINE   71 | Total lines:
+LINE   72 | 1,683
+LINE   73 | 
+LINE   74 | --------------------------------------------------------------
+LINE   75 | DEPENDENCIES AND REFERENCES
+LINE   76 | --------------------------------------------------------------
+LINE   77 | • src/components/producto/creacion/productoForm.vue:
+LINE   78 |   - import { ref, watch, computed, onUnmounted } from 'vue'
+LINE   79 |   - import { TipoFactura } from 'src/composables/FuncionesGenerales'
+LINE   80 |   - import imageCompression from 'browser-image-compression'
+LINE   81 |   - import { useQuasar } from 'quasar'
+LINE   82 | • src/components/producto/creacion/productoTable.vue:
+LINE   83 |   - import { ref, computed, watch } from 'vue'
+LINE   84 |   - import { imagen } from 'src/boot/url'
+LINE   85 |   - import { getTipoFactura } from 'src/composables/FuncionesG'
+LINE   86 |   - import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+LINE   87 |   - import { useQuasar } from 'quasar'
+LINE   88 |   - import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+LINE   89 | • src/composables/useReporteInventarioExterior.js:
+LINE   90 |   - import { ref } from 'vue'
+LINE   91 |   - import { date } from 'quasar'
+LINE   92 |   - import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE   93 |   - import { api } from 'src/boot/axios'
+LINE   94 |   - import axios from 'axios'
+LINE   95 |   - import 'jspdf-autotable'
+LINE   96 | • src/pages/producto/CproductoPage.vue:
+LINE   97 |   - import { ref, onMounted } from 'vue'
+LINE   98 |   - import { api } from 'boot/axios'
+LINE   99 |   - import { idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
+LINE  100 |   - import { useQuasar } from 'quasar'
+LINE  101 |   - import { objectToFormData } from 'src/composables/FuncionesGenerales'
+LINE  102 |   - import ProductoForm from 'src/components/producto/creacion/productoForm.vue'
+LINE  103 |   - import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
+LINE  104 |   - import { imagen } from 'src/boot/url'
+LINE  105 |   - import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+LINE  106 |   - import seriePage from 'src/modules/serie/page/seriePage.vue'
+LINE  107 |   - import ProductoVarianteDialog from 'src/components/producto/variantes/productoVarianteDialog.vue'
+LINE  108 | 
+LINE  109 | --------------------------------------------------------------
+LINE  110 | INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK (DETECT ERRORS)
+LINE  111 | --------------------------------------------------------------
+LINE  112 | El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
+LINE  113 | 
+LINE  114 | Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al perfil:
+LINE  115 | 
+LINE  116 | # DIAGNOSIS
+LINE  117 | ## Detected Bugs
+LINE  118 | [Lista técnica de los bugs encontrados con su causa raíz exacta]
+LINE  119 | 
+LINE  120 | # FILES TO MODIFY
+LINE  121 | ## 1. [ruta/relativa/archivo.ext]
+LINE  122 | Approximate line: [número]
+LINE  123 | ### Bug Description
+LINE  124 | [Explicación concisa del error]
+LINE  125 | ### Current Code
+LINE  126 | ```
+LINE  127 | [código con error]
+LINE  128 | ```
+LINE  129 | ### Bugfix Code
+LINE  130 | ```
+LINE  131 | [código corregido listo para sustituir]
+LINE  132 | ```
+LINE  133 | 
+LINE  134 | # VERIFICATION & EDGE CASES
+LINE  135 | [Prueba o caso límite para verificar que el bug fue resuelto]
+LINE  136 | 
+LINE  137 | REGLA OBLIGATORIA: No respondas con JSON. Responde con el Markdown estructurado exacto indicado arriba.
+LINE  138 | 
+LINE  139 | Estructura de Directorios:
+LINE  140 | ```
+LINE  141 | cm-oficial/
+LINE  142 | └── src/
+LINE  143 |     ├── components/
+LINE  144 |     │   └── producto/
+LINE  145 |     │       └── creacion/
+LINE  146 |     │           ├── productoForm.vue
+LINE  147 |     │           └── productoTable.vue
+LINE  148 |     ├── composables/
+LINE  149 |     │   └── useReporteInventarioExterior.js
+LINE  150 |     └── pages/
+LINE  151 |         └── producto/
+LINE  152 |             └── CproductoPage.vue
+LINE  153 | ```
+LINE  154 | 
+LINE  155 | 
+LINE  156 | ==============================================================
+LINE  157 | ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE
+LINE  158 | ==============================================================
+LINE  159 | 
+LINE  160 | ==============================================================
+LINE  161 | FILE: src/components/producto/creacion/productoForm.vue
+LINE  162 | ==============================================================
+LINE  163 | ```vue
+LINE  164 | LINE   1 | <template>
+LINE  165 | LINE   2 |   <q-form @submit.prevent="handleSubmit">
+LINE  166 | LINE   3 |     <!-- Información Básica -->
+LINE  167 | LINE   4 |     <q-card-section>
+LINE  168 | LINE   5 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Información Básica</div>
+LINE  169 | LINE   6 |       <q-separator class="q-mb-md" />
+LINE  170 | LINE   7 |       
+LINE  171 | LINE   8 |       <div class="row q-col-gutter-md">
+LINE  172 | LINE   9 |         <div class="col-12 col-md-4">
+LINE  173 | LINE  10 |           <q-input
+LINE  174 | LINE  11 |             v-model="localData.codigo"
+LINE  175 | LINE  12 |             label="Código de Producto *"
+LINE  176 | LINE  13 |             dense
+LINE  177 | LINE  14 |             outlined
+LINE  178 | LINE  15 |             hint="Código único del producto"
+LINE  179 | LINE  16 |           />
+LINE  180 | LINE  17 |         </div>
+LINE  181 | LINE  18 |         
+LINE  182 | LINE  19 |         <div class="col-12 col-md-4">
+LINE  183 | LINE  20 |           <q-input
+LINE  184 | LINE  21 |             v-model="localData.nombre"
+LINE  185 | LINE  22 |             label="Nombre del Producto *"
+LINE  186 | LINE  23 |             dense
+LINE  187 | LINE  24 |             outlined
+LINE  188 | LINE  25 |             hint="Nombre comercial"
+LINE  189 | LINE  26 |           />
+LINE  190 | LINE  27 |         </div>
+LINE  191 | LINE  28 |         
+LINE  192 | LINE  29 |         <div class="col-12 col-md-4">
+LINE  193 | LINE  30 |           <q-input
+LINE  194 | LINE  31 |             v-model="localData.descripcion"
+LINE  195 | LINE  32 |             label="Descripción *"
+LINE  196 | LINE  33 |             dense
+LINE  197 | LINE  34 |             outlined
+LINE  198 | LINE  35 |             hint="Descripción breve"
+LINE  199 | LINE  36 |           />
+LINE  200 | LINE  37 |         </div>
+LINE  201 | LINE  38 |         
+LINE  202 | LINE  39 |         <div class="col-12 col-md-4">
+LINE  203 | LINE  40 |           <q-input
+LINE  204 | LINE  41 |             v-model="localData.codigobarras"
+LINE  205 | LINE  42 |             label="Código de Barras"
+LINE  206 | LINE  43 |             dense
+LINE  207 | LINE  44 |             outlined
+LINE  208 | LINE  45 |             hint="Opcional"
+LINE  209 | LINE  46 |           />
+LINE  210 | LINE  47 |         </div>
+LINE  211 | LINE  48 |       </div>
+LINE  212 | LINE  49 |     </q-card-section>
+LINE  213 | LINE  50 | 
+LINE  214 | LINE  51 |     <!-- Categorización -->
+LINE  215 | LINE  52 |     <q-card-section>
+LINE  216 | LINE  53 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Categorización</div>
+LINE  217 | LINE  54 |       <q-separator class="q-mb-md" />
+LINE  218 | LINE  55 |       
+LINE  219 | LINE  56 |       <div class="row q-col-gutter-md">
+LINE  220 | LINE  57 |         <div class="col-12 col-md-4">
+LINE  221 | LINE  58 |           <q-select
+LINE  222 | LINE  59 |             v-model="localData.categoria"
+LINE  223 | LINE  60 |             :options="categorias"
+LINE  224 | LINE  61 |             label="Categoría *"
+LINE  225 | LINE  62 |             dense
+LINE  226 | LINE  63 |             outlined
+LINE  227 | LINE  64 |             emit-value
+LINE  228 | LINE  65 |             map-options
+LINE  229 | LINE  66 |             hint="Seleccione la categoría principal"
+LINE  230 | LINE  67 |             @update:model-value="
+LINE  231 | LINE  68 |               (val) => {
+LINE  232 | LINE  69 |                 localData.subcategoria = null
+LINE  233 | LINE  70 |                 emit('categoria-changed', val)
+LINE  234 | LINE  71 |               }
+LINE  235 | LINE  72 |             "
+LINE  236 | LINE  73 |           />
+LINE  237 | LINE  74 |         </div>
+LINE  238 | LINE  75 |         
+LINE  239 | LINE  76 |         <div class="col-12 col-md-4" v-if="subcategorias.length > 0">
+LINE  240 | LINE  77 |           <q-select
+LINE  241 | LINE  78 |             v-model="localData.subcategoria"
+LINE  242 | LINE  79 |             :options="subcategorias"
+LINE  243 | LINE  80 |             label="Sub Categoría *"
+LINE  244 | LINE  81 |             dense
+LINE  245 | LINE  82 |             outlined
+LINE  246 | LINE  83 |             emit-value
+LINE  247 | LINE  84 |             map-options
+LINE  248 | LINE  85 |             hint="Seleccione la subcategoría"
+LINE  249 | LINE  86 |           />
+LINE  250 | LINE  87 |         </div>
+LINE  251 | LINE  88 |         
+LINE  252 | LINE  89 |         <div class="col-12 col-md-4">
+LINE  253 | LINE  90 |           <q-select
+LINE  254 | LINE  91 |             v-model="localData.estadoproductos"
+LINE  255 | LINE  92 |             :options="estados"
+LINE  256 | LINE  93 |             label="Estado del Producto *"
+LINE  257 | LINE  94 |             dense
+LINE  258 | LINE  95 |             outlined
+LINE  259 | LINE  96 |             emit-value
+LINE  260 | LINE  97 |             map-options
+LINE  261 | LINE  98 |             hint="Estado actual"
+LINE  262 | LINE  99 |           />
+LINE  263 | LINE 100 |         </div>
+LINE  264 | LINE 101 |       </div>
+LINE  265 | LINE 102 |     </q-card-section>
+LINE  266 | LINE 103 | 
+LINE  267 | LINE 104 |     <!-- Características -->
+LINE  268 | LINE 105 |     <q-card-section>
+LINE  269 | LINE 106 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Características</div>
+LINE  270 | LINE 107 |       <q-separator class="q-mb-md" />
+LINE  271 | LINE 108 |       
+LINE  272 | LINE 109 |       <div class="row q-col-gutter-md">
+LINE  273 | LINE 110 |         <div class="col-12 col-md-4">
+LINE  274 | LINE 111 |           <q-select
+LINE  275 | LINE 112 |             v-model="localData.unidad"
+LINE  276 | LINE 113 |             :options="unidades"
+LINE  277 | LINE 114 |             label="Unidad de Medida *"
+LINE  278 | LINE 115 |             dense
+LINE  279 | LINE 116 |             outlined
+LINE  280 | LINE 117 |             emit-value
+LINE  281 | LINE 118 |             map-options
+LINE  282 | LINE 119 |             hint="Ej: Kilo, Unidad, Litro"
+LINE  283 | LINE 120 |           />
+LINE  284 | LINE 121 |         </div>
+LINE  285 | LINE 122 |         
+LINE  286 | LINE 123 |         <div class="col-12 col-md-4">
+LINE  287 | LINE 124 |           <q-select
+LINE  288 | LINE 125 |             v-model="localData.medida"
+LINE  289 | LINE 126 |             :options="medidas"
+LINE  290 | LINE 127 |             label="Característica *"
+LINE  291 | LINE 128 |             dense
+LINE  292 | LINE 129 |             outlined
+LINE  293 | LINE 130 |             emit-value
+LINE  294 | LINE 131 |             map-options
+LINE  295 | LINE 132 |           />
+LINE  296 | LINE 133 |         </div>
+LINE  297 | LINE 134 |         
+LINE  298 | LINE 135 |         <div class="col-12 col-md-4">
+LINE  299 | LINE 136 |           <q-input
+LINE  300 | LINE 137 |             v-model="localData.caracteristica"
+LINE  301 | LINE 138 |             label="Otras Características"
+LINE  302 | LINE 139 |             dense
+LINE  303 | LINE 140 |             outlined
+LINE  304 | LINE 141 |             hint="Opcional"
+LINE  305 | LINE 142 |           />
+LINE  306 | LINE 143 |         </div>
+LINE  307 | LINE 144 |       </div>
+LINE  308 | LINE 145 |     </q-card-section>
+LINE  309 | LINE 146 | 
+LINE  310 | LINE 147 |     <!-- Información SIN (Facturación) -->
+LINE  311 | LINE 148 |     <q-card-section v-if="tipoFactura">
+LINE  312 | LINE 149 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Información SIN (Facturación)</div>
+LINE  313 | LINE 150 |       <q-separator class="q-mb-md" />
+LINE  314 | LINE 151 |       
+LINE  315 | LINE 152 |       <div class="row q-col-gutter-md">
+LINE  316 | LINE 153 |         <div class="col-12 col-md-6">
+LINE  317 | LINE 154 |           <q-select
+LINE  318 | LINE 155 |             v-model="localData.codigosin"
+LINE  319 | LINE 156 |             :options="FilterProductoSIN"
+LINE  320 | LINE 157 |             label="Producto SIN *"
+LINE  321 | LINE 158 |             dense
+LINE  322 | LINE 159 |             outlined
+LINE  323 | LINE 160 |             emit-value
+LINE  324 | LINE 161 |             map-options
+LINE  325 | LINE 162 |             use-input
+LINE  326 | LINE 163 |             fill-input
+LINE  327 | LINE 164 |             hide-selected
+LINE  328 | LINE 165 |             input-debounce="0"
+LINE  329 | LINE 166 |             @filter="filterFn"
+LINE  330 | LINE 167 |             hint="Busque el código SIN del producto"
+LINE  331 | LINE 168 |           />
+LINE  332 | LINE 169 |         </div>
+LINE  333 | LINE 170 |         
+LINE  334 | LINE 171 |         <div class="col-12 col-md-3">
+LINE  335 | LINE 172 |           <q-select
+LINE  336 | LINE 173 |             v-model="localData.unidadsin"
+LINE  337 | LINE 174 |             :options="FilterUnidadSIN"
+LINE  338 | LINE 175 |             label="Unidad SIN *"
+LINE  339 | LINE 176 |             dense
+LINE  340 | LINE 177 |             outlined
+LINE  341 | LINE 178 |             emit-value
+LINE  342 | LINE 179 |             map-options
+LINE  343 | LINE 180 |             use-input
+LINE  344 | LINE 181 |             fill-input
+LINE  345 | LINE 182 |             hide-selected
+LINE  346 | LINE 183 |             input-debounce="0"
+LINE  347 | LINE 184 |             @filter="filterUnidadFn"
+LINE  348 | LINE 185 |             hint="Unidad según SIN"
+LINE  349 | LINE 186 |           />
+LINE  350 | LINE 187 |         </div>
+LINE  351 | LINE 188 |         
+LINE  352 | LINE 189 |         <div class="col-12 col-md-3">
+LINE  353 | LINE 190 |           <q-input
+LINE  354 | LINE 191 |             v-model="localData.codigoNandina"
+LINE  355 | LINE 192 |             label="Código Nandina"
+LINE  356 | LINE 193 |             dense
+LINE  357 | LINE 194 |             outlined
+LINE  358 | LINE 195 |             hint="Opcional"
+LINE  359 | LINE 196 |           />
+LINE  360 | LINE 197 |         </div>
+LINE  361 | LINE 198 |       </div>
+LINE  362 | LINE 199 |     </q-card-section>
+LINE  363 | LINE 200 | 
+LINE  364 | LINE 201 |     <!-- Imagen del Producto -->
+LINE  365 | LINE 202 |     <q-card-section>
+LINE  366 | LINE 203 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Imagen del Producto</div>
+LINE  367 | LINE 204 |       <q-separator class="q-mb-md" />
+LINE  368 | LINE 205 |       
+LINE  369 | LINE 206 |       <div class="row q-col-gutter-md">
+LINE  370 | LINE 207 |         <div class="col-12" :class="imagePreview ? 'col-md-8' : ''">
+LINE  371 | LINE 208 |           <q-file
+LINE  372 | LINE 209 |             v-model="localData.imagen"
+LINE  373 | LINE 210 |             label="Seleccionar imagen"
+LINE  374 | LINE 211 |             outlined
+LINE  375 | LINE 212 |             dense
+LINE  376 | LINE 213 |             accept="image/*"
+LINE  377 | LINE 214 |             hint="Formatos admitidos: JPG, PNG. La imagen se optimizará automáticamente."
+LINE  378 | LINE 215 |             counter
+LINE  379 | LINE 216 |             @update:model-value="onImageSelected"
+LINE  380 | LINE 217 |             :loading="isCompressing"
+LINE  381 | LINE 218 |             :disable="isCompressing"
+LINE  382 | LINE 219 |           >
+LINE  383 | LINE 220 |             <template v-slot:prepend>
+LINE  384 | LINE 221 |               <q-icon name="attach_file" />
+LINE  385 | LINE 222 |             </template>
+LINE  386 | LINE 223 |           </q-file>
+LINE  387 | LINE 224 |         </div>
+LINE  388 | LINE 225 |         
+LINE  389 | LINE 226 |         <div class="col-12 col-md-4" v-if="imagePreview">
+LINE  390 | LINE 227 |           <div class="text-caption text-grey-7 q-mb-xs">
+LINE  391 | LINE 228 |             {{ typeof localData.imagen === 'string' ? 'Imagen actual' : 'Vista previa' }}
+LINE  392 | LINE 229 |           </div>
+LINE  393 | LINE 230 |           <q-card flat bordered class="q-pa-sm">
+LINE  394 | LINE 231 |             <q-img
+LINE  395 | LINE 232 |               :src="imagePreview"
+LINE  396 | LINE 233 |               style="max-height: 120px; border-radius: 4px"
+LINE  397 | LINE 234 |               fit="contain"
+LINE  398 | LINE 235 |               class="bg-grey-2"
+LINE  399 | LINE 236 |             >
+LINE  400 | LINE 237 |               <template v-slot:error>
+LINE  401 | LINE 238 |                 <div class="absolute-full flex flex-center bg-grey-3 text-grey-7">
+LINE  402 | LINE 239 |                   <div class="text-center">
+LINE  403 | LINE 240 |                     <q-icon name="broken_image" size="md" />
+LINE  404 | LINE 241 |                     <div class="text-caption">Error al cargar imagen</div>
+LINE  405 | LINE 242 |                   </div>
+LINE  406 | LINE 243 |                 </div>
+LINE  407 | LINE 244 |               </template>
+LINE  408 | LINE 245 |             </q-img>
+LINE  409 | LINE 246 |             <div class="text-caption text-grey-7 q-mt-xs text-center" v-if="typeof localData.imagen !== 'string'">
+LINE  410 | LINE 247 |               {{ localData.imagen?.name }}
+LINE  411 | LINE 248 |             </div>
+LINE  412 | LINE 249 |           </q-card>
+LINE  413 | LINE 250 |         </div>
+LINE  414 | LINE 251 |       </div>
+LINE  415 | LINE 252 |     </q-card-section>
+LINE  416 | LINE 253 | 
+LINE  417 | LINE 254 |     <!-- Botones de Acción -->
+LINE  418 | LINE 255 |     <q-separator />
+LINE  419 | LINE 256 |     
+LINE  420 | LINE 257 |     <q-card-actions align="right" class="q-pa-md">
+LINE  421 | LINE 258 |       <q-btn
+LINE  422 | LINE 259 |         label="Cancelar"
+LINE  423 | LINE 260 |         flat
+LINE  424 | LINE 261 |         color="grey-7"
+LINE  425 | LINE 262 |         @click="$emit('cancel')"
+LINE  426 | LINE 263 |         class="q-mr-sm"
+LINE  427 | LINE 264 |       />
+LINE  428 | LINE 265 |       <q-btn
+LINE  429 | LINE 266 |         label="Guardar"
+LINE  430 | LINE 267 |         type="submit"
+LINE  431 | LINE 268 |         color="primary"
+LINE  432 | LINE 269 |         unelevated
+LINE  433 | LINE 270 |         :disable="isCompressing"
+LINE  434 | LINE 271 |       />
+LINE  435 | LINE 272 |     </q-card-actions>
+LINE  436 | LINE 273 |   </q-form>
+LINE  437 | LINE 274 | </template>
+LINE  438 | LINE 275 | 
+LINE  439 | LINE 276 | <script setup>
+LINE  440 | LINE 277 | import { ref, watch, computed, onUnmounted } from 'vue'
+LINE  441 | LINE 278 | import { TipoFactura } from 'src/composables/FuncionesGenerales'
+LINE  442 | LINE 279 | import imageCompression from 'browser-image-compression'
+LINE  443 | LINE 280 | import { useQuasar } from 'quasar'
+LINE  444 | LINE 281 | 
+LINE  445 | LINE 282 | const $q = useQuasar()
+LINE  446 | LINE 283 | const tipoFactura = TipoFactura()
+LINE  447 | LINE 284 | console.log('Tipo de factura en productoForm.vue:', tipoFactura)
+LINE  448 | LINE 285 | 
+LINE  449 | LINE 286 | let objectUrl = null
+LINE  450 | LINE 287 | const isCompressing = ref(false)
+LINE  451 | LINE 288 | let isProgrammaticUpdate = false // Flag to prevent infinite loop
+LINE  452 | LINE 289 | 
+LINE  453 | LINE 290 | const props = defineProps({
+LINE  454 | LINE 291 |   isEditing: Boolean,
+LINE  455 | LINE 292 |   modelValue: Object,
+LINE  456 | LINE 293 |   categorias: {
+LINE  457 | LINE 294 |     type: Array,
+LINE  458 | LINE 295 |     default: () => [],
+LINE  459 | LINE 296 |   },
+LINE  460 | LINE 297 |   estados: {
+LINE  461 | LINE 298 |     type: Array,
+LINE  462 | LINE 299 |     default: () => [],
+LINE  463 | LINE 300 |   },
+LINE  464 | LINE 301 |   subcategorias: {
+LINE  465 | LINE 302 |     type: Array,
+LINE  466 | LINE 303 |     default: () => [],
+LINE  467 | LINE 304 |   },
+LINE  468 | LINE 305 |   unidades: {
+LINE  469 | LINE 306 |     type: Array,
+LINE  470 | LINE 307 |     default: () => [],
+LINE  471 | LINE 308 |   },
+LINE  472 | LINE 309 |   medidas: {
+LINE  473 | LINE 310 |     type: Array,
+LINE  474 | LINE 311 |     default: () => [],
+LINE  475 | LINE 312 |   },
+LINE  476 | LINE 313 |   productoSIN: {
+LINE  477 | LINE 314 |     type: Array,
+LINE  478 | LINE 315 |     default: () => [],
+LINE  479 | LINE 316 |   },
+LINE  480 | LINE 317 |   unidadSIN: {
+LINE  481 | LINE 318 |     type: Array,
+LINE  482 | LINE 319 |     default: () => [],
+LINE  483 | LINE 320 |   },
+LINE  484 | LINE 321 | })
+LINE  485 | LINE 322 | 
+LINE  486 | LINE 323 | const emit = defineEmits(['submit', 'cancel'])
+LINE  487 | LINE 324 | const FilterProductoSIN = ref([...props.productoSIN])
+LINE  488 | LINE 325 | const FilterUnidadSIN = ref([...props.unidadSIN])
+LINE  489 | LINE 326 | const localData = ref({ ...props.modelValue })
+LINE  490 | LINE 327 | 
+LINE  491 | LINE 328 | // Computed property for image preview
+LINE  492 | LINE 329 | const imagePreview = computed(() => {
+LINE  493 | LINE 330 |   if (!localData.value.imagen) return null
+LINE  494 | LINE 331 |   
+LINE  495 | LINE 332 |   // If it's a File object (newly selected), create object URL
+LINE  496 | LINE 333 |   if (localData.value.imagen instanceof File) {
+LINE  497 | LINE 334 |     // Clean up old object URL if exists
+LINE  498 | LINE 335 |     if (objectUrl) {
+LINE  499 | LINE 336 |       URL.revokeObjectURL(objectUrl)
+LINE  500 | LINE 337 |     }
+LINE  501 | LINE 338 |     objectUrl = URL.createObjectURL(localData.value.imagen)
+LINE  502 | LINE 339 |     return objectUrl
+LINE  503 | LINE 340 |   }
+LINE  504 | LINE 341 |   
+LINE  505 | LINE 342 |   // If it's a string (existing image from database), use vista URL
+LINE  506 | LINE 343 |   if (typeof localData.value.imagen === 'string') {
+LINE  507 | LINE 344 |     return localData.value.vista
+LINE  508 | LINE 345 |   }
+LINE  509 | LINE 346 |   
+LINE  510 | LINE 347 |   return null
+LINE  511 | LINE 348 | })
+LINE  512 | LINE 349 | 
+LINE  513 | LINE 350 | // Handler for image selection and compression
+LINE  514 | LINE 351 | const onImageSelected = async (file) => {
+LINE  515 | LINE 352 |   // Prevent infinite loop if we are just updating the model programmatically
+LINE  516 | LINE 353 |   if (isProgrammaticUpdate) {
+LINE  517 | LINE 354 |     isProgrammaticUpdate = false
+LINE  518 | LINE 355 |     return
+LINE  519 | LINE 356 |   }
+LINE  520 | LINE 357 | 
+LINE  521 | LINE 358 |   // Prevent infinite loop if the file is already a webp or undefined
+LINE  522 | LINE 359 |   if (!file) {
+LINE  523 | LINE 360 |     if (objectUrl) {
+LINE  524 | LINE 361 |       URL.revokeObjectURL(objectUrl)
+LINE  525 | LINE 362 |       objectUrl = null
+LINE  526 | LINE 363 |     }
+LINE  527 | LINE 364 |     return
+LINE  528 | LINE 365 |   }
+LINE  529 | LINE 366 |   
+LINE  530 | LINE 367 |   // If it's a string (existing image)
+LINE  531 | LINE 368 |   if (!(file instanceof File)) {
+LINE  532 | LINE 369 |     return
+LINE  533 | LINE 370 |   }
+LINE  534 | LINE 371 | 
+LINE  535 | LINE 372 |   try {
+LINE  536 | LINE 373 |     isCompressing.value = true
+LINE  537 | LINE 374 |     
+LINE  538 | LINE 375 |     // We use a simple notification without trying to store its ID and update it later
+LINE  539 | LINE 376 |     // because doing so causes "trying to update a grouped one which is forbidden" error in Quasar.
+LINE  540 | LINE 377 |     $q.notify({
+LINE  541 | LINE 378 |       message: 'Optimizando imagen...',
+LINE  542 | LINE 379 |       color: 'info',
+LINE  543 | LINE 380 |       textColor: 'white',
+LINE  544 | LINE 381 |       icon: 'cloud_upload',
+LINE  545 | LINE 382 |       timeout: 1500, // Short timeout, the real indicator is the loading spinner on the input
+LINE  546 | LINE 383 |     })
+LINE  547 | LINE 384 | 
+LINE  548 | LINE 385 |     const options = {
+LINE  549 | LINE 386 |       maxSizeMB: 1, // Compress to less than 1MB
+LINE  550 | LINE 387 |       maxWidthOrHeight: 1920, // Max resolution 1920px
+LINE  551 | LINE 388 |       useWebWorker: true,
+LINE  552 | LINE 389 |       fileType: 'image/jpeg', // Convert to JPEG format for backend compatibility (JPG/PNG only)
+LINE  553 | LINE 390 |       initialQuality: 0.9, // Maintain high visual quality
+LINE  554 | LINE 391 |     }
+LINE  555 | LINE 392 | 
+LINE  556 | LINE 393 |     // Attempt to compress the image
+LINE  557 | LINE 394 |     const compressedBlob = await imageCompression(file, options)
+LINE  558 | LINE 395 |     
+LINE  559 | LINE 396 |     // Create a new File from the Blob to keep the original name (but with .jpg extension)
+LINE  560 | LINE 397 |     const newFileName = file.name.replace(/\.[^/.]+$/, "") + '.jpg'
+LINE  561 | LINE 398 |     const compressedFile = new File([compressedBlob], newFileName, {
+LINE  562 | LINE 399 |       type: 'image/jpeg',
+LINE  563 | LINE 400 |       lastModified: Date.now()
+LINE  564 | LINE 401 |     })
+LINE  565 | LINE 402 | 
+LINE  566 | LINE 403 |     console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+LINE  567 | LINE 404 |     console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`)
+LINE  568 | LINE 405 | 
+LINE  569 | LINE 406 |     // This flag prevents the @update:model-value from triggering this function again and causing an infinite loop
+LINE  570 | LINE 407 |     isProgrammaticUpdate = true
+LINE  571 | LINE 408 |     
+LINE  572 | LINE 409 |     // Update the v-model with the compressed file
+LINE  573 | LINE 410 |     // Note: This triggers the `imagePreview` computed properly
+LINE  574 | LINE 411 |     localData.value.imagen = compressedFile
+LINE  575 | LINE 412 | 
+LINE  576 | LINE 413 |     // Show a success notification
+LINE  577 | LINE 414 |     $q.notify({
+LINE  578 | LINE 415 |       message: 'Imagen optimizada con éxito',
+LINE  579 | LINE 416 |       color: 'positive',
+LINE  580 | LINE 417 |       icon: 'check_circle',
+LINE  581 | LINE 418 |       timeout: 2500,
+LINE  582 | LINE 419 |     })
+LINE  583 | LINE 420 | 
+LINE  584 | LINE 421 |   } catch (error) {
+LINE  585 | LINE 422 |     console.error('Error compressing image:', error)
+LINE  586 | LINE 423 |     $q.notify({
+LINE  587 | LINE 424 |       message: 'Hubo un error al optimizar la imagen',
+LINE  588 | LINE 425 |       color: 'negative',
+LINE  589 | LINE 426 |       icon: 'warning',
+LINE  590 | LINE 427 |     })
+LINE  591 | LINE 428 |     
+LINE  592 | LINE 429 |     isProgrammaticUpdate = true
+LINE  593 | LINE 430 |     // If compression fails, we fallback to the original file
+LINE  594 | LINE 431 |     // The imagePreview will still handle the display
+LINE  595 | LINE 432 |     localData.value.imagen = file
+LINE  596 | LINE 433 |   } finally {
+LINE  597 | LINE 434 |     isCompressing.value = false
+LINE  598 | LINE 435 |   }
+LINE  599 | LINE 436 | }
+LINE  600 | LINE 437 | 
+LINE  601 | LINE 438 | // Cleanup object URL on unmount
+LINE  602 | LINE 439 | onUnmounted(() => {
+LINE  603 | LINE 440 |   if (objectUrl) {
+LINE  604 | LINE 441 |     URL.revokeObjectURL(objectUrl)
+LINE  605 | LINE 442 |   }
+LINE  606 | LINE 443 | })
+LINE  607 | LINE 444 | function filterFn(val, update) {
+LINE  608 | LINE 445 |   console.log(val)
+LINE  609 | LINE 446 |   if (val === '') {
+LINE  610 | LINE 447 |     update(() => {
+LINE  611 | LINE 448 |       FilterProductoSIN.value = [...props.productoSIN]
+LINE  612 | LINE 449 |     })
+LINE  613 | LINE 450 |     return
+LINE  614 | LINE 451 |   }
+LINE  615 | LINE 452 | 
+LINE  616 | LINE 453 |   update(() => {
+LINE  617 | LINE 454 |     const needle = val.toLowerCase()
+LINE  618 | LINE 455 |     FilterProductoSIN.value = props.productoSIN.filter((v) =>
+LINE  619 | LINE 456 |       v.label.toLowerCase().includes(needle),
+LINE  620 | LINE 457 |     )
+LINE  621 | LINE 458 |   })
+LINE  622 | LINE 459 | }
+LINE  623 | LINE 460 | function filterUnidadFn(val, update) {
+LINE  624 | LINE 461 |   console.log(val)
+LINE  625 | LINE 462 |   if (val === '') {
+LINE  626 | LINE 463 |     update(() => {
+LINE  627 | LINE 464 |       FilterUnidadSIN.value = [...props.unidadSIN]
+LINE  628 | LINE 465 |     })
+LINE  629 | LINE 466 |     return
+LINE  630 | LINE 467 |   }
+LINE  631 | LINE 468 |   update(() => {
+LINE  632 | LINE 469 |     const needle = val.toLowerCase()
+LINE  633 | LINE 470 |     FilterUnidadSIN.value = props.unidadSIN.filter((v) => v.label.toLowerCase().includes(needle))
+LINE  634 | LINE 471 |   })
+LINE  635 | LINE 472 | }
+LINE  636 | LINE 473 | console.log(props.modelValue)
+LINE  637 | LINE 474 | watch(
+LINE  638 | LINE 475 |   () => props.modelValue,
+LINE  639 | LINE 476 |   (val) => {
+LINE  640 | LINE 477 |     localData.value = { ...val }
+LINE  641 | LINE 478 |   },
+LINE  642 | LINE 479 |   { deep: true },
+LINE  643 | LINE 480 | )
+LINE  644 | LINE 481 | 
+LINE  645 | LINE 482 | const handleSubmit = () => {
+LINE  646 | LINE 483 |   console.log('=== FORM SUBMIT DEBUG ===')
+LINE  647 | LINE 484 |   console.log('localData.categoria:', localData.value.categoria)
+LINE  648 | LINE 485 |   console.log('localData.subcategoria:', localData.value.subcategoria)
+LINE  649 | LINE 486 |   console.log('Full localData:', JSON.stringify(localData.value, null, 2))
+LINE  650 | LINE 487 |   emit('submit', localData.value)
+LINE  651 | LINE 488 | }
+LINE  652 | LINE 489 | </script>
+LINE  653 | ```
+LINE  654 | 
+LINE  655 | ==============================================================
+LINE  656 | FILE: src/components/producto/creacion/productoTable.vue
+LINE  657 | ==============================================================
+LINE  658 | ```vue
+LINE  659 | LINE   1 | //src\components\producto\creacion\productoTable.vue
+LINE  660 | LINE   2 | <template>
+LINE  661 | LINE   3 |   <div>
+LINE  662 | LINE   4 |     <q-card flat class="q-mb-md">
+LINE  663 | LINE   5 |       <q-card-section class="row items-center justify-between q-pb-none">
+LINE  664 | LINE   6 |         <div class="col-12 col-md-4">
+LINE  665 | LINE   7 |           <div class="text-h6 text-primary text-weight-bold">
+LINE  666 | LINE   8 |             <q-icon name="inventory_2" size="sm" class="q-mr-sm" />
+LINE  667 | LINE   9 |             Catálogo de Productos
+LINE  668 | LINE  10 |           </div>
+LINE  669 | LINE  11 |           <div class="text-caption text-grey-7">Administre sus productos y servicios</div>
+LINE  670 | LINE  12 |         </div>
+LINE  671 | LINE  13 |         <div class="col-12 col-md-8">
+LINE  672 | LINE  14 |           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
+LINE  673 | LINE  15 |             <q-btn
+LINE  674 | LINE  16 |               unelevated
+LINE  675 | LINE  17 |               outline
+LINE  676 | LINE  18 |               color="blue"
+LINE  677 | LINE  19 |               @click="$emit('irconjunto')"
+LINE  678 | LINE  20 |               icon="mdi-set-all"
+LINE  679 | LINE  21 |               label="Conjunto"
+LINE  680 | LINE  22 |             />
+LINE  681 | LINE  23 |             <q-btn
+LINE  682 | LINE  24 |               unelevated
+LINE  683 | LINE  25 |               outline
+LINE  684 | LINE  26 |               color="indigo"
+LINE  685 | LINE  27 |               @click="exportarDatos"
+LINE  686 | LINE  28 |               icon="mdi-file-excel"
+LINE  687 | LINE  29 |               label="Descargar Excel"
+LINE  688 | LINE  30 |             />
+LINE  689 | LINE  31 |             <q-btn
+LINE  690 | LINE  32 |               unelevated
+LINE  691 | LINE  33 |               outline
+LINE  692 | LINE  34 |               color="positive"
+LINE  693 | LINE  35 |               @click="exportarFormato"
+LINE  694 | LINE  36 |               icon="mdi-file-download-outline"
+LINE  695 | LINE  37 |               label="Descargar Formato"
+LINE  696 | LINE  38 |             />
+LINE  697 | LINE  39 |             <q-btn
+LINE  698 | LINE  40 |               unelevated
+LINE  699 | LINE  41 |               outline
+LINE  700 | LINE  42 |               color="secondary"
+LINE  701 | LINE  43 |               @click="$refs.fileInput.click()"
+LINE  702 | LINE  44 |               icon="mdi-file-upload-outline"
+LINE  703 | LINE  45 |               label="Cargar Excel"
+LINE  704 | LINE  46 |               :loading="importing"
+LINE  705 | LINE  47 |               :disable="importing"
+LINE  706 | LINE  48 |             />
+LINE  707 | LINE  49 |             <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Producto">
+LINE  708 | LINE  50 |               <q-icon name="add" class="icono" />
+LINE  709 | LINE  51 |               <span class="texto"> <q-icon name="add" /> Nuevo </span>
+LINE  710 | LINE  52 |             </q-btn>
+LINE  711 | LINE  53 |             <input
+LINE  712 | LINE  54 |               type="file"
+LINE  713 | LINE  55 |               ref="fileInput"
+LINE  714 | LINE  56 |               style="display: none"
+LINE  715 | LINE  57 |               accept=".xlsx, .xls"
+LINE  716 | LINE  58 |               @change="onFileSelected"
+LINE  717 | LINE  59 |             />
+LINE  718 | LINE  60 |             <q-btn
+LINE  719 | LINE  61 |               v-if="selectedIds.size > 0"
+LINE  720 | LINE  62 |               unelevated
+LINE  721 | LINE  63 |               color="negative"
+LINE  722 | LINE  64 |               icon="delete_sweep"
+LINE  723 | LINE  65 |               label="Eliminar seleccionados"
+LINE  724 | LINE  66 |               @click="eliminarSeleccionados"
+LINE  725 | LINE  67 |             />
+LINE  726 | LINE  68 |             <!-- Dentro de <q-card-section class="row items-center justify-between q-pb-none"> -->
+LINE  727 | LINE  69 |             <q-checkbox
+LINE  728 | LINE  70 |               v-model="selectAll"
+LINE  729 | LINE  71 |               label="Seleccionar todo"
+LINE  730 | LINE  72 |               :indeterminate="selectedIds.size > 0 && selectedIds.length < filteredRows.length"
+LINE  731 | LINE  73 |             />
+LINE  732 | LINE  74 |           </div>
+LINE  733 | LINE  75 |         </div>
+LINE  734 | LINE  76 |       </q-card-section>
+LINE  735 | LINE  77 | 
+LINE  736 | LINE  78 |       <q-card-section>
+LINE  737 | LINE  79 |         <BaseFilterableTable
+LINE  738 | LINE  80 |           id="tablaProductos"
+LINE  739 | LINE  81 |           ref="reHijo"
+LINE  740 | LINE  82 |           :rows="filteredRows"
+LINE  741 | LINE  83 |           :columns="columns"
+LINE  742 | LINE  84 |           :arrayHeaders="arrayHeaders"
+LINE  743 | LINE  85 |           row-key="id"
+LINE  744 | LINE  86 |           :loading="loading"
+LINE  745 | LINE  87 |           flat
+LINE  746 | LINE  88 |           bordered
+LINE  747 | LINE  89 |         >
+LINE  748 | LINE  90 |           <template v-slot:top-right></template>
+LINE  749 | LINE  91 | 
+LINE  750 | LINE  92 |           <template v-slot:body-cell-imagen="props">
+LINE  751 | LINE  93 |             <q-td :props="props" id="imagenproducto">
+LINE  752 | LINE  94 |               <q-img
+LINE  753 | LINE  95 |                 :src="imagen + props.row.imagen"
+LINE  754 | LINE  96 |                 @click="abrirModal(props.row.imagen)"
+LINE  755 | LINE  97 |                 style="max-width: 100px; max-height: 100px; cursor: pointer"
+LINE  756 | LINE  98 |                 spinner-color="primary"
+LINE  757 | LINE  99 |               >
+LINE  758 | LINE 100 |                 <template v-slot:error>
+LINE  759 | LINE 101 |                   <div
+LINE  760 | LINE 102 |                     class="column items-center justify-center bg-grey-3"
+LINE  761 | LINE 103 |                     style="height: 100%; width: 100%"
+LINE  762 | LINE 104 |                   >
+LINE  763 | LINE 105 |                     <q-icon name="image_not_supported" size="md" color="grey-7" />
+LINE  764 | LINE 106 |                   </div>
+LINE  765 | LINE 107 |                 </template>
+LINE  766 | LINE 108 |               </q-img>
+LINE  767 | LINE 109 |             </q-td>
+LINE  768 | LINE 110 |           </template>
+LINE  769 | LINE 111 |           <template v-slot:body-cell-productosin="props">
+LINE  770 | LINE 112 |             <q-td :props="props">
+LINE  771 | LINE 113 |               <div class="text-truncate" @click.stop v-if="props.row.productosin">
+LINE  772 | LINE 114 |                 {{ props.row.productosin?.descripcion }}
+LINE  773 | LINE 115 | 
+LINE  774 | LINE 116 |                 <q-popup-proxy>
+LINE  775 | LINE 117 |                   <q-card class="q-pa-sm" style="max-width: 300px; white-space: normal">
+LINE  776 | LINE 118 |                     {{ props.row.productosin?.descripcion }}
+LINE  777 | LINE 119 |                   </q-card>
+LINE  778 | LINE 120 |                 </q-popup-proxy>
+LINE  779 | LINE 121 |               </div>
+LINE  780 | LINE 122 |             </q-td>
+LINE  781 | LINE 123 |           </template>
+LINE  782 | LINE 124 | 
+LINE  783 | LINE 125 |           <template v-slot:body-cell-opciones="props">
+LINE  784 | LINE 126 |             <q-td :props="props" class="text-nowrap">
+LINE  785 | LINE 127 |               <q-btn
+LINE  786 | LINE 128 |                 icon="edit"
+LINE  787 | LINE 129 |                 color="primary"
+LINE  788 | LINE 130 |                 dense
+LINE  789 | LINE 131 |                 class="q-mr-sm"
+LINE  790 | LINE 132 |                 @click="$emit('edit-item', props.row)"
+LINE  791 | LINE 133 |                 flat
+LINE  792 | LINE 134 |                 id="editarproducto"
+LINE  793 | LINE 135 |               />
+LINE  794 | LINE 136 |               <q-btn
+LINE  795 | LINE 137 |                 icon="tune"
+LINE  796 | LINE 138 |                 color="secondary"
+LINE  797 | LINE 139 |                 dense
+LINE  798 | LINE 140 |                 class="q-mr-sm"
+LINE  799 | LINE 141 |                 @click="$emit('gestionar-variantes', props.row)"
+LINE  800 | LINE 142 |                 flat
+LINE  801 | LINE 143 |                 title="Gestionar variantes"
+LINE  802 | LINE 144 |                 id="variantesproducto"
+LINE  803 | LINE 145 |               />
+LINE  804 | LINE 146 |               <q-btn
+LINE  805 | LINE 147 |                 icon="delete"
+LINE  806 | LINE 148 |                 color="negative"
+LINE  807 | LINE 149 |                 dense
+LINE  808 | LINE 150 |                 @click="$emit('delete-item', props.row)"
+LINE  809 | LINE 151 |                 flat
+LINE  810 | LINE 152 |                 id="eliminarproducto"
+LINE  811 | LINE 153 |               />
+LINE  812 | LINE 154 |             </q-td>
+LINE  813 | LINE 155 |           </template>
+LINE  814 | LINE 156 |           <template v-slot:body-cell-seleccionar="props">
+LINE  815 | LINE 157 |             <q-td :props="props" auto-width>
+LINE  816 | LINE 158 |               <q-checkbox
+LINE  817 | LINE 159 |                 :model-value="selectedIds.has(props.row.id)"
+LINE  818 | LINE 160 |                 @update:model-value="(val) => toggleSeleccion(props.row.id, val)"
+LINE  819 | LINE 161 |                 dense
+LINE  820 | LINE 162 |               />
+LINE  821 | LINE 163 |             </q-td>
+LINE  822 | LINE 164 |           </template>
+LINE  823 | LINE 165 |         </BaseFilterableTable>
+LINE  824 | LINE 166 |       </q-card-section>
+LINE  825 | LINE 167 |     </q-card>
+LINE  826 | LINE 168 | 
+LINE  827 | LINE 169 |     <q-dialog v-model="mostrarImagen">
+LINE  828 | LINE 170 |       <q-card class="responsive-dialog">
+LINE  829 | LINE 171 |         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
+LINE  830 | LINE 172 |           <div>Vista Previa de Imagen</div>
+LINE  831 | LINE 173 |           <q-btn icon="close" flat dense round @click="mostrarImagen = false" />
+LINE  832 | LINE 174 |         </q-card-section>
+LINE  833 | LINE 175 |         <q-card-section>
+LINE  834 | LINE 176 |           <q-img
+LINE  835 | LINE 177 |             :src="imagen + imagenSeleccionada"
+LINE  836 | LINE 178 |             style="max-width: 100%; max-height: 100%"
+LINE  837 | LINE 179 |             spinner-color="primary"
+LINE  838 | LINE 180 |           />
+LINE  839 | LINE 181 |         </q-card-section>
+LINE  840 | LINE 182 |       </q-card>
+LINE  841 | LINE 183 |     </q-dialog>
+LINE  842 | LINE 184 |   </div>
+LINE  843 | LINE 185 | </template>
+LINE  844 | LINE 186 | 
+LINE  845 | LINE 187 | <script setup>
+LINE  846 | LINE 188 | import { ref, computed, watch } from 'vue'
+LINE  847 | LINE 189 | import { imagen } from 'src/boot/url'
+LINE  848 | LINE 190 | import { getTipoFactura } from 'src/composables/FuncionesG'
+LINE  849 | LINE 191 | import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+LINE  850 | LINE 192 | import {
+LINE  851 | LINE 193 |   exportarPlantillaProductos,
+LINE  852 | LINE 194 |   importarProductosDesdeExcel,
+LINE  853 | LINE 195 |   exportToXLSX_CatalogoProductos,
+LINE  854 | LINE 196 | } from 'src/utils/XCLReportImport'
+LINE  855 | LINE 197 | import { useQuasar } from 'quasar'
+LINE  856 | LINE 198 | import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+LINE  857 | LINE 199 | 
+LINE  858 | LINE 200 | const selectedIds = ref(new Set())
+LINE  859 | LINE 201 | const $q = useQuasar()
+LINE  860 | LINE 202 | const fileInput = ref(null)
+LINE  861 | LINE 203 | 
+LINE  862 | LINE 204 | const tipoFactura = getTipoFactura(true)
+LINE  863 | LINE 205 | 
+LINE  864 | LINE 206 | const mostrarImagen = ref(false)
+LINE  865 | LINE 207 | const imagenSeleccionada = ref(null)
+LINE  866 | LINE 208 | 
+LINE  867 | LINE 209 | const abrirModal = (img) => {
+LINE  868 | LINE 210 |   imagenSeleccionada.value = img
+LINE  869 | LINE 211 |   mostrarImagen.value = true
+LINE  870 | LINE 212 | }
+LINE  871 | LINE 213 | const props = defineProps({
+LINE  872 | LINE 214 |   rows: {
+LINE  873 | LINE 215 |     type: Array,
+LINE  874 | LINE 216 |     required: true,
+LINE  875 | LINE 217 |     default: () => [],
+LINE  876 | LINE 218 |   },
+LINE  877 | LINE 219 |   loading: {
+LINE  878 | LINE 220 |     type: Boolean,
+LINE  879 | LINE 221 |     default: false,
+LINE  880 | LINE 222 |   },
+LINE  881 | LINE 223 |   importing: { type: Boolean, default: false },
+LINE  882 | LINE 224 | })
+LINE  883 | LINE 225 | 
+LINE  884 | LINE 226 | let columns = []
+LINE  885 | LINE 227 | if (tipoFactura) {
+LINE  886 | LINE 228 |   columns = [
+LINE  887 | LINE 229 |     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+LINE  888 | LINE 230 |     {
+LINE  889 | LINE 231 |       name: 'fecha',
+LINE  890 | LINE 232 |       label: 'Fecha',
+LINE  891 | LINE 233 |       field: 'fecha',
+LINE  892 | LINE 234 |       align: 'left',
+LINE  893 | LINE 235 |       format: (val) => cambiarFormatoFecha(val),
+LINE  894 | LINE 236 |       dataType: 'date',
+LINE  895 | LINE 237 |     },
+LINE  896 | LINE 238 |     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
+LINE  897 | LINE 239 |     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+LINE  898 | LINE 240 |     {
+LINE  899 | LINE 241 |       name: 'descripcion',
+LINE  900 | LINE 242 |       label: 'Descripción',
+LINE  901 | LINE 243 |       field: 'descripcion',
+LINE  902 | LINE 244 |       align: 'left',
+LINE  903 | LINE 245 |       dataType: 'text',
+LINE  904 | LINE 246 |     },
+LINE  905 | LINE 247 |     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+LINE  906 | LINE 248 |     {
+LINE  907 | LINE 249 |       name: 'subcategoria',
+LINE  908 | LINE 250 |       label: 'Sub Categorías',
+LINE  909 | LINE 251 |       field: 'subcategoria',
+LINE  910 | LINE 252 |       align: 'left',
+LINE  911 | LINE 253 |       dataType: 'text',
+LINE  912 | LINE 254 |     },
+LINE  913 | LINE 255 |     {
+LINE  914 | LINE 256 |       name: 'codigobarras',
+LINE  915 | LINE 257 |       label: 'Cod.Barra',
+LINE  916 | LINE 258 |       field: 'codigobarras',
+LINE  917 | LINE 259 |       align: 'right',
+LINE  918 | LINE 260 |       dataType: 'text',
+LINE  919 | LINE 261 |     },
+LINE  920 | LINE 262 |     {
+LINE  921 | LINE 263 |       name: 'medida',
+LINE  922 | LINE 264 |       label: 'Caract.',
+LINE  923 | LINE 265 |       field: 'medida',
+LINE  924 | LINE 266 |       align: 'left',
+LINE  925 | LINE 267 |       dataType: 'text',
+LINE  926 | LINE 268 |       defaultVisible: false,
+LINE  927 | LINE 269 |     },
+LINE  928 | LINE 270 |     {
+LINE  929 | LINE 271 |       name: 'estadoproducto',
+LINE  930 | LINE 272 |       label: 'Estado',
+LINE  931 | LINE 273 |       field: 'estadoproducto',
+LINE  932 | LINE 274 |       align: 'left',
+LINE  933 | LINE 275 |       dataType: 'text',
+LINE  934 | LINE 276 |       defaultVisible: false,
+LINE  935 | LINE 277 |     },
+LINE  936 | LINE 278 |     {
+LINE  937 | LINE 279 |       name: 'unidad',
+LINE  938 | LINE 280 |       label: 'Unidad',
+LINE  939 | LINE 281 |       field: 'unidad',
+LINE  940 | LINE 282 |       align: 'left',
+LINE  941 | LINE 283 |       dataType: 'text',
+LINE  942 | LINE 284 |       defaultVisible: false,
+LINE  943 | LINE 285 |     },
+LINE  944 | LINE 286 |     {
+LINE  945 | LINE 287 |       name: 'caracteristica',
+LINE  946 | LINE 288 |       label: 'Otras caract.',
+LINE  947 | LINE 289 |       field: 'caracteristica',
+LINE  948 | LINE 290 |       align: 'left',
+LINE  949 | LINE 291 |       dataType: 'text',
+LINE  950 | LINE 292 |       defaultVisible: false,
+LINE  951 | LINE 293 |     },
+LINE  952 | LINE 294 |     {
+LINE  953 | LINE 295 |       name: 'productosin',
+LINE  954 | LINE 296 |       label: 'Producto SIN',
+LINE  955 | LINE 297 |       field: 'productosin',
+LINE  956 | LINE 298 |       align: 'left',
+LINE  957 | LINE 299 |       dataType: 'text',
+LINE  958 | LINE 300 |       defaultVisible: false,
+LINE  959 | LINE 301 |     },
+LINE  960 | LINE 302 |     {
+LINE  961 | LINE 303 |       name: 'codigonandina',
+LINE  962 | LINE 304 |       label: 'CodigoNandina',
+LINE  963 | LINE 305 |       field: 'codigonandina',
+LINE  964 | LINE 306 |       align: 'left',
+LINE  965 | LINE 307 |       dataType: 'text',
+LINE  966 | LINE 308 |       defaultVisible: false,
+LINE  967 | LINE 309 |     },
+LINE  968 | LINE 310 | 
+LINE  969 | LINE 311 |     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+LINE  970 | LINE 312 |     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+LINE  971 | LINE 313 |     {
+LINE  972 | LINE 314 |       name: 'seleccionar',
+LINE  973 | LINE 315 |       label: '',
+LINE  974 | LINE 316 |       field: 'seleccionar',
+LINE  975 | LINE 317 |       align: 'center',
+LINE  976 | LINE 318 |       sortable: false,
+LINE  977 | LINE 319 |       headerStyle: 'width: 50px',
+LINE  978 | LINE 320 |     },
+LINE  979 | LINE 321 |   ]
+LINE  980 | LINE 322 | } else {
+LINE  981 | LINE 323 |   columns = [
+LINE  982 | LINE 324 |     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+LINE  983 | LINE 325 |     {
+LINE  984 | LINE 326 |       name: 'fecha',
+LINE  985 | LINE 327 |       label: 'Fecha',
+LINE  986 | LINE 328 |       field: 'fecha',
+LINE  987 | LINE 329 |       align: 'left',
+LINE  988 | LINE 330 |       format: (val) => cambiarFormatoFecha(val),
+LINE  989 | LINE 331 |       dataType: 'date',
+LINE  990 | LINE 332 |     },
+LINE  991 | LINE 333 |     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
+LINE  992 | LINE 334 |     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+LINE  993 | LINE 335 |     {
+LINE  994 | LINE 336 |       name: 'descripcion',
+LINE  995 | LINE 337 |       label: 'Descripción',
+LINE  996 | LINE 338 |       field: 'descripcion',
+LINE  997 | LINE 339 |       align: 'left',
+LINE  998 | LINE 340 |       dataType: 'text',
+LINE  999 | LINE 341 |     },
+LINE 1000 | LINE 342 |     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+LINE 1001 | LINE 343 |     {
+LINE 1002 | LINE 344 |       name: 'subcategoria',
+LINE 1003 | LINE 345 |       label: 'Sub Categorías',
+LINE 1004 | LINE 346 |       field: 'subcategoria',
+LINE 1005 | LINE 347 |       align: 'left',
+LINE 1006 | LINE 348 |       dataType: 'text',
+LINE 1007 | LINE 349 |     },
+LINE 1008 | LINE 350 |     {
+LINE 1009 | LINE 351 |       name: 'codigobarras',
+LINE 1010 | LINE 352 |       label: 'Cod.Barra',
+LINE 1011 | LINE 353 |       field: 'codigobarras',
+LINE 1012 | LINE 354 |       align: 'right',
+LINE 1013 | LINE 355 |       dataType: 'text',
+LINE 1014 | LINE 356 |     },
+LINE 1015 | LINE 357 |     {
+LINE 1016 | LINE 358 |       name: 'medida',
+LINE 1017 | LINE 359 |       label: 'Caract.',
+LINE 1018 | LINE 360 |       field: 'medida',
+LINE 1019 | LINE 361 |       align: 'left',
+LINE 1020 | LINE 362 |       dataType: 'text',
+LINE 1021 | LINE 363 |       defaultVisible: false,
+LINE 1022 | LINE 364 |     },
+LINE 1023 | LINE 365 |     {
+LINE 1024 | LINE 366 |       name: 'estadoproducto',
+LINE 1025 | LINE 367 |       label: 'Estado',
+LINE 1026 | LINE 368 |       field: 'estadoproducto',
+LINE 1027 | LINE 369 |       align: 'left',
+LINE 1028 | LINE 370 |       dataType: 'text',
+LINE 1029 | LINE 371 |       defaultVisible: false,
+LINE 1030 | LINE 372 |     },
+LINE 1031 | LINE 373 |     {
+LINE 1032 | LINE 374 |       name: 'unidad',
+LINE 1033 | LINE 375 |       label: 'Unidad',
+LINE 1034 | LINE 376 |       field: 'unidad',
+LINE 1035 | LINE 377 |       align: 'left',
+LINE 1036 | LINE 378 |       dataType: 'text',
+LINE 1037 | LINE 379 |       defaultVisible: false,
+LINE 1038 | LINE 380 |     },
+LINE 1039 | LINE 381 |     {
+LINE 1040 | LINE 382 |       name: 'caracteristica',
+LINE 1041 | LINE 383 |       label: 'Otras caract.',
+LINE 1042 | LINE 384 |       field: 'caracteristica',
+LINE 1043 | LINE 385 |       align: 'left',
+LINE 1044 | LINE 386 |       dataType: 'text',
+LINE 1045 | LINE 387 |       defaultVisible: false,
+LINE 1046 | LINE 388 |     },
+LINE 1047 | LINE 389 | 
+LINE 1048 | LINE 390 |     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+LINE 1049 | LINE 391 |     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+LINE 1050 | LINE 392 |     {
+LINE 1051 | LINE 393 |       name: 'seleccionar',
+LINE 1052 | LINE 394 |       label: '',
+LINE 1053 | LINE 395 |       field: 'seleccionar',
+LINE 1054 | LINE 396 |       align: 'center',
+LINE 1055 | LINE 397 |       sortable: false,
+LINE 1056 | LINE 398 |       headerStyle: 'width: 50px',
+LINE 1057 | LINE 399 |     },
+LINE 1058 | LINE 400 |   ]
+LINE 1059 | LINE 401 | }
+LINE 1060 | LINE 402 | 
+LINE 1061 | LINE 403 | const arrayHeaders = [
+LINE 1062 | LINE 404 |   'numero',
+LINE 1063 | LINE 405 |   'fecha',
+LINE 1064 | LINE 406 |   'codigo',
+LINE 1065 | LINE 407 |   'nombre',
+LINE 1066 | LINE 408 |   'descripcion',
+LINE 1067 | LINE 409 |   'categoria',
+LINE 1068 | LINE 410 |   'subcategoria',
+LINE 1069 | LINE 411 |   'codigobarras',
+LINE 1070 | LINE 412 |   'medida',
+LINE 1071 | LINE 413 |   'estadoproducto',
+LINE 1072 | LINE 414 |   'unidad',
+LINE 1073 | LINE 415 |   'caracteristica',
+LINE 1074 | LINE 416 |   'productosin',
+LINE 1075 | LINE 417 |   'codigonandina',
+LINE 1076 | LINE 418 | ]
+LINE 1077 | LINE 419 | 
+LINE 1078 | LINE 420 | const search = ref('')
+LINE 1079 | LINE 421 | 
+LINE 1080 | LINE 422 | const filteredRows = computed(() => {
+LINE 1081 | LINE 423 |   if (!search.value) return props.rows
+LINE 1082 | LINE 424 |   const term = search.value.toLowerCase()
+LINE 1083 | LINE 425 |   return props.rows.filter((row) => {
+LINE 1084 | LINE 426 |     // Buscar el término en cualquier propiedad de la fila (sin importar qué columna sea)
+LINE 1085 | LINE 427 |     return Object.values(row).some((val) => val && String(val).toLowerCase().includes(term))
+LINE 1086 | LINE 428 |   })
+LINE 1087 | LINE 429 | })
+LINE 1088 | LINE 430 | 
+LINE 1089 | LINE 431 | const exportarFormato = () => {
+LINE 1090 | LINE 432 |   exportarPlantillaProductos()
+LINE 1091 | LINE 433 | }
+LINE 1092 | LINE 434 | 
+LINE 1093 | LINE 435 | const exportarDatos = () => {
+LINE 1094 | LINE 436 |   if (props.rows.length === 0) {
+LINE 1095 | LINE 437 |     $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
+LINE 1096 | LINE 438 |     return
+LINE 1097 | LINE 439 |   }
+LINE 1098 | LINE 440 |   exportToXLSX_CatalogoProductos(props.rows)
+LINE 1099 | LINE 441 | }
+LINE 1100 | LINE 442 | 
+LINE 1101 | LINE 443 | const emit = defineEmits([
+LINE 1102 | LINE 444 |   'add',
+LINE 1103 | LINE 445 |   'edit-item',
+LINE 1104 | LINE 446 |   'delete-item',
+LINE 1105 | LINE 447 |   'toggle-status',
+LINE 1106 | LINE 448 |   'mostrarReporte',
+LINE 1107 | LINE 449 |   'importar',
+LINE 1108 | LINE 450 |   'delete-selected',
+LINE 1109 | LINE 451 |   'gestionar-variantes',
+LINE 1110 | LINE 452 | ])
+LINE 1111 | LINE 453 | 
+LINE 1112 | LINE 454 | const toggleSeleccion = (id, checked) => {
+LINE 1113 | LINE 455 |   if (checked) {
+LINE 1114 | LINE 456 |     selectedIds.value.add(id)
+LINE 1115 | LINE 457 |   } else {
+LINE 1116 | LINE 458 |     selectedIds.value.delete(id)
+LINE 1117 | LINE 459 |   }
+LINE 1118 | LINE 460 |   // Forzar reactividad de Set (en Vue 3 no siempre es necesario, pero mejor)
+LINE 1119 | LINE 461 |   selectedIds.value = new Set(selectedIds.value)
+LINE 1120 | LINE 462 | }
+LINE 1121 | LINE 463 | 
+LINE 1122 | LINE 464 | const eliminarSeleccionados = () => {
+LINE 1123 | LINE 465 |   if (selectedIds.value.size === 0) return
+LINE 1124 | LINE 466 |   const ids = [...selectedIds.value]
+LINE 1125 | LINE 467 |   emit('delete-selected', ids)
+LINE 1126 | LINE 468 |   selectedIds.value = new Set() // limpiar selección
+LINE 1127 | LINE 469 | }
+LINE 1128 | LINE 470 | 
+LINE 1129 | LINE 471 | const selectAll = computed({
+LINE 1130 | LINE 472 |   get() {
+LINE 1131 | LINE 473 |     return (
+LINE 1132 | LINE 474 |       filteredRows.value.length > 0 &&
+LINE 1133 | LINE 475 |       filteredRows.value.every((row) => selectedIds.value.has(row.id))
+LINE 1134 | LINE 476 |     )
+LINE 1135 | LINE 477 |   },
+LINE 1136 | LINE 478 |   set(val) {
+LINE 1137 | LINE 479 |     if (val) {
+LINE 1138 | LINE 480 |       // Agregar todos los IDs visibles
+LINE 1139 | LINE 481 |       const ids = filteredRows.value.map((row) => row.id)
+LINE 1140 | LINE 482 |       selectedIds.value = new Set(ids)
+LINE 1141 | LINE 483 |     } else {
+LINE 1142 | LINE 484 |       selectedIds.value = new Set()
+LINE 1143 | LINE 485 |     }
+LINE 1144 | LINE 486 |   },
+LINE 1145 | LINE 487 | })
+LINE 1146 | LINE 488 | const onFileSelected = async (event) => {
+LINE 1147 | LINE 489 |   const file = event.target.files[0]
+LINE 1148 | LINE 490 |   if (!file) return
+LINE 1149 | LINE 491 | 
+LINE 1150 | LINE 492 |   try {
+LINE 1151 | LINE 493 |     $q.loading.show({ message: 'Leyendo archivo Excel...' })
+LINE 1152 | LINE 494 |     const data = await importarProductosDesdeExcel(file)
+LINE 1153 | LINE 495 |     event.target.value = ''
+LINE 1154 | LINE 496 | 
+LINE 1155 | LINE 497 |     if (data && data.length > 0) {
+LINE 1156 | LINE 498 |       // Actualizar mensaje con la cantidad de productos
+LINE 1157 | LINE 499 |       const total = data.length
+LINE 1158 | LINE 500 |       $q.loading.show({
+LINE 1159 | LINE 501 |         message: `Importando ${total} producto${total !== 1 ? 's' : ''}...`,
+LINE 1160 | LINE 502 |       })
+LINE 1161 | LINE 503 |       // Emitir los datos; el padre debe poner importing=true (si no lo está) y luego false al finalizar
+LINE 1162 | LINE 504 |       emit('importar', data)
+LINE 1163 | LINE 505 |     } else {
+LINE 1164 | LINE 506 |       // Si no hay datos, ocultar loading y notificar
+LINE 1165 | LINE 507 |       $q.loading.hide()
+LINE 1166 | LINE 508 |       $q.notify({ type: 'warning', message: 'El archivo no contiene productos válidos' })
+LINE 1167 | LINE 509 |     }
+LINE 1168 | LINE 510 |   } catch (error) {
+LINE 1169 | LINE 511 |     console.error('Error al importar:', error)
+LINE 1170 | LINE 512 |     $q.loading.hide()
+LINE 1171 | LINE 513 |     $q.notify({ type: 'negative', message: 'Error al procesar el archivo Excel' })
+LINE 1172 | LINE 514 |   }
+LINE 1173 | LINE 515 | }
+LINE 1174 | LINE 516 | watch(
+LINE 1175 | LINE 517 |   () => props.rows,
+LINE 1176 | LINE 518 |   () => {
+LINE 1177 | LINE 519 |     selectedIds.value = new Set()
+LINE 1178 | LINE 520 |   },
+LINE 1179 | LINE 521 | )
+LINE 1180 | LINE 522 | watch(
+LINE 1181 | LINE 523 |   () => props.importing,
+LINE 1182 | LINE 524 |   (nuevo) => {
+LINE 1183 | LINE 525 |     if (!nuevo) {
+LINE 1184 | LINE 526 |       $q.loading.hide()
+LINE 1185 | LINE 527 |     }
+LINE 1186 | LINE 528 |   },
+LINE 1187 | LINE 529 | )
+LINE 1188 | LINE 530 | </script>
+LINE 1189 | LINE 531 | <style>
+LINE 1190 | LINE 532 | .text-truncate {
+LINE 1191 | LINE 533 |   max-width: 200px; /* ajusta según tu tabla */
+LINE 1192 | LINE 534 |   white-space: nowrap;
+LINE 1193 | LINE 535 |   overflow: hidden;
+LINE 1194 | LINE 536 |   text-overflow: ellipsis;
+LINE 1195 | LINE 537 | }
+LINE 1196 | LINE 538 | </style>
+LINE 1197 | ```
+LINE 1198 | 
+LINE 1199 | ==============================================================
+LINE 1200 | FILE: src/composables/useReporteInventarioExterior.js
+LINE 1201 | ==============================================================
+LINE 1202 | ```js
+LINE 1203 | LINE   1 | import { ref } from 'vue'
+LINE 1204 | LINE   2 | import { date } from 'quasar'
+LINE 1205 | LINE   3 | import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE 1206 | LINE   4 | import { api } from 'src/boot/axios'
+LINE 1207 | LINE   5 | import axios from 'axios'
+LINE 1208 | LINE   6 | import 'jspdf-autotable'
+LINE 1209 | LINE   7 | 
+LINE 1210 | LINE   8 | export function useReporteInventarioExterior() {
+LINE 1211 | LINE   9 |   // --- Estado ---
+LINE 1212 | LINE  10 |   const fechaInicio = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
+LINE 1213 | LINE  11 |   const fechaFin = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
+LINE 1214 | LINE  12 |   const datosReporte = ref([])
+LINE 1215 | LINE  13 |   const cargando = ref(false)
+LINE 1216 | LINE  14 | 
+LINE 1217 | LINE  15 |   const idusuario = idusuario_md5()
+LINE 1218 | LINE  16 |   // const idusuario = '03afdbd66e7929b125f8597834fa83a4'
+LINE 1219 | LINE  17 | 
+LINE 1220 | LINE  18 |   const idempresa = idempresa_md5()
+LINE 1221 | LINE  19 |   console.log('ID Empresa MD5:', idempresa)
+LINE 1222 | LINE  20 | 
+LINE 1223 | LINE  21 |   const generarReporte = async () => {
+LINE 1224 | LINE  22 |     cargando.value = true
+LINE 1225 | LINE  23 |     try {
+LINE 1226 | LINE  24 |       const endpoint = `reporteinvexterno/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+LINE 1227 | LINE  25 |       console.log('Generando reporte con endpoint:', endpoint)
+LINE 1228 | LINE  26 |       const response = await api.get(endpoint)
+LINE 1229 | LINE  27 |       // Map data to add index and composite location
+LINE 1230 | LINE  28 |       const promises = response.data.map(async (item, index) => {
+LINE 1231 | LINE  29 |         const direccion = await obtenerDireccionComoString(item.latitud, item.longitud)
+LINE 1232 | LINE  30 |         return {
+LINE 1233 | LINE  31 |           ...item,
+LINE 1234 | LINE  32 |           id: item.id_inv_externo,
+LINE 1235 | LINE  33 |           indice: index + 1,
+LINE 1236 | LINE  34 |           ubicacion: direccion,
+LINE 1237 | LINE  35 |         }
+LINE 1238 | LINE  36 |       })
+LINE 1239 | LINE  37 |       datosReporte.value = await Promise.all(promises)
+LINE 1240 | LINE  38 |       console.log('Datos del reporte recibidos (procesados):', datosReporte.value)
+LINE 1241 | LINE  39 |     } catch (error) {
+LINE 1242 | LINE  40 |       console.error('Error al generar reporte:', error)
+LINE 1243 | LINE  41 |       datosReporte.value = []
+LINE 1244 | LINE  42 |     } finally {
+LINE 1245 | LINE  43 |       cargando.value = false
+LINE 1246 | LINE  44 |     }
+LINE 1247 | LINE  45 |   }
+LINE 1248 | LINE  46 | 
+LINE 1249 | LINE  47 |   async function obtenerDireccionComoString(lat, lng) {
+LINE 1250 | LINE  48 |     try {
+LINE 1251 | LINE  49 |       const url = 'https://nominatim.openstreetmap.org/reverse'
+LINE 1252 | LINE  50 | 
+LINE 1253 | LINE  51 |       const response = await axios.get(url, {
+LINE 1254 | LINE  52 |         params: {
+LINE 1255 | LINE  53 |           format: 'json',
+LINE 1256 | LINE  54 |           lat: lat,
+LINE 1257 | LINE  55 |           lon: lng,
+LINE 1258 | LINE  56 |           zoom: 18,
+LINE 1259 | LINE  57 |           addressdetails: 1,
+LINE 1260 | LINE  58 |         },
+LINE 1261 | LINE  59 |         headers: {
+LINE 1262 | LINE  60 |           Accept: 'application/json',
+LINE 1263 | LINE  61 |         },
+LINE 1264 | LINE  62 |       })
+LINE 1265 | LINE  63 | 
+LINE 1266 | LINE  64 |       // Retorna toda la dirección en una sola cadena no una promesa
+LINE 1267 | LINE  65 |       return response.data.display_name || 'Dirección no disponible'
+LINE 1268 | LINE  66 |     } catch (error) {
+LINE 1269 | LINE  67 |       console.error('Error obteniendo la dirección:', error)
+LINE 1270 | LINE  68 |       return 'Dirección no disponible'
+LINE 1271 | LINE  69 |     }
+LINE 1272 | LINE  70 |   }
+LINE 1273 | LINE  71 | 
+LINE 1274 | LINE  72 |   //función para generar reporte detallado
+LINE 1275 | LINE  73 |   const generarReporteDetalladoIExternor = async (idInventario) => {
+LINE 1276 | LINE  74 |     try {
+LINE 1277 | LINE  75 |       const endpoint = `detalleInventarioExterior/${idInventario}/${idempresa}`
+LINE 1278 | LINE  76 |       console.log('Generando reporte detallado con endpoint:', endpoint)
+LINE 1279 | LINE  77 |       const response = await api.get(endpoint)
+LINE 1280 | LINE  78 |       console.log('Datos del reporte detallado recibidos:', response.data)
+LINE 1281 | LINE  79 | 
+LINE 1282 | LINE  80 |       // Limpiar descripción de productos
+LINE 1283 | LINE  81 |       if (response.data && response.data.length > 0 && response.data[0].detalle) {
+LINE 1284 | LINE  82 |         response.data[0].detalle = response.data[0].detalle.map((item) => ({
+LINE 1285 | LINE  83 |           ...item,
+LINE 1286 | LINE  84 |           descripcion_producto: item.descripcion_producto
+LINE 1287 | LINE  85 |             ? item.descripcion_producto.replace(/\s+/g, ' ').trim()
+LINE 1288 | LINE  86 |             : item.descripcion_producto,
+LINE 1289 | LINE  87 |         }))
+LINE 1290 | LINE  88 |       }
+LINE 1291 | LINE  89 | 
+LINE 1292 | LINE  90 |       return response.data // Retorna los datos detallados del inventario
+LINE 1293 | LINE  91 |     } catch (error) {
+LINE 1294 | LINE  92 |       console.error('Error al generar reporte detallado:', error)
+LINE 1295 | LINE  93 |     }
+LINE 1296 | LINE  94 |   }
+LINE 1297 | LINE  95 | 
+LINE 1298 | LINE  96 |   return {
+LINE 1299 | LINE  97 |     fechaInicio,
+LINE 1300 | LINE  98 |     fechaFin,
+LINE 1301 | LINE  99 |     datosReporte,
+LINE 1302 | LINE 100 |     cargando,
+LINE 1303 | LINE 101 |     generarReporte,
+LINE 1304 | LINE 102 | 
+LINE 1305 | LINE 103 |     columns: [
+LINE 1306 | LINE 104 |       // Columnas reales para la tabla UI
+LINE 1307 | LINE 105 |       { name: 'indice', label: 'Nº', field: 'indice', sortable: true, align: 'left' },
+LINE 1308 | LINE 106 |       {
+LINE 1309 | LINE 107 |         name: 'fecha',
+LINE 1310 | LINE 108 |         label: 'Fecha',
+LINE 1311 | LINE 109 |         field: 'fecha_control',
+LINE 1312 | LINE 110 |         sortable: true,
+LINE 1313 | LINE 111 |         dataType: 'date',
+LINE 1314 | LINE 112 |         align: 'left',
+LINE 1315 | LINE 113 |       },
+LINE 1316 | LINE 114 |       { name: 'almacen', label: 'Almacén', field: 'almacen', sortable: true, align: 'left' },
+LINE 1317 | LINE 115 |       { name: 'cliente', label: 'Cliente', field: 'cliente', sortable: true, align: 'left' },
+LINE 1318 | LINE 116 |       { name: 'sucursal', label: 'Sucursal', field: 'sucursal', sortable: true, align: 'left' },
+LINE 1319 | LINE 117 |       { name: 'observaciones', label: 'Obs.', field: 'observaciones', align: 'left' },
+LINE 1320 | LINE 118 |       { name: 'ubicacion', label: 'Ubicacion', field: 'ubicacion' },
+LINE 1321 | LINE 119 |       { name: 'reporte', label: 'Reporte', field: 'reporte' }, // Added name and label.reporte matching table
+LINE 1322 | LINE 120 |     ],
+LINE 1323 | LINE 121 |     arrayHeaders: ['fecha', 'almacen', 'cliente', 'sucursal'], // Filtros de columna activados
+LINE 1324 | LINE 122 |     generarReporteDetalladoIExternor,
+LINE 1325 | LINE 123 |   }
+LINE 1326 | LINE 124 | }
+LINE 1327 | ```
+LINE 1328 | 
+LINE 1329 | ==============================================================
+LINE 1330 | FILE: src/pages/producto/CproductoPage.vue
+LINE 1331 | ==============================================================
+LINE 1332 | ```vue
+LINE 1333 | LINE   1 | <template>
+LINE 1334 | LINE   2 |   <q-page v-if="mostrarmoduloConjunto">
+LINE 1335 | LINE   3 |     <div class="row justify-end q-mb-md">
+LINE 1336 | LINE   4 |       <q-btn
+LINE 1337 | LINE   5 |         color="primary"
+LINE 1338 | LINE   6 |         label="Volver a Productos"
+LINE 1339 | LINE   7 |         icon="arrow_back"
+LINE 1340 | LINE   8 |         @click="mostrarmoduloConjunto = false"
+LINE 1341 | LINE   9 |         outline
+LINE 1342 | LINE  10 |       />
+LINE 1343 | LINE  11 |     </div>
+LINE 1344 | LINE  12 |     <seriePage />
+LINE 1345 | LINE  13 |   </q-page>
+LINE 1346 | LINE  14 |   <q-page padding v-else>
+LINE 1347 | LINE  15 |     <q-dialog v-model="showForm">
+LINE 1348 | LINE  16 |       <q-card class="responsive-dialog">
+LINE 1349 | LINE  17 |         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
+LINE 1350 | LINE  18 |           <div>Registrar Producto o Servicio</div>
+LINE 1351 | LINE  19 |           <q-btn icon="close" @click="toggleForm" dense flat round />
+LINE 1352 | LINE  20 |         </q-card-section>
+LINE 1353 | LINE  21 |         <q-card-section class="q-pa-none">
+LINE 1354 | LINE  22 |           <producto-form
+LINE 1355 | LINE  23 |             :isEditing="isEditing"
+LINE 1356 | LINE  24 |             :model-value="formData"
+LINE 1357 | LINE  25 |             :categorias="categorias"
+LINE 1358 | LINE  26 |             :estados="estados"
+LINE 1359 | LINE  27 |             :subcategorias="subcategorias"
+LINE 1360 | LINE  28 |             :unidades="unidades"
+LINE 1361 | LINE  29 |             :medidas="medidas"
+LINE 1362 | LINE  30 |             :productoSIN="ProductoSin"
+LINE 1363 | LINE  31 |             :unidadSIN="UnidadSin"
+LINE 1364 | LINE  32 |             @submit="handleSubmit"
+LINE 1365 | LINE  33 |             @cancel="toggleForm"
+LINE 1366 | LINE  34 |             @categoria-changed="loadsubcategorias"
+LINE 1367 | LINE  35 |           />
+LINE 1368 | LINE  36 |         </q-card-section>
+LINE 1369 | LINE  37 |       </q-card>
+LINE 1370 | LINE  38 |     </q-dialog>
+LINE 1371 | LINE  39 | 
+LINE 1372 | LINE  40 |     <producto-tabla
+LINE 1373 | LINE  41 |       :rows="productos"
+LINE 1374 | LINE  42 |       :loading="cargando"
+LINE 1375 | LINE  43 |       :importing="importing"
+LINE 1376 | LINE  44 |       @add="toggleForm"
+LINE 1377 | LINE  45 |       @irconjunto="mostrarmoduloConjunto = true"
+LINE 1378 | LINE  46 |       @mostrarReporte="mostrarReporte"
+LINE 1379 | LINE  47 |       @edit-item="editUnit"
+LINE 1380 | LINE  48 |       @delete-item="confirmDelete"
+LINE 1381 | LINE  49 |       @toggleStatus="toggleStatus"
+LINE 1382 | LINE  50 |       @importar="handleImport"
+LINE 1383 | LINE  51 |       @delete-selected="eliminarProductosSeleccionados"
+LINE 1384 | LINE  52 |       @gestionar-variantes="abrirVariantes"
+LINE 1385 | LINE  53 |     />
+LINE 1386 | LINE  54 | 
+LINE 1387 | LINE  55 |     <ProductoVarianteDialog
+LINE 1388 | LINE  56 |       v-model="showVariantesDialog"
+LINE 1389 | LINE  57 |       :producto="productoVariantes"
+LINE 1390 | LINE  58 |       :empresa="idempresa"
+LINE 1391 | LINE  59 |     />
+LINE 1392 | LINE  60 |   </q-page>
+LINE 1393 | LINE  61 | </template>
+LINE 1394 | LINE  62 | 
+LINE 1395 | LINE  63 | <script setup>
+LINE 1396 | LINE  64 | import { ref, onMounted } from 'vue'
+LINE 1397 | LINE  65 | import { api } from 'boot/axios' // Asegúrate de tener esto configurado
+LINE 1398 | LINE  66 | import { idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
+LINE 1399 | LINE  67 | import { useQuasar } from 'quasar'
+LINE 1400 | LINE  68 | import { objectToFormData } from 'src/composables/FuncionesGenerales'
+LINE 1401 | LINE  69 | import ProductoForm from 'src/components/producto/creacion/productoForm.vue'
+LINE 1402 | LINE  70 | import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
+LINE 1403 | LINE  71 | import { imagen } from 'src/boot/url'
+LINE 1404 | LINE  72 | import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+LINE 1405 | LINE  73 | import seriePage from 'src/modules/serie/page/seriePage.vue'
+LINE 1406 | LINE  74 | import ProductoVarianteDialog from 'src/components/producto/variantes/productoVarianteDialog.vue'
+LINE 1407 | LINE  75 | const tipoFactura = getTipoFactura(true)
+LINE 1408 | LINE  76 | const mostrarmoduloConjunto = ref(false)
+LINE 1409 | LINE  77 | const showVariantesDialog = ref(false)
+LINE 1410 | LINE  78 | const productoVariantes = ref(null)
+LINE 1411 | LINE  79 | console.log('Tipo Factura:', tipoFactura)
+LINE 1412 | LINE  80 | const idempresa = idempresa_md5()
+LINE 1413 | LINE  81 | const contenidousuario = validarUsuario()
+LINE 1414 | LINE  82 | console.log(contenidousuario)
+LINE 1415 | LINE  83 | const token = getToken()
+LINE 1416 | LINE  84 | console.log('Token:', token)
+LINE 1417 | LINE  85 | const productos = ref([])
+LINE 1418 | LINE  86 | 
+LINE 1419 | LINE  87 | const categorias = ref([])
+LINE 1420 | LINE  88 | 
+LINE 1421 | LINE  89 | const estados = ref([])
+LINE 1422 | LINE  90 | const subcategorias = ref([])
+LINE 1423 | LINE  91 | const unidades = ref([])
+LINE 1424 | LINE  92 | const medidas = ref([])
+LINE 1425 | LINE  93 | const $q = useQuasar()
+LINE 1426 | LINE  94 | const isEditing = ref(false)
+LINE 1427 | LINE  95 | const showForm = ref(false)
+LINE 1428 | LINE  96 | const cargando = ref(false)
+LINE 1429 | LINE  97 | const importing = ref(false)
+LINE 1430 | LINE  98 | 
+LINE 1431 | LINE  99 | const formData = ref({
+LINE 1432 | LINE 100 |   ver: 'registrarProducto',
+LINE 1433 | LINE 101 |   idempresa: idempresa,
+LINE 1434 | LINE 102 | })
+LINE 1435 | LINE 103 | const ProductoSin = ref([])
+LINE 1436 | LINE 104 | const UnidadSin = ref([])
+LINE 1437 | LINE 105 | async function loadRows() {
+LINE 1438 | LINE 106 |   try {
+LINE 1439 | LINE 107 |     cargando.value = true
+LINE 1440 | LINE 108 |     const tipo = getTipoFactura()
+LINE 1441 | LINE 109 |     let point = ``
+LINE 1442 | LINE 110 |     if (token && tipo && getTipoFactura(true) && getToken(true)) {
+LINE 1443 | LINE 111 |       point = `listaProducto/${idempresa}/${token}/${tipo}`
+LINE 1444 | LINE 112 |     } else {
+LINE 1445 | LINE 113 |       point = `listaProducto/${idempresa}/`
+LINE 1446 | LINE 114 |     }
+LINE 1447 | LINE 115 |     console.log('Endpoint:', point)
+LINE 1448 | LINE 116 |     const response = await api.get(point)
+LINE 1449 | LINE 117 |     console.log('estos son los datos', response.data)
+LINE 1450 | LINE 118 |     productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
+LINE 1451 | LINE 119 |   } catch (error) {
+LINE 1452 | LINE 120 |     console.error('Error al cargar datos:', error)
+LINE 1453 | LINE 121 |     $q.notify({
+LINE 1454 | LINE 122 |       type: 'negative',
+LINE 1455 | LINE 123 |       message: 'No se pudieron cargar los datos del catálogo',
+LINE 1456 | LINE 124 |     })
+LINE 1457 | LINE 125 |   } finally {
+LINE 1458 | LINE 126 |     cargando.value = false
+LINE 1459 | LINE 127 |   }
+LINE 1460 | LINE 128 | }
+LINE 1461 | LINE 129 | 
+LINE 1462 | LINE 130 | async function loadcategorias() {
+LINE 1463 | LINE 131 |   try {
+LINE 1464 | LINE 132 |     const response = await api.get(`listaCategoriaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1465 | LINE 133 |     console.log(response)
+LINE 1466 | LINE 134 |     const filtrados = response.data.filter((u) => u.estado == 1 && (!u.idp || u.idp == 0))
+LINE 1467 | LINE 135 |     const formateado = filtrados.map((item) => ({
+LINE 1468 | LINE 136 |       label: item.nombre,
+LINE 1469 | LINE 137 |       value: item.id,
+LINE 1470 | LINE 138 |     }))
+LINE 1471 | LINE 139 |     categorias.value = formateado // Asume que la API devuelve un array
+LINE 1472 | LINE 140 |   } catch (error) {
+LINE 1473 | LINE 141 |     console.error('Error al cargar datos:', error)
+LINE 1474 | LINE 142 |     $q.notify({
+LINE 1475 | LINE 143 |       type: 'negative',
+LINE 1476 | LINE 144 |       message: 'No se pudieron cargar los datos',
+LINE 1477 | LINE 145 |     })
+LINE 1478 | LINE 146 |   }
+LINE 1479 | LINE 147 | }
+LINE 1480 | LINE 148 | async function loadestados() {
+LINE 1481 | LINE 149 |   try {
+LINE 1482 | LINE 150 |     const response = await api.get(`listaEstadoProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1483 | LINE 151 |     console.log(response)
+LINE 1484 | LINE 152 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1485 | LINE 153 |     const formateado = filtrados.map((item) => ({
+LINE 1486 | LINE 154 |       label: item.nombre,
+LINE 1487 | LINE 155 |       value: item.id,
+LINE 1488 | LINE 156 |     }))
+LINE 1489 | LINE 157 |     estados.value = formateado // Asume que la API devuelve un array
+LINE 1490 | LINE 158 |   } catch (error) {
+LINE 1491 | LINE 159 |     console.error('Error al cargar datos:', error)
+LINE 1492 | LINE 160 |     $q.notify({
+LINE 1493 | LINE 161 |       type: 'negative',
+LINE 1494 | LINE 162 |       message: 'No se pudieron cargar los Estados de Producto',
+LINE 1495 | LINE 163 |     })
+LINE 1496 | LINE 164 |   }
+LINE 1497 | LINE 165 | }
+LINE 1498 | LINE 166 | async function loadsubcategorias(idcategoria) {
+LINE 1499 | LINE 167 |   console.log('idcategoria:', idcategoria)
+LINE 1500 | LINE 168 | 
+LINE 1501 | LINE 169 |   if (!idcategoria) {
+LINE 1502 | LINE 170 |     subcategorias.value = []
+LINE 1503 | LINE 171 |     return
+LINE 1504 | LINE 172 |   }
+LINE 1505 | LINE 173 |   try {
+LINE 1506 | LINE 174 |     const response = await api.get(`listaCategoriaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1507 | LINE 175 |     console.log(formData.value)
+LINE 1508 | LINE 176 |     const filtrados = response.data.filter((u) => u.estado == 1 && u.idp == idcategoria)
+LINE 1509 | LINE 177 |     const formateado = filtrados.map((item) => ({
+LINE 1510 | LINE 178 |       label: item.nombre,
+LINE 1511 | LINE 179 |       value: item.id,
+LINE 1512 | LINE 180 |     }))
+LINE 1513 | LINE 181 |     subcategorias.value = formateado // Asume que la API devuelve un array
+LINE 1514 | LINE 182 |   } catch (error) {
+LINE 1515 | LINE 183 |     console.error('Error al cargar datos:', error)
+LINE 1516 | LINE 184 |     $q.notify({
+LINE 1517 | LINE 185 |       type: 'negative',
+LINE 1518 | LINE 186 |       message: 'No se pudieron cargar los datos',
+LINE 1519 | LINE 187 |     })
+LINE 1520 | LINE 188 |   }
+LINE 1521 | LINE 189 | }
+LINE 1522 | LINE 190 | async function loadunidades() {
+LINE 1523 | LINE 191 |   try {
+LINE 1524 | LINE 192 |     const response = await api.get(`listaUnidadProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1525 | LINE 193 |     console.log(response)
+LINE 1526 | LINE 194 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1527 | LINE 195 |     const formateado = filtrados.map((item) => ({
+LINE 1528 | LINE 196 |       label: item.nombre + ' : ' + item.descripcion,
+LINE 1529 | LINE 197 |       value: item.id,
+LINE 1530 | LINE 198 |     }))
+LINE 1531 | LINE 199 |     unidades.value = formateado // Asume que la API devuelve un array
+LINE 1532 | LINE 200 |   } catch (error) {
+LINE 1533 | LINE 201 |     console.error('Error al cargar datos:', error)
+LINE 1534 | LINE 202 |     $q.notify({
+LINE 1535 | LINE 203 |       type: 'negative',
+LINE 1536 | LINE 204 |       message: 'No se pudieron cargar los datos',
+LINE 1537 | LINE 205 |     })
+LINE 1538 | LINE 206 |   }
+LINE 1539 | LINE 207 | }
+LINE 1540 | LINE 208 | async function ListaProductoSin() {
+LINE 1541 | LINE 209 |   if (!tipoFactura) {
+LINE 1542 | LINE 210 |     return
+LINE 1543 | LINE 211 |   }
+LINE 1544 | LINE 212 |   const contenidousuario = validarUsuario()
+LINE 1545 | LINE 213 |   const token = contenidousuario[0]?.factura?.access_token
+LINE 1546 | LINE 214 |   const tipo = contenidousuario[0]?.factura?.tipo
+LINE 1547 | LINE 215 |   const endpoint = `listaproductoSIN/productossin/${token}/${tipo}`
+LINE 1548 | LINE 216 |   try {
+LINE 1549 | LINE 217 |     const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1550 | LINE 218 |     console.log(response)
+LINE 1551 | LINE 219 |     const res = response.data
+LINE 1552 | LINE 220 |     if (res.status == 'success') {
+LINE 1553 | LINE 221 |       const formateado = res.data.map((item) => ({
+LINE 1554 | LINE 222 |         label: item.descripcion,
+LINE 1555 | LINE 223 |         value: item.codigo,
+LINE 1556 | LINE 224 |       }))
+LINE 1557 | LINE 225 |       ProductoSin.value = formateado
+LINE 1558 | LINE 226 |     }
+LINE 1559 | LINE 227 |   } catch (error) {
+LINE 1560 | LINE 228 |     console.error('Error al cargar datos:', error)
+LINE 1561 | LINE 229 |     $q.notify({
+LINE 1562 | LINE 230 |       type: 'negative',
+LINE 1563 | LINE 231 |       message: 'No se pudieron cargar los datos',
+LINE 1564 | LINE 232 |     })
+LINE 1565 | LINE 233 |   }
+LINE 1566 | LINE 234 | }
+LINE 1567 | LINE 235 | async function ListaUnidadSin() {
+LINE 1568 | LINE 236 |   if (!tipoFactura) {
+LINE 1569 | LINE 237 |     return
+LINE 1570 | LINE 238 |   }
+LINE 1571 | LINE 239 |   const contenidousuario = validarUsuario()
+LINE 1572 | LINE 240 |   const token = contenidousuario[0]?.factura?.access_token
+LINE 1573 | LINE 241 |   const tipo = contenidousuario[0]?.factura?.tipo
+LINE 1574 | LINE 242 |   const endpoint = `listaproductoSIN/unidadsin/${token}/${tipo}`
+LINE 1575 | LINE 243 |   try {
+LINE 1576 | LINE 244 |     const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1577 | LINE 245 |     console.log(response)
+LINE 1578 | LINE 246 |     const res = response.data
+LINE 1579 | LINE 247 |     if (res.status == 'success') {
+LINE 1580 | LINE 248 |       const formateado = res.data.map((item) => ({
+LINE 1581 | LINE 249 |         label: item.descripcion,
+LINE 1582 | LINE 250 |         value: item.codigo,
+LINE 1583 | LINE 251 |       }))
+LINE 1584 | LINE 252 |       UnidadSin.value = formateado
+LINE 1585 | LINE 253 |     }
+LINE 1586 | LINE 254 |   } catch (error) {
+LINE 1587 | LINE 255 |     console.error('Error al cargar datos:', error)
+LINE 1588 | LINE 256 |     $q.notify({
+LINE 1589 | LINE 257 |       type: 'negative',
+LINE 1590 | LINE 258 |       message: 'No se pudieron cargar los datos',
+LINE 1591 | LINE 259 |     })
+LINE 1592 | LINE 260 |   }
+LINE 1593 | LINE 261 | }
+LINE 1594 | LINE 262 | async function loadmedidas() {
+LINE 1595 | LINE 263 |   try {
+LINE 1596 | LINE 264 |     const response = await api.get(`listaCaracteristicaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1597 | LINE 265 |     console.log(response)
+LINE 1598 | LINE 266 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1599 | LINE 267 | 
+LINE 1600 | LINE 268 |     const formateado = filtrados.map((item) => ({
+LINE 1601 | LINE 269 |       label: item.nombre,
+LINE 1602 | LINE 270 |       value: item.id,
+LINE 1603 | LINE 271 |     }))
+LINE 1604 | LINE 272 |     medidas.value = formateado // Asume que la API devuelve un array
+LINE 1605 | LINE 273 |   } catch (error) {
+LINE 1606 | LINE 274 |     console.error('Error al cargar datos:', error)
+LINE 1607 | LINE 275 |     $q.notify({
+LINE 1608 | LINE 276 |       type: 'negative',
+LINE 1609 | LINE 277 |       message: 'No se pudieron cargar los datos',
+LINE 1610 | LINE 278 |     })
+LINE 1611 | LINE 279 |   }
+LINE 1612 | LINE 280 | }
+LINE 1613 | LINE 281 | 
+LINE 1614 | LINE 282 | const handleSubmit = async (data) => {
+LINE 1615 | LINE 283 |   const formData = objectToFormData(data)
+LINE 1616 | LINE 284 | 
+LINE 1617 | LINE 285 |   console.log('=== FormData entries ===')
+LINE 1618 | LINE 286 |   // for (let [k, v] of formData.entries()) {
+LINE 1619 | LINE 287 |   //   console.log(`${k}: ${v}`)
+LINE 1620 | LINE 288 |   // }
+LINE 1621 | LINE 289 | 
+LINE 1622 | LINE 290 |   try {
+LINE 1623 | LINE 291 |     if (isEditing.value) {
+LINE 1624 | LINE 292 |       const response = await api.post(``, formData)
+LINE 1625 | LINE 293 |       console.log('Edit response:', response.data)
+LINE 1626 | LINE 294 |     } else {
+LINE 1627 | LINE 295 |       const response = await api.post(``, formData)
+LINE 1628 | LINE 296 |       console.log('Create response:', response.data)
+LINE 1629 | LINE 297 |     }
+LINE 1630 | LINE 298 |     $q.notify({
+LINE 1631 | LINE 299 |       type: 'positive',
+LINE 1632 | LINE 300 |       message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+LINE 1633 | LINE 301 |     })
+LINE 1634 | LINE 302 |     loadRows()
+LINE 1635 | LINE 303 |   } catch (error) {
+LINE 1636 | LINE 304 |     console.error('Error al guardar:', error)
+LINE 1637 | LINE 305 |     $q.notify({
+LINE 1638 | LINE 306 |       type: 'negative',
+LINE 1639 | LINE 307 |       message: 'Ocurrió un error al guardar' + error,
+LINE 1640 | LINE 308 |     })
+LINE 1641 | LINE 309 |   }
+LINE 1642 | LINE 310 |   toggleForm()
+LINE 1643 | LINE 311 | }
+LINE 1644 | LINE 312 | const toggleForm = () => {
+LINE 1645 | LINE 313 |   showForm.value = !showForm.value
+LINE 1646 | LINE 314 |   if (!showForm.value) {
+LINE 1647 | LINE 315 |     isEditing.value = false
+LINE 1648 | LINE 316 |     resetForm()
+LINE 1649 | LINE 317 |     subcategorias.value = [] // limpia subcategorías
+LINE 1650 | LINE 318 |   }
+LINE 1651 | LINE 319 | }
+LINE 1652 | LINE 320 | function resetForm() {
+LINE 1653 | LINE 321 |   isEditing.value = false
+LINE 1654 | LINE 322 |   formData.value = {
+LINE 1655 | LINE 323 |     ver: 'registrarProducto',
+LINE 1656 | LINE 324 |     idempresa: idempresa,
+LINE 1657 | LINE 325 |   }
+LINE 1658 | LINE 326 | }
+LINE 1659 | LINE 327 | const editUnit = async (row) => {
+LINE 1660 | LINE 328 |   console.log(row)
+LINE 1661 | LINE 329 |   const tipo = getTipoFactura()
+LINE 1662 | LINE 330 |   let endpoint = ``
+LINE 1663 | LINE 331 |   if (token && tipo && getTipoFactura(true) && getToken(true)) {
+LINE 1664 | LINE 332 |     endpoint = `verificarExistenciaProducto/${row.id}/${token}/${tipo}`
+LINE 1665 | LINE 333 |   } else {
+LINE 1666 | LINE 334 |     endpoint = `verificarExistenciaProducto/${row.id}/`
+LINE 1667 | LINE 335 |   }
+LINE 1668 | LINE 336 |   console.log(endpoint)
+LINE 1669 | LINE 337 |   const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1670 | LINE 338 |   console.log('API Response:', response.data)
+LINE 1671 | LINE 339 |   const item = response.data.datos
+LINE 1672 | LINE 340 |   console.log('Item data:', item)
+LINE 1673 | LINE 341 | 
+LINE 1674 | LINE 342 |   // Handle subcategoria - it might be missing, null, 0, or empty string
+LINE 1675 | LINE 343 |   const rawSubcategoria = item?.idsubcategoria ?? null
+LINE 1676 | LINE 344 |   const subcategoriaValue =
+LINE 1677 | LINE 345 |     rawSubcategoria !== null && rawSubcategoria !== '0' && rawSubcategoria !== 0
+LINE 1678 | LINE 346 |       ? rawSubcategoria
+LINE 1679 | LINE 347 |       : null
+LINE 1680 | LINE 348 | 
+LINE 1681 | LINE 349 |   formData.value = {
+LINE 1682 | LINE 350 |     ver: 'editarProducto',
+LINE 1683 | LINE 351 |     id: item.id,
+LINE 1684 | LINE 352 |     idempresa: idempresa,
+LINE 1685 | LINE 353 |     codigo: item.codigo,
+LINE 1686 | LINE 354 |     nombre: item.nombre,
+LINE 1687 | LINE 355 |     descripcion: item.descripcion,
+LINE 1688 | LINE 356 |     codigobarras: item.codbarras,
+LINE 1689 | LINE 357 |     categoria: item?.idcategoria ?? null,
+LINE 1690 | LINE 358 |     subcategoria: subcategoriaValue,
+LINE 1691 | LINE 359 |     estadoproductos: item.idestadoproducto,
+LINE 1692 | LINE 360 |     unidad: item.idunidad,
+LINE 1693 | LINE 361 |     medida: item.idmedida,
+LINE 1694 | LINE 362 |     caracteristica: item.caracteristica && item.caracteristica !== '0' ? item.caracteristica : '',
+LINE 1695 | LINE 363 |     vista: imagen + item.imagen,
+LINE 1696 | LINE 364 |     imagen: item.imagen,
+LINE 1697 | LINE 365 |     codigosin:
+LINE 1698 | LINE 366 |       tipoFactura && item.productosin && item.productosin[0] ? item.productosin[0].codigo : '',
+LINE 1699 | LINE 367 |     unidadsin: tipoFactura && item.unidadsin && item.unidadsin[0] ? item.unidadsin[0].codigo : '',
+LINE 1700 | LINE 368 |     codigoNandina:
+LINE 1701 | LINE 369 |       tipoFactura && item.codigonandina && item.codigonandina !== '0' ? item.codigonandina : '',
+LINE 1702 | LINE 370 |   }
+LINE 1703 | LINE 371 | 
+LINE 1704 | LINE 372 |   console.log('FormData to load:', formData.value)
+LINE 1705 | LINE 373 |   loadsubcategorias(item?.idcategoria ?? null)
+LINE 1706 | LINE 374 |   isEditing.value = true
+LINE 1707 | LINE 375 |   showForm.value = true
+LINE 1708 | LINE 376 | }
+LINE 1709 | LINE 377 | 
+LINE 1710 | LINE 378 | const confirmDelete = (row) => {
+LINE 1711 | LINE 379 |   console.log(row)
+LINE 1712 | LINE 380 | 
+LINE 1713 | LINE 381 |   $q.dialog({
+LINE 1714 | LINE 382 |     title: 'Confirmar',
+LINE 1715 | LINE 383 |     message: `¿Eliminar Producto "${row.nombre}"?`,
+LINE 1716 | LINE 384 |     cancel: true,
+LINE 1717 | LINE 385 |     persistent: true,
+LINE 1718 | LINE 386 |   }).onOk(async () => {
+LINE 1719 | LINE 387 |     try {
+LINE 1720 | LINE 388 |       const response = await api.get(`eliminarProducto/${row.id}`) // Cambia a tu ruta real
+LINE 1721 | LINE 389 |       console.log(response)
+LINE 1722 | LINE 390 |       if (response.data.estado === 'exito') {
+LINE 1723 | LINE 391 |         loadRows()
+LINE 1724 | LINE 392 |         $q.notify({
+LINE 1725 | LINE 393 |           type: 'positive',
+LINE 1726 | LINE 394 |           message: response.data.mensaje,
+LINE 1727 | LINE 395 |         })
+LINE 1728 | LINE 396 |       } else {
+LINE 1729 | LINE 397 |         $q.notify({
+LINE 1730 | LINE 398 |           type: 'negative',
+LINE 1731 | LINE 399 |           message: response.data.mensaje,
+LINE 1732 | LINE 400 |         })
+LINE 1733 | LINE 401 |       }
+LINE 1734 | LINE 402 |     } catch (error) {
+LINE 1735 | LINE 403 |       console.error('Error al cargar datos:', error)
+LINE 1736 | LINE 404 |       $q.notify({
+LINE 1737 | LINE 405 |         type: 'negative',
+LINE 1738 | LINE 406 |         message: 'No se pudieron cargar los datos',
+LINE 1739 | LINE 407 |       })
+LINE 1740 | LINE 408 |     }
+LINE 1741 | LINE 409 |   })
+LINE 1742 | LINE 410 | }
+LINE 1743 | LINE 411 | const eliminarProductosSeleccionados = (ids) => {
+LINE 1744 | LINE 412 |   console.log(ids)
+LINE 1745 | LINE 413 | 
+LINE 1746 | LINE 414 |   $q.dialog({
+LINE 1747 | LINE 415 |     title: 'Confirmar',
+LINE 1748 | LINE 416 |     message: `¿Eliminar Productos seleccionados?`,
+LINE 1749 | LINE 417 |     cancel: true,
+LINE 1750 | LINE 418 |     persistent: true,
+LINE 1751 | LINE 419 |   }).onOk(async () => {
+LINE 1752 | LINE 420 |     try {
+LINE 1753 | LINE 421 |       const data = {
+LINE 1754 | LINE 422 |         ver: 'eliminarProductosMasivo',
+LINE 1755 | LINE 423 |         ids: ids,
+LINE 1756 | LINE 424 |       }
+LINE 1757 | LINE 425 |       const response = await api.post(``, data) // Cambia a tu ruta real
+LINE 1758 | LINE 426 |       console.log(response)
+LINE 1759 | LINE 427 |       if (response.data.estado === 'exito') {
+LINE 1760 | LINE 428 |         loadRows()
+LINE 1761 | LINE 429 |         $q.notify({
+LINE 1762 | LINE 430 |           type: 'positive',
+LINE 1763 | LINE 431 |           message: response.data.mensaje,
+LINE 1764 | LINE 432 |         })
+LINE 1765 | LINE 433 |       } else {
+LINE 1766 | LINE 434 |         $q.notify({
+LINE 1767 | LINE 435 |           type: 'negative',
+LINE 1768 | LINE 436 |           message: response.data.mensaje,
+LINE 1769 | LINE 437 |         })
+LINE 1770 | LINE 438 |       }
+LINE 1771 | LINE 439 |     } catch (error) {
+LINE 1772 | LINE 440 |       console.error('Error al cargar datos:', error)
+LINE 1773 | LINE 441 |       $q.notify({
+LINE 1774 | LINE 442 |         type: 'negative',
+LINE 1775 | LINE 443 |         message: 'No se pudieron cargar los datos',
+LINE 1776 | LINE 444 |       })
+LINE 1777 | LINE 445 |     }
+LINE 1778 | LINE 446 |   })
+LINE 1779 | LINE 447 | }
+LINE 1780 | LINE 448 | 
+LINE 1781 | LINE 449 | const handleImport = async (data) => {
+LINE 1782 | LINE 450 |   let successCount = 0
+LINE 1783 | LINE 451 |   let errorCount = 0
+LINE 1784 | LINE 452 |   importing.value = true
+LINE 1785 | LINE 453 | 
+LINE 1786 | LINE 454 |   $q.loading.show({
+LINE 1787 | LINE 455 |     message: 'Importando productos...',
+LINE 1788 | LINE 456 |   })
+LINE 1789 | LINE 457 | 
+LINE 1790 | LINE 458 |   for (const item of data) {
+LINE 1791 | LINE 459 |     try {
+LINE 1792 | LINE 460 |       // Mapear nombres a IDs
+LINE 1793 | LINE 461 |       const cat = categorias.value.find(
+LINE 1794 | LINE 462 |         (c) => c.label.toLowerCase() === item.categoria_nombre?.toLowerCase(),
+LINE 1795 | LINE 463 |       )
+LINE 1796 | LINE 464 |       const unit = unidades.value.find((u) =>
+LINE 1797 | LINE 465 |         u.label.toLowerCase().includes(item.unidad_nombre?.toLowerCase()),
+LINE 1798 | LINE 466 |       )
+LINE 1799 | LINE 467 |       const state = estados.value.find(
+LINE 1800 | LINE 468 |         (e) => e.label.toLowerCase() === item.estado_nombre?.toLowerCase(),
+LINE 1801 | LINE 469 |       )
+LINE 1802 | LINE 470 |       const measure = medidas.value.find(
+LINE 1803 | LINE 471 |         (m) => m.label.toLowerCase() === item.medida_nombre?.toLowerCase(),
+LINE 1804 | LINE 472 |       )
+LINE 1805 | LINE 473 | 
+LINE 1806 | LINE 474 |       const payload = {
+LINE 1807 | LINE 475 |         ver: 'registrarProducto',
+LINE 1808 | LINE 476 |         idempresa: idempresa,
+LINE 1809 | LINE 477 |         codigo: item.codigo || '',
+LINE 1810 | LINE 478 |         nombre: item.nombre || '',
+LINE 1811 | LINE 479 |         descripcion: item.descripcion || '',
+LINE 1812 | LINE 480 |         codigobarras: item.codigobarras || '',
+LINE 1813 | LINE 481 |         categoria: cat ? cat.value : null,
+LINE 1814 | LINE 482 |         subcategoria: null, // No tenemos mapeo de subcat directo sin contexto de cat en Excel por ahora
+LINE 1815 | LINE 483 |         estadoproductos: state ? state.value : estados.value[0]?.value || null,
+LINE 1816 | LINE 484 |         unidad: unit ? unit.value : unidades.value[0]?.value || null,
+LINE 1817 | LINE 485 |         medida: measure ? measure.value : medidas.value[0]?.value || null,
+LINE 1818 | LINE 486 |         caracteristica: item.caracteristica || '',
+LINE 1819 | LINE 487 |         codigonandina: item.codigonandina || '',
+LINE 1820 | LINE 488 |       }
+LINE 1821 | LINE 489 | 
+LINE 1822 | LINE 490 |       console.log('Bulk Import saving:', payload)
+LINE 1823 | LINE 491 |       const fData = objectToFormData(payload)
+LINE 1824 | LINE 492 |       const response = await api.post(``, fData)
+LINE 1825 | LINE 493 |       console.log(response.data)
+LINE 1826 | LINE 494 |       if (response.data.estado === 'exito') {
+LINE 1827 | LINE 495 |         successCount++
+LINE 1828 | LINE 496 |       } else {
+LINE 1829 | LINE 497 |         errorCount++
+LINE 1830 | LINE 498 |       }
+LINE 1831 | LINE 499 |     } catch (err) {
+LINE 1832 | LINE 500 |       console.error('Error importing product:', err)
+LINE 1833 | LINE 501 |       errorCount++
+LINE 1834 | LINE 502 |     }
+LINE 1835 | LINE 503 |   }
+LINE 1836 | LINE 504 | 
+LINE 1837 | LINE 505 |   importing.value = false
+LINE 1838 | LINE 506 | 
+LINE 1839 | LINE 507 |   $q.notify({
+LINE 1840 | LINE 508 |     type: successCount > 0 ? 'positive' : 'negative',
+LINE 1841 | LINE 509 |     message: `Importación finalizada. Éxito: ${successCount}, Errores: ${errorCount}`,
+LINE 1842 | LINE 510 |     position: 'center',
+LINE 1843 | LINE 511 |     timeout: 5000,
+LINE 1844 | LINE 512 |   })
+LINE 1845 | LINE 513 | 
+LINE 1846 | LINE 514 |   loadRows()
+LINE 1847 | LINE 515 | }
+LINE 1848 | LINE 516 | const abrirVariantes = (row) => {
+LINE 1849 | LINE 517 |   productoVariantes.value = row
+LINE 1850 | LINE 518 |   showVariantesDialog.value = true
+LINE 1851 | LINE 519 | }
+LINE 1852 | LINE 520 | onMounted(() => {
+LINE 1853 | LINE 521 |   loadcategorias()
+LINE 1854 | LINE 522 |   loadestados()
+LINE 1855 | LINE 523 |   loadmedidas()
+LINE 1856 | LINE 524 |   loadsubcategorias()
+LINE 1857 | LINE 525 |   loadunidades()
+LINE 1858 | LINE 526 |   loadRows()
+LINE 1859 | LINE 527 |   if (getTipoFactura(true)) {
+LINE 1860 | LINE 528 |     ListaProductoSin()
+LINE 1861 | LINE 529 |     ListaUnidadSin()
+LINE 1862 | LINE 530 |   }
+LINE 1863 | LINE 531 | })
+LINE 1864 | LINE 532 | </script>
+LINE 1865 | ```
+```
+
+==============================================================
+FILE: output/deepseek_project_context.txt
+==============================================================
+```txt
+LINE    1 | ==============================================================
+LINE    2 | REPORTED PROBLEM OR GOAL / PROBLEMA REPORTADO U OBJETIVO
+LINE    3 | ==============================================================
+LINE    4 | generar el codigo en python para hacer el cambio el codigo se creara en la raiz del archivo 
+LINE    5 | agregar las columnas a la tabla de producto medida, estadoProducto, unidad, caracteristica 
+LINE    6 | la api listaProducto devuelve estos datos 
+LINE    7 | [
+LINE    8 |     {
+LINE    9 |         "id": "4004",
+LINE   10 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   11 |         "codigo": "IND-BOT-T-M-P",
+LINE   12 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   13 |         "codigobarras": "",
+LINE   14 |         "fecha": "2026-09-03",
+LINE   15 |         "imagen": "",
+LINE   16 |         "idcategoria": "0",
+LINE   17 |         "categoria": null,
+LINE   18 |         "subcategoria": "",
+LINE   19 |         "idmedida": "234",
+LINE   20 |         "medida": "general",
+LINE   21 |         "idestadoproducto": "275",
+LINE   22 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE   23 |         "idunidad": "250",
+LINE   24 |         "unidad": "Rollo",
+LINE   25 |         "caracteristica": ""{
+LINE   26 |         "id": "4004",
+LINE   27 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   28 |         "codigo": "IND-BOT-T-M-P",
+LINE   29 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE   30 |         "codigobarras": "",
+LINE   31 |         "imagen": "",
+LINE   32 |         "idcategoria": "0",
+LINE   33 |         "categoria": null,
+LINE   34 |         "subcategoria": "",
+LINE   35 |         "idmedida": "234",
+LINE   36 |         "medida": "general",
+LINE   37 |         "idestadoproducto": "275",
+LINE   38 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE   39 |         "idunidad": "250",
+LINE   40 |         "unidad": "Rollo",
+LINE   41 |         "caracteristica": ""
+LINE   42 |     },...
+LINE   43 | ]
+LINE   44 | 
+LINE   45 | 
+LINE   46 | ==============================================================
+LINE   47 | SELECTED ANALYSIS PROFILE / PERFIL DE ANÁLISIS: 🐞 Detect errors
+LINE   48 | ==============================================================
+LINE   49 | • Objetivo: Identificar errores de sintaxis, bugs lógicos, excepciones no controladas, condiciones de carrera y fallos de tipo en el código.
+LINE   50 | • Enfoque: Detección exhaustiva de bugs, casos límite (edge cases), seguridad de nulos/undefined, control de flujo y manejo robusto de excepciones.
+LINE   51 | • Prioridades: 1. Crashes y errores que detienen la ejecución. 2. Fallos silenciosos y corrupción de estado. 3. Manejo deficiente de excepciones. 4. Regresiones potenciales.
+LINE   52 | • Resultado esperado: Localización exacta de cada error (archivo y línea), causa raíz técnica, código corregido listo para copiar/pegar y caso de prueba de verificación.
+LINE   53 | 
+LINE   54 | ⚠️ REGLA DE CONCRECIÓN TÉCNICA: El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
+LINE   55 | 
+LINE   56 | ==============================================================
+LINE   57 | PROJECT CONTEXT / CONTEXTO DEL PROYECTO
+LINE   58 | ==============================================================
+LINE   59 | • Nombre del Proyecto: cm-oficial
+LINE   60 | • Ruta Base: /media/richard/Nuevo vol/quasar/dess/comercial/cm-oficial
+LINE   61 | • Fecha de Generación: 2026-09-28 15:15:32
+LINE   62 | 
+LINE   63 | --------------------------------------------------------------
+LINE   64 | PROJECT SUMMARY
+LINE   65 | --------------------------------------------------------------
+LINE   66 | Selected files: 4
+LINE   67 | File extensions:
+LINE   68 |   .vue: 3
+LINE   69 |   .js: 1
+LINE   70 | 
+LINE   71 | Total lines:
+LINE   72 | 1,683
+LINE   73 | 
+LINE   74 | --------------------------------------------------------------
+LINE   75 | DEPENDENCIES AND REFERENCES
+LINE   76 | --------------------------------------------------------------
+LINE   77 | • src/components/producto/creacion/productoForm.vue:
+LINE   78 |   - import { ref, watch, computed, onUnmounted } from 'vue'
+LINE   79 |   - import { TipoFactura } from 'src/composables/FuncionesGenerales'
+LINE   80 |   - import imageCompression from 'browser-image-compression'
+LINE   81 |   - import { useQuasar } from 'quasar'
+LINE   82 | • src/components/producto/creacion/productoTable.vue:
+LINE   83 |   - import { ref, computed, watch } from 'vue'
+LINE   84 |   - import { imagen } from 'src/boot/url'
+LINE   85 |   - import { getTipoFactura } from 'src/composables/FuncionesG'
+LINE   86 |   - import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+LINE   87 |   - import { useQuasar } from 'quasar'
+LINE   88 |   - import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+LINE   89 | • src/composables/useReporteInventarioExterior.js:
+LINE   90 |   - import { ref } from 'vue'
+LINE   91 |   - import { date } from 'quasar'
+LINE   92 |   - import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE   93 |   - import { api } from 'src/boot/axios'
+LINE   94 |   - import axios from 'axios'
+LINE   95 |   - import 'jspdf-autotable'
+LINE   96 | • src/pages/producto/CproductoPage.vue:
+LINE   97 |   - import { ref, onMounted } from 'vue'
+LINE   98 |   - import { api } from 'boot/axios'
+LINE   99 |   - import { idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
+LINE  100 |   - import { useQuasar } from 'quasar'
+LINE  101 |   - import { objectToFormData } from 'src/composables/FuncionesGenerales'
+LINE  102 |   - import ProductoForm from 'src/components/producto/creacion/productoForm.vue'
+LINE  103 |   - import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
+LINE  104 |   - import { imagen } from 'src/boot/url'
+LINE  105 |   - import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+LINE  106 |   - import seriePage from 'src/modules/serie/page/seriePage.vue'
+LINE  107 |   - import ProductoVarianteDialog from 'src/components/producto/variantes/productoVarianteDialog.vue'
+LINE  108 | 
+LINE  109 | --------------------------------------------------------------
+LINE  110 | INSTRUCCIONES OBLIGATORIAS PARA DEEPSEEK (DETECT ERRORS)
+LINE  111 | --------------------------------------------------------------
+LINE  112 | El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
+LINE  113 | 
+LINE  114 | Tu respuesta DEBE seguir exactamente la siguiente estructura Markdown adaptada al perfil:
+LINE  115 | 
+LINE  116 | # DIAGNOSIS
+LINE  117 | ## Detected Bugs
+LINE  118 | [Lista técnica de los bugs encontrados con su causa raíz exacta]
+LINE  119 | 
+LINE  120 | # FILES TO MODIFY
+LINE  121 | ## 1. [ruta/relativa/archivo.ext]
+LINE  122 | Approximate line: [número]
+LINE  123 | ### Bug Description
+LINE  124 | [Explicación concisa del error]
+LINE  125 | ### Current Code
+LINE  126 | ```
+LINE  127 | [código con error]
+LINE  128 | ```
+LINE  129 | ### Bugfix Code
+LINE  130 | ```
+LINE  131 | [código corregido listo para sustituir]
+LINE  132 | ```
+LINE  133 | 
+LINE  134 | # VERIFICATION & EDGE CASES
+LINE  135 | [Prueba o caso límite para verificar que el bug fue resuelto]
+LINE  136 | 
+LINE  137 | REGLA OBLIGATORIA: No respondas con JSON. Responde con el formato estructurado exacto indicado arriba.
+LINE  138 | 
+LINE  139 | Estructura de Directorios:
+LINE  140 | cm-oficial/
+LINE  141 | └── src/
+LINE  142 |     ├── components/
+LINE  143 |     │   └── producto/
+LINE  144 |     │       └── creacion/
+LINE  145 |     │           ├── productoForm.vue
+LINE  146 |     │           └── productoTable.vue
+LINE  147 |     ├── composables/
+LINE  148 |     │   └── useReporteInventarioExterior.js
+LINE  149 |     └── pages/
+LINE  150 |         └── producto/
+LINE  151 |             └── CproductoPage.vue
+LINE  152 | 
+LINE  153 | 
+LINE  154 | ==============================================================
+LINE  155 | ATTACHMENTS / ARCHIVOS Y CÓDIGO FUENTE
+LINE  156 | ==============================================================
+LINE  157 | 
+LINE  158 | ==============================================================
+LINE  159 | FILE: src/components/producto/creacion/productoForm.vue
+LINE  160 | ==============================================================
+LINE  161 | LINE   1 | <template>
+LINE  162 | LINE   2 |   <q-form @submit.prevent="handleSubmit">
+LINE  163 | LINE   3 |     <!-- Información Básica -->
+LINE  164 | LINE   4 |     <q-card-section>
+LINE  165 | LINE   5 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Información Básica</div>
+LINE  166 | LINE   6 |       <q-separator class="q-mb-md" />
+LINE  167 | LINE   7 |       
+LINE  168 | LINE   8 |       <div class="row q-col-gutter-md">
+LINE  169 | LINE   9 |         <div class="col-12 col-md-4">
+LINE  170 | LINE  10 |           <q-input
+LINE  171 | LINE  11 |             v-model="localData.codigo"
+LINE  172 | LINE  12 |             label="Código de Producto *"
+LINE  173 | LINE  13 |             dense
+LINE  174 | LINE  14 |             outlined
+LINE  175 | LINE  15 |             hint="Código único del producto"
+LINE  176 | LINE  16 |           />
+LINE  177 | LINE  17 |         </div>
+LINE  178 | LINE  18 |         
+LINE  179 | LINE  19 |         <div class="col-12 col-md-4">
+LINE  180 | LINE  20 |           <q-input
+LINE  181 | LINE  21 |             v-model="localData.nombre"
+LINE  182 | LINE  22 |             label="Nombre del Producto *"
+LINE  183 | LINE  23 |             dense
+LINE  184 | LINE  24 |             outlined
+LINE  185 | LINE  25 |             hint="Nombre comercial"
+LINE  186 | LINE  26 |           />
+LINE  187 | LINE  27 |         </div>
+LINE  188 | LINE  28 |         
+LINE  189 | LINE  29 |         <div class="col-12 col-md-4">
+LINE  190 | LINE  30 |           <q-input
+LINE  191 | LINE  31 |             v-model="localData.descripcion"
+LINE  192 | LINE  32 |             label="Descripción *"
+LINE  193 | LINE  33 |             dense
+LINE  194 | LINE  34 |             outlined
+LINE  195 | LINE  35 |             hint="Descripción breve"
+LINE  196 | LINE  36 |           />
+LINE  197 | LINE  37 |         </div>
+LINE  198 | LINE  38 |         
+LINE  199 | LINE  39 |         <div class="col-12 col-md-4">
+LINE  200 | LINE  40 |           <q-input
+LINE  201 | LINE  41 |             v-model="localData.codigobarras"
+LINE  202 | LINE  42 |             label="Código de Barras"
+LINE  203 | LINE  43 |             dense
+LINE  204 | LINE  44 |             outlined
+LINE  205 | LINE  45 |             hint="Opcional"
+LINE  206 | LINE  46 |           />
+LINE  207 | LINE  47 |         </div>
+LINE  208 | LINE  48 |       </div>
+LINE  209 | LINE  49 |     </q-card-section>
+LINE  210 | LINE  50 | 
+LINE  211 | LINE  51 |     <!-- Categorización -->
+LINE  212 | LINE  52 |     <q-card-section>
+LINE  213 | LINE  53 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Categorización</div>
+LINE  214 | LINE  54 |       <q-separator class="q-mb-md" />
+LINE  215 | LINE  55 |       
+LINE  216 | LINE  56 |       <div class="row q-col-gutter-md">
+LINE  217 | LINE  57 |         <div class="col-12 col-md-4">
+LINE  218 | LINE  58 |           <q-select
+LINE  219 | LINE  59 |             v-model="localData.categoria"
+LINE  220 | LINE  60 |             :options="categorias"
+LINE  221 | LINE  61 |             label="Categoría *"
+LINE  222 | LINE  62 |             dense
+LINE  223 | LINE  63 |             outlined
+LINE  224 | LINE  64 |             emit-value
+LINE  225 | LINE  65 |             map-options
+LINE  226 | LINE  66 |             hint="Seleccione la categoría principal"
+LINE  227 | LINE  67 |             @update:model-value="
+LINE  228 | LINE  68 |               (val) => {
+LINE  229 | LINE  69 |                 localData.subcategoria = null
+LINE  230 | LINE  70 |                 emit('categoria-changed', val)
+LINE  231 | LINE  71 |               }
+LINE  232 | LINE  72 |             "
+LINE  233 | LINE  73 |           />
+LINE  234 | LINE  74 |         </div>
+LINE  235 | LINE  75 |         
+LINE  236 | LINE  76 |         <div class="col-12 col-md-4" v-if="subcategorias.length > 0">
+LINE  237 | LINE  77 |           <q-select
+LINE  238 | LINE  78 |             v-model="localData.subcategoria"
+LINE  239 | LINE  79 |             :options="subcategorias"
+LINE  240 | LINE  80 |             label="Sub Categoría *"
+LINE  241 | LINE  81 |             dense
+LINE  242 | LINE  82 |             outlined
+LINE  243 | LINE  83 |             emit-value
+LINE  244 | LINE  84 |             map-options
+LINE  245 | LINE  85 |             hint="Seleccione la subcategoría"
+LINE  246 | LINE  86 |           />
+LINE  247 | LINE  87 |         </div>
+LINE  248 | LINE  88 |         
+LINE  249 | LINE  89 |         <div class="col-12 col-md-4">
+LINE  250 | LINE  90 |           <q-select
+LINE  251 | LINE  91 |             v-model="localData.estadoproductos"
+LINE  252 | LINE  92 |             :options="estados"
+LINE  253 | LINE  93 |             label="Estado del Producto *"
+LINE  254 | LINE  94 |             dense
+LINE  255 | LINE  95 |             outlined
+LINE  256 | LINE  96 |             emit-value
+LINE  257 | LINE  97 |             map-options
+LINE  258 | LINE  98 |             hint="Estado actual"
+LINE  259 | LINE  99 |           />
+LINE  260 | LINE 100 |         </div>
+LINE  261 | LINE 101 |       </div>
+LINE  262 | LINE 102 |     </q-card-section>
+LINE  263 | LINE 103 | 
+LINE  264 | LINE 104 |     <!-- Características -->
+LINE  265 | LINE 105 |     <q-card-section>
+LINE  266 | LINE 106 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Características</div>
+LINE  267 | LINE 107 |       <q-separator class="q-mb-md" />
+LINE  268 | LINE 108 |       
+LINE  269 | LINE 109 |       <div class="row q-col-gutter-md">
+LINE  270 | LINE 110 |         <div class="col-12 col-md-4">
+LINE  271 | LINE 111 |           <q-select
+LINE  272 | LINE 112 |             v-model="localData.unidad"
+LINE  273 | LINE 113 |             :options="unidades"
+LINE  274 | LINE 114 |             label="Unidad de Medida *"
+LINE  275 | LINE 115 |             dense
+LINE  276 | LINE 116 |             outlined
+LINE  277 | LINE 117 |             emit-value
+LINE  278 | LINE 118 |             map-options
+LINE  279 | LINE 119 |             hint="Ej: Kilo, Unidad, Litro"
+LINE  280 | LINE 120 |           />
+LINE  281 | LINE 121 |         </div>
+LINE  282 | LINE 122 |         
+LINE  283 | LINE 123 |         <div class="col-12 col-md-4">
+LINE  284 | LINE 124 |           <q-select
+LINE  285 | LINE 125 |             v-model="localData.medida"
+LINE  286 | LINE 126 |             :options="medidas"
+LINE  287 | LINE 127 |             label="Característica *"
+LINE  288 | LINE 128 |             dense
+LINE  289 | LINE 129 |             outlined
+LINE  290 | LINE 130 |             emit-value
+LINE  291 | LINE 131 |             map-options
+LINE  292 | LINE 132 |           />
+LINE  293 | LINE 133 |         </div>
+LINE  294 | LINE 134 |         
+LINE  295 | LINE 135 |         <div class="col-12 col-md-4">
+LINE  296 | LINE 136 |           <q-input
+LINE  297 | LINE 137 |             v-model="localData.caracteristica"
+LINE  298 | LINE 138 |             label="Otras Características"
+LINE  299 | LINE 139 |             dense
+LINE  300 | LINE 140 |             outlined
+LINE  301 | LINE 141 |             hint="Opcional"
+LINE  302 | LINE 142 |           />
+LINE  303 | LINE 143 |         </div>
+LINE  304 | LINE 144 |       </div>
+LINE  305 | LINE 145 |     </q-card-section>
+LINE  306 | LINE 146 | 
+LINE  307 | LINE 147 |     <!-- Información SIN (Facturación) -->
+LINE  308 | LINE 148 |     <q-card-section v-if="tipoFactura">
+LINE  309 | LINE 149 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Información SIN (Facturación)</div>
+LINE  310 | LINE 150 |       <q-separator class="q-mb-md" />
+LINE  311 | LINE 151 |       
+LINE  312 | LINE 152 |       <div class="row q-col-gutter-md">
+LINE  313 | LINE 153 |         <div class="col-12 col-md-6">
+LINE  314 | LINE 154 |           <q-select
+LINE  315 | LINE 155 |             v-model="localData.codigosin"
+LINE  316 | LINE 156 |             :options="FilterProductoSIN"
+LINE  317 | LINE 157 |             label="Producto SIN *"
+LINE  318 | LINE 158 |             dense
+LINE  319 | LINE 159 |             outlined
+LINE  320 | LINE 160 |             emit-value
+LINE  321 | LINE 161 |             map-options
+LINE  322 | LINE 162 |             use-input
+LINE  323 | LINE 163 |             fill-input
+LINE  324 | LINE 164 |             hide-selected
+LINE  325 | LINE 165 |             input-debounce="0"
+LINE  326 | LINE 166 |             @filter="filterFn"
+LINE  327 | LINE 167 |             hint="Busque el código SIN del producto"
+LINE  328 | LINE 168 |           />
+LINE  329 | LINE 169 |         </div>
+LINE  330 | LINE 170 |         
+LINE  331 | LINE 171 |         <div class="col-12 col-md-3">
+LINE  332 | LINE 172 |           <q-select
+LINE  333 | LINE 173 |             v-model="localData.unidadsin"
+LINE  334 | LINE 174 |             :options="FilterUnidadSIN"
+LINE  335 | LINE 175 |             label="Unidad SIN *"
+LINE  336 | LINE 176 |             dense
+LINE  337 | LINE 177 |             outlined
+LINE  338 | LINE 178 |             emit-value
+LINE  339 | LINE 179 |             map-options
+LINE  340 | LINE 180 |             use-input
+LINE  341 | LINE 181 |             fill-input
+LINE  342 | LINE 182 |             hide-selected
+LINE  343 | LINE 183 |             input-debounce="0"
+LINE  344 | LINE 184 |             @filter="filterUnidadFn"
+LINE  345 | LINE 185 |             hint="Unidad según SIN"
+LINE  346 | LINE 186 |           />
+LINE  347 | LINE 187 |         </div>
+LINE  348 | LINE 188 |         
+LINE  349 | LINE 189 |         <div class="col-12 col-md-3">
+LINE  350 | LINE 190 |           <q-input
+LINE  351 | LINE 191 |             v-model="localData.codigoNandina"
+LINE  352 | LINE 192 |             label="Código Nandina"
+LINE  353 | LINE 193 |             dense
+LINE  354 | LINE 194 |             outlined
+LINE  355 | LINE 195 |             hint="Opcional"
+LINE  356 | LINE 196 |           />
+LINE  357 | LINE 197 |         </div>
+LINE  358 | LINE 198 |       </div>
+LINE  359 | LINE 199 |     </q-card-section>
+LINE  360 | LINE 200 | 
+LINE  361 | LINE 201 |     <!-- Imagen del Producto -->
+LINE  362 | LINE 202 |     <q-card-section>
+LINE  363 | LINE 203 |       <div class="text-subtitle1 text-weight-medium q-mb-md">Imagen del Producto</div>
+LINE  364 | LINE 204 |       <q-separator class="q-mb-md" />
+LINE  365 | LINE 205 |       
+LINE  366 | LINE 206 |       <div class="row q-col-gutter-md">
+LINE  367 | LINE 207 |         <div class="col-12" :class="imagePreview ? 'col-md-8' : ''">
+LINE  368 | LINE 208 |           <q-file
+LINE  369 | LINE 209 |             v-model="localData.imagen"
+LINE  370 | LINE 210 |             label="Seleccionar imagen"
+LINE  371 | LINE 211 |             outlined
+LINE  372 | LINE 212 |             dense
+LINE  373 | LINE 213 |             accept="image/*"
+LINE  374 | LINE 214 |             hint="Formatos admitidos: JPG, PNG. La imagen se optimizará automáticamente."
+LINE  375 | LINE 215 |             counter
+LINE  376 | LINE 216 |             @update:model-value="onImageSelected"
+LINE  377 | LINE 217 |             :loading="isCompressing"
+LINE  378 | LINE 218 |             :disable="isCompressing"
+LINE  379 | LINE 219 |           >
+LINE  380 | LINE 220 |             <template v-slot:prepend>
+LINE  381 | LINE 221 |               <q-icon name="attach_file" />
+LINE  382 | LINE 222 |             </template>
+LINE  383 | LINE 223 |           </q-file>
+LINE  384 | LINE 224 |         </div>
+LINE  385 | LINE 225 |         
+LINE  386 | LINE 226 |         <div class="col-12 col-md-4" v-if="imagePreview">
+LINE  387 | LINE 227 |           <div class="text-caption text-grey-7 q-mb-xs">
+LINE  388 | LINE 228 |             {{ typeof localData.imagen === 'string' ? 'Imagen actual' : 'Vista previa' }}
+LINE  389 | LINE 229 |           </div>
+LINE  390 | LINE 230 |           <q-card flat bordered class="q-pa-sm">
+LINE  391 | LINE 231 |             <q-img
+LINE  392 | LINE 232 |               :src="imagePreview"
+LINE  393 | LINE 233 |               style="max-height: 120px; border-radius: 4px"
+LINE  394 | LINE 234 |               fit="contain"
+LINE  395 | LINE 235 |               class="bg-grey-2"
+LINE  396 | LINE 236 |             >
+LINE  397 | LINE 237 |               <template v-slot:error>
+LINE  398 | LINE 238 |                 <div class="absolute-full flex flex-center bg-grey-3 text-grey-7">
+LINE  399 | LINE 239 |                   <div class="text-center">
+LINE  400 | LINE 240 |                     <q-icon name="broken_image" size="md" />
+LINE  401 | LINE 241 |                     <div class="text-caption">Error al cargar imagen</div>
+LINE  402 | LINE 242 |                   </div>
+LINE  403 | LINE 243 |                 </div>
+LINE  404 | LINE 244 |               </template>
+LINE  405 | LINE 245 |             </q-img>
+LINE  406 | LINE 246 |             <div class="text-caption text-grey-7 q-mt-xs text-center" v-if="typeof localData.imagen !== 'string'">
+LINE  407 | LINE 247 |               {{ localData.imagen?.name }}
+LINE  408 | LINE 248 |             </div>
+LINE  409 | LINE 249 |           </q-card>
+LINE  410 | LINE 250 |         </div>
+LINE  411 | LINE 251 |       </div>
+LINE  412 | LINE 252 |     </q-card-section>
+LINE  413 | LINE 253 | 
+LINE  414 | LINE 254 |     <!-- Botones de Acción -->
+LINE  415 | LINE 255 |     <q-separator />
+LINE  416 | LINE 256 |     
+LINE  417 | LINE 257 |     <q-card-actions align="right" class="q-pa-md">
+LINE  418 | LINE 258 |       <q-btn
+LINE  419 | LINE 259 |         label="Cancelar"
+LINE  420 | LINE 260 |         flat
+LINE  421 | LINE 261 |         color="grey-7"
+LINE  422 | LINE 262 |         @click="$emit('cancel')"
+LINE  423 | LINE 263 |         class="q-mr-sm"
+LINE  424 | LINE 264 |       />
+LINE  425 | LINE 265 |       <q-btn
+LINE  426 | LINE 266 |         label="Guardar"
+LINE  427 | LINE 267 |         type="submit"
+LINE  428 | LINE 268 |         color="primary"
+LINE  429 | LINE 269 |         unelevated
+LINE  430 | LINE 270 |         :disable="isCompressing"
+LINE  431 | LINE 271 |       />
+LINE  432 | LINE 272 |     </q-card-actions>
+LINE  433 | LINE 273 |   </q-form>
+LINE  434 | LINE 274 | </template>
+LINE  435 | LINE 275 | 
+LINE  436 | LINE 276 | <script setup>
+LINE  437 | LINE 277 | import { ref, watch, computed, onUnmounted } from 'vue'
+LINE  438 | LINE 278 | import { TipoFactura } from 'src/composables/FuncionesGenerales'
+LINE  439 | LINE 279 | import imageCompression from 'browser-image-compression'
+LINE  440 | LINE 280 | import { useQuasar } from 'quasar'
+LINE  441 | LINE 281 | 
+LINE  442 | LINE 282 | const $q = useQuasar()
+LINE  443 | LINE 283 | const tipoFactura = TipoFactura()
+LINE  444 | LINE 284 | console.log('Tipo de factura en productoForm.vue:', tipoFactura)
+LINE  445 | LINE 285 | 
+LINE  446 | LINE 286 | let objectUrl = null
+LINE  447 | LINE 287 | const isCompressing = ref(false)
+LINE  448 | LINE 288 | let isProgrammaticUpdate = false // Flag to prevent infinite loop
+LINE  449 | LINE 289 | 
+LINE  450 | LINE 290 | const props = defineProps({
+LINE  451 | LINE 291 |   isEditing: Boolean,
+LINE  452 | LINE 292 |   modelValue: Object,
+LINE  453 | LINE 293 |   categorias: {
+LINE  454 | LINE 294 |     type: Array,
+LINE  455 | LINE 295 |     default: () => [],
+LINE  456 | LINE 296 |   },
+LINE  457 | LINE 297 |   estados: {
+LINE  458 | LINE 298 |     type: Array,
+LINE  459 | LINE 299 |     default: () => [],
+LINE  460 | LINE 300 |   },
+LINE  461 | LINE 301 |   subcategorias: {
+LINE  462 | LINE 302 |     type: Array,
+LINE  463 | LINE 303 |     default: () => [],
+LINE  464 | LINE 304 |   },
+LINE  465 | LINE 305 |   unidades: {
+LINE  466 | LINE 306 |     type: Array,
+LINE  467 | LINE 307 |     default: () => [],
+LINE  468 | LINE 308 |   },
+LINE  469 | LINE 309 |   medidas: {
+LINE  470 | LINE 310 |     type: Array,
+LINE  471 | LINE 311 |     default: () => [],
+LINE  472 | LINE 312 |   },
+LINE  473 | LINE 313 |   productoSIN: {
+LINE  474 | LINE 314 |     type: Array,
+LINE  475 | LINE 315 |     default: () => [],
+LINE  476 | LINE 316 |   },
+LINE  477 | LINE 317 |   unidadSIN: {
+LINE  478 | LINE 318 |     type: Array,
+LINE  479 | LINE 319 |     default: () => [],
+LINE  480 | LINE 320 |   },
+LINE  481 | LINE 321 | })
+LINE  482 | LINE 322 | 
+LINE  483 | LINE 323 | const emit = defineEmits(['submit', 'cancel'])
+LINE  484 | LINE 324 | const FilterProductoSIN = ref([...props.productoSIN])
+LINE  485 | LINE 325 | const FilterUnidadSIN = ref([...props.unidadSIN])
+LINE  486 | LINE 326 | const localData = ref({ ...props.modelValue })
+LINE  487 | LINE 327 | 
+LINE  488 | LINE 328 | // Computed property for image preview
+LINE  489 | LINE 329 | const imagePreview = computed(() => {
+LINE  490 | LINE 330 |   if (!localData.value.imagen) return null
+LINE  491 | LINE 331 |   
+LINE  492 | LINE 332 |   // If it's a File object (newly selected), create object URL
+LINE  493 | LINE 333 |   if (localData.value.imagen instanceof File) {
+LINE  494 | LINE 334 |     // Clean up old object URL if exists
+LINE  495 | LINE 335 |     if (objectUrl) {
+LINE  496 | LINE 336 |       URL.revokeObjectURL(objectUrl)
+LINE  497 | LINE 337 |     }
+LINE  498 | LINE 338 |     objectUrl = URL.createObjectURL(localData.value.imagen)
+LINE  499 | LINE 339 |     return objectUrl
+LINE  500 | LINE 340 |   }
+LINE  501 | LINE 341 |   
+LINE  502 | LINE 342 |   // If it's a string (existing image from database), use vista URL
+LINE  503 | LINE 343 |   if (typeof localData.value.imagen === 'string') {
+LINE  504 | LINE 344 |     return localData.value.vista
+LINE  505 | LINE 345 |   }
+LINE  506 | LINE 346 |   
+LINE  507 | LINE 347 |   return null
+LINE  508 | LINE 348 | })
+LINE  509 | LINE 349 | 
+LINE  510 | LINE 350 | // Handler for image selection and compression
+LINE  511 | LINE 351 | const onImageSelected = async (file) => {
+LINE  512 | LINE 352 |   // Prevent infinite loop if we are just updating the model programmatically
+LINE  513 | LINE 353 |   if (isProgrammaticUpdate) {
+LINE  514 | LINE 354 |     isProgrammaticUpdate = false
+LINE  515 | LINE 355 |     return
+LINE  516 | LINE 356 |   }
+LINE  517 | LINE 357 | 
+LINE  518 | LINE 358 |   // Prevent infinite loop if the file is already a webp or undefined
+LINE  519 | LINE 359 |   if (!file) {
+LINE  520 | LINE 360 |     if (objectUrl) {
+LINE  521 | LINE 361 |       URL.revokeObjectURL(objectUrl)
+LINE  522 | LINE 362 |       objectUrl = null
+LINE  523 | LINE 363 |     }
+LINE  524 | LINE 364 |     return
+LINE  525 | LINE 365 |   }
+LINE  526 | LINE 366 |   
+LINE  527 | LINE 367 |   // If it's a string (existing image)
+LINE  528 | LINE 368 |   if (!(file instanceof File)) {
+LINE  529 | LINE 369 |     return
+LINE  530 | LINE 370 |   }
+LINE  531 | LINE 371 | 
+LINE  532 | LINE 372 |   try {
+LINE  533 | LINE 373 |     isCompressing.value = true
+LINE  534 | LINE 374 |     
+LINE  535 | LINE 375 |     // We use a simple notification without trying to store its ID and update it later
+LINE  536 | LINE 376 |     // because doing so causes "trying to update a grouped one which is forbidden" error in Quasar.
+LINE  537 | LINE 377 |     $q.notify({
+LINE  538 | LINE 378 |       message: 'Optimizando imagen...',
+LINE  539 | LINE 379 |       color: 'info',
+LINE  540 | LINE 380 |       textColor: 'white',
+LINE  541 | LINE 381 |       icon: 'cloud_upload',
+LINE  542 | LINE 382 |       timeout: 1500, // Short timeout, the real indicator is the loading spinner on the input
+LINE  543 | LINE 383 |     })
+LINE  544 | LINE 384 | 
+LINE  545 | LINE 385 |     const options = {
+LINE  546 | LINE 386 |       maxSizeMB: 1, // Compress to less than 1MB
+LINE  547 | LINE 387 |       maxWidthOrHeight: 1920, // Max resolution 1920px
+LINE  548 | LINE 388 |       useWebWorker: true,
+LINE  549 | LINE 389 |       fileType: 'image/jpeg', // Convert to JPEG format for backend compatibility (JPG/PNG only)
+LINE  550 | LINE 390 |       initialQuality: 0.9, // Maintain high visual quality
+LINE  551 | LINE 391 |     }
+LINE  552 | LINE 392 | 
+LINE  553 | LINE 393 |     // Attempt to compress the image
+LINE  554 | LINE 394 |     const compressedBlob = await imageCompression(file, options)
+LINE  555 | LINE 395 |     
+LINE  556 | LINE 396 |     // Create a new File from the Blob to keep the original name (but with .jpg extension)
+LINE  557 | LINE 397 |     const newFileName = file.name.replace(/\.[^/.]+$/, "") + '.jpg'
+LINE  558 | LINE 398 |     const compressedFile = new File([compressedBlob], newFileName, {
+LINE  559 | LINE 399 |       type: 'image/jpeg',
+LINE  560 | LINE 400 |       lastModified: Date.now()
+LINE  561 | LINE 401 |     })
+LINE  562 | LINE 402 | 
+LINE  563 | LINE 403 |     console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+LINE  564 | LINE 404 |     console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`)
+LINE  565 | LINE 405 | 
+LINE  566 | LINE 406 |     // This flag prevents the @update:model-value from triggering this function again and causing an infinite loop
+LINE  567 | LINE 407 |     isProgrammaticUpdate = true
+LINE  568 | LINE 408 |     
+LINE  569 | LINE 409 |     // Update the v-model with the compressed file
+LINE  570 | LINE 410 |     // Note: This triggers the `imagePreview` computed properly
+LINE  571 | LINE 411 |     localData.value.imagen = compressedFile
+LINE  572 | LINE 412 | 
+LINE  573 | LINE 413 |     // Show a success notification
+LINE  574 | LINE 414 |     $q.notify({
+LINE  575 | LINE 415 |       message: 'Imagen optimizada con éxito',
+LINE  576 | LINE 416 |       color: 'positive',
+LINE  577 | LINE 417 |       icon: 'check_circle',
+LINE  578 | LINE 418 |       timeout: 2500,
+LINE  579 | LINE 419 |     })
+LINE  580 | LINE 420 | 
+LINE  581 | LINE 421 |   } catch (error) {
+LINE  582 | LINE 422 |     console.error('Error compressing image:', error)
+LINE  583 | LINE 423 |     $q.notify({
+LINE  584 | LINE 424 |       message: 'Hubo un error al optimizar la imagen',
+LINE  585 | LINE 425 |       color: 'negative',
+LINE  586 | LINE 426 |       icon: 'warning',
+LINE  587 | LINE 427 |     })
+LINE  588 | LINE 428 |     
+LINE  589 | LINE 429 |     isProgrammaticUpdate = true
+LINE  590 | LINE 430 |     // If compression fails, we fallback to the original file
+LINE  591 | LINE 431 |     // The imagePreview will still handle the display
+LINE  592 | LINE 432 |     localData.value.imagen = file
+LINE  593 | LINE 433 |   } finally {
+LINE  594 | LINE 434 |     isCompressing.value = false
+LINE  595 | LINE 435 |   }
+LINE  596 | LINE 436 | }
+LINE  597 | LINE 437 | 
+LINE  598 | LINE 438 | // Cleanup object URL on unmount
+LINE  599 | LINE 439 | onUnmounted(() => {
+LINE  600 | LINE 440 |   if (objectUrl) {
+LINE  601 | LINE 441 |     URL.revokeObjectURL(objectUrl)
+LINE  602 | LINE 442 |   }
+LINE  603 | LINE 443 | })
+LINE  604 | LINE 444 | function filterFn(val, update) {
+LINE  605 | LINE 445 |   console.log(val)
+LINE  606 | LINE 446 |   if (val === '') {
+LINE  607 | LINE 447 |     update(() => {
+LINE  608 | LINE 448 |       FilterProductoSIN.value = [...props.productoSIN]
+LINE  609 | LINE 449 |     })
+LINE  610 | LINE 450 |     return
+LINE  611 | LINE 451 |   }
+LINE  612 | LINE 452 | 
+LINE  613 | LINE 453 |   update(() => {
+LINE  614 | LINE 454 |     const needle = val.toLowerCase()
+LINE  615 | LINE 455 |     FilterProductoSIN.value = props.productoSIN.filter((v) =>
+LINE  616 | LINE 456 |       v.label.toLowerCase().includes(needle),
+LINE  617 | LINE 457 |     )
+LINE  618 | LINE 458 |   })
+LINE  619 | LINE 459 | }
+LINE  620 | LINE 460 | function filterUnidadFn(val, update) {
+LINE  621 | LINE 461 |   console.log(val)
+LINE  622 | LINE 462 |   if (val === '') {
+LINE  623 | LINE 463 |     update(() => {
+LINE  624 | LINE 464 |       FilterUnidadSIN.value = [...props.unidadSIN]
+LINE  625 | LINE 465 |     })
+LINE  626 | LINE 466 |     return
+LINE  627 | LINE 467 |   }
+LINE  628 | LINE 468 |   update(() => {
+LINE  629 | LINE 469 |     const needle = val.toLowerCase()
+LINE  630 | LINE 470 |     FilterUnidadSIN.value = props.unidadSIN.filter((v) => v.label.toLowerCase().includes(needle))
+LINE  631 | LINE 471 |   })
+LINE  632 | LINE 472 | }
+LINE  633 | LINE 473 | console.log(props.modelValue)
+LINE  634 | LINE 474 | watch(
+LINE  635 | LINE 475 |   () => props.modelValue,
+LINE  636 | LINE 476 |   (val) => {
+LINE  637 | LINE 477 |     localData.value = { ...val }
+LINE  638 | LINE 478 |   },
+LINE  639 | LINE 479 |   { deep: true },
+LINE  640 | LINE 480 | )
+LINE  641 | LINE 481 | 
+LINE  642 | LINE 482 | const handleSubmit = () => {
+LINE  643 | LINE 483 |   console.log('=== FORM SUBMIT DEBUG ===')
+LINE  644 | LINE 484 |   console.log('localData.categoria:', localData.value.categoria)
+LINE  645 | LINE 485 |   console.log('localData.subcategoria:', localData.value.subcategoria)
+LINE  646 | LINE 486 |   console.log('Full localData:', JSON.stringify(localData.value, null, 2))
+LINE  647 | LINE 487 |   emit('submit', localData.value)
+LINE  648 | LINE 488 | }
+LINE  649 | LINE 489 | </script>
+LINE  650 | 
+LINE  651 | ==============================================================
+LINE  652 | FILE: src/components/producto/creacion/productoTable.vue
+LINE  653 | ==============================================================
+LINE  654 | LINE   1 | //src\components\producto\creacion\productoTable.vue
+LINE  655 | LINE   2 | <template>
+LINE  656 | LINE   3 |   <div>
+LINE  657 | LINE   4 |     <q-card flat class="q-mb-md">
+LINE  658 | LINE   5 |       <q-card-section class="row items-center justify-between q-pb-none">
+LINE  659 | LINE   6 |         <div class="col-12 col-md-4">
+LINE  660 | LINE   7 |           <div class="text-h6 text-primary text-weight-bold">
+LINE  661 | LINE   8 |             <q-icon name="inventory_2" size="sm" class="q-mr-sm" />
+LINE  662 | LINE   9 |             Catálogo de Productos
+LINE  663 | LINE  10 |           </div>
+LINE  664 | LINE  11 |           <div class="text-caption text-grey-7">Administre sus productos y servicios</div>
+LINE  665 | LINE  12 |         </div>
+LINE  666 | LINE  13 |         <div class="col-12 col-md-8">
+LINE  667 | LINE  14 |           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
+LINE  668 | LINE  15 |             <q-btn
+LINE  669 | LINE  16 |               unelevated
+LINE  670 | LINE  17 |               outline
+LINE  671 | LINE  18 |               color="blue"
+LINE  672 | LINE  19 |               @click="$emit('irconjunto')"
+LINE  673 | LINE  20 |               icon="mdi-set-all"
+LINE  674 | LINE  21 |               label="Conjunto"
+LINE  675 | LINE  22 |             />
+LINE  676 | LINE  23 |             <q-btn
+LINE  677 | LINE  24 |               unelevated
+LINE  678 | LINE  25 |               outline
+LINE  679 | LINE  26 |               color="indigo"
+LINE  680 | LINE  27 |               @click="exportarDatos"
+LINE  681 | LINE  28 |               icon="mdi-file-excel"
+LINE  682 | LINE  29 |               label="Descargar Excel"
+LINE  683 | LINE  30 |             />
+LINE  684 | LINE  31 |             <q-btn
+LINE  685 | LINE  32 |               unelevated
+LINE  686 | LINE  33 |               outline
+LINE  687 | LINE  34 |               color="positive"
+LINE  688 | LINE  35 |               @click="exportarFormato"
+LINE  689 | LINE  36 |               icon="mdi-file-download-outline"
+LINE  690 | LINE  37 |               label="Descargar Formato"
+LINE  691 | LINE  38 |             />
+LINE  692 | LINE  39 |             <q-btn
+LINE  693 | LINE  40 |               unelevated
+LINE  694 | LINE  41 |               outline
+LINE  695 | LINE  42 |               color="secondary"
+LINE  696 | LINE  43 |               @click="$refs.fileInput.click()"
+LINE  697 | LINE  44 |               icon="mdi-file-upload-outline"
+LINE  698 | LINE  45 |               label="Cargar Excel"
+LINE  699 | LINE  46 |               :loading="importing"
+LINE  700 | LINE  47 |               :disable="importing"
+LINE  701 | LINE  48 |             />
+LINE  702 | LINE  49 |             <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Producto">
+LINE  703 | LINE  50 |               <q-icon name="add" class="icono" />
+LINE  704 | LINE  51 |               <span class="texto"> <q-icon name="add" /> Nuevo </span>
+LINE  705 | LINE  52 |             </q-btn>
+LINE  706 | LINE  53 |             <input
+LINE  707 | LINE  54 |               type="file"
+LINE  708 | LINE  55 |               ref="fileInput"
+LINE  709 | LINE  56 |               style="display: none"
+LINE  710 | LINE  57 |               accept=".xlsx, .xls"
+LINE  711 | LINE  58 |               @change="onFileSelected"
+LINE  712 | LINE  59 |             />
+LINE  713 | LINE  60 |             <q-btn
+LINE  714 | LINE  61 |               v-if="selectedIds.size > 0"
+LINE  715 | LINE  62 |               unelevated
+LINE  716 | LINE  63 |               color="negative"
+LINE  717 | LINE  64 |               icon="delete_sweep"
+LINE  718 | LINE  65 |               label="Eliminar seleccionados"
+LINE  719 | LINE  66 |               @click="eliminarSeleccionados"
+LINE  720 | LINE  67 |             />
+LINE  721 | LINE  68 |             <!-- Dentro de <q-card-section class="row items-center justify-between q-pb-none"> -->
+LINE  722 | LINE  69 |             <q-checkbox
+LINE  723 | LINE  70 |               v-model="selectAll"
+LINE  724 | LINE  71 |               label="Seleccionar todo"
+LINE  725 | LINE  72 |               :indeterminate="selectedIds.size > 0 && selectedIds.length < filteredRows.length"
+LINE  726 | LINE  73 |             />
+LINE  727 | LINE  74 |           </div>
+LINE  728 | LINE  75 |         </div>
+LINE  729 | LINE  76 |       </q-card-section>
+LINE  730 | LINE  77 | 
+LINE  731 | LINE  78 |       <q-card-section>
+LINE  732 | LINE  79 |         <BaseFilterableTable
+LINE  733 | LINE  80 |           id="tablaProductos"
+LINE  734 | LINE  81 |           ref="reHijo"
+LINE  735 | LINE  82 |           :rows="filteredRows"
+LINE  736 | LINE  83 |           :columns="columns"
+LINE  737 | LINE  84 |           :arrayHeaders="arrayHeaders"
+LINE  738 | LINE  85 |           row-key="id"
+LINE  739 | LINE  86 |           :loading="loading"
+LINE  740 | LINE  87 |           flat
+LINE  741 | LINE  88 |           bordered
+LINE  742 | LINE  89 |         >
+LINE  743 | LINE  90 |           <template v-slot:top-right></template>
+LINE  744 | LINE  91 | 
+LINE  745 | LINE  92 |           <template v-slot:body-cell-imagen="props">
+LINE  746 | LINE  93 |             <q-td :props="props" id="imagenproducto">
+LINE  747 | LINE  94 |               <q-img
+LINE  748 | LINE  95 |                 :src="imagen + props.row.imagen"
+LINE  749 | LINE  96 |                 @click="abrirModal(props.row.imagen)"
+LINE  750 | LINE  97 |                 style="max-width: 100px; max-height: 100px; cursor: pointer"
+LINE  751 | LINE  98 |                 spinner-color="primary"
+LINE  752 | LINE  99 |               >
+LINE  753 | LINE 100 |                 <template v-slot:error>
+LINE  754 | LINE 101 |                   <div
+LINE  755 | LINE 102 |                     class="column items-center justify-center bg-grey-3"
+LINE  756 | LINE 103 |                     style="height: 100%; width: 100%"
+LINE  757 | LINE 104 |                   >
+LINE  758 | LINE 105 |                     <q-icon name="image_not_supported" size="md" color="grey-7" />
+LINE  759 | LINE 106 |                   </div>
+LINE  760 | LINE 107 |                 </template>
+LINE  761 | LINE 108 |               </q-img>
+LINE  762 | LINE 109 |             </q-td>
+LINE  763 | LINE 110 |           </template>
+LINE  764 | LINE 111 |           <template v-slot:body-cell-productosin="props">
+LINE  765 | LINE 112 |             <q-td :props="props">
+LINE  766 | LINE 113 |               <div class="text-truncate" @click.stop v-if="props.row.productosin">
+LINE  767 | LINE 114 |                 {{ props.row.productosin?.descripcion }}
+LINE  768 | LINE 115 | 
+LINE  769 | LINE 116 |                 <q-popup-proxy>
+LINE  770 | LINE 117 |                   <q-card class="q-pa-sm" style="max-width: 300px; white-space: normal">
+LINE  771 | LINE 118 |                     {{ props.row.productosin?.descripcion }}
+LINE  772 | LINE 119 |                   </q-card>
+LINE  773 | LINE 120 |                 </q-popup-proxy>
+LINE  774 | LINE 121 |               </div>
+LINE  775 | LINE 122 |             </q-td>
+LINE  776 | LINE 123 |           </template>
+LINE  777 | LINE 124 | 
+LINE  778 | LINE 125 |           <template v-slot:body-cell-opciones="props">
+LINE  779 | LINE 126 |             <q-td :props="props" class="text-nowrap">
+LINE  780 | LINE 127 |               <q-btn
+LINE  781 | LINE 128 |                 icon="edit"
+LINE  782 | LINE 129 |                 color="primary"
+LINE  783 | LINE 130 |                 dense
+LINE  784 | LINE 131 |                 class="q-mr-sm"
+LINE  785 | LINE 132 |                 @click="$emit('edit-item', props.row)"
+LINE  786 | LINE 133 |                 flat
+LINE  787 | LINE 134 |                 id="editarproducto"
+LINE  788 | LINE 135 |               />
+LINE  789 | LINE 136 |               <q-btn
+LINE  790 | LINE 137 |                 icon="tune"
+LINE  791 | LINE 138 |                 color="secondary"
+LINE  792 | LINE 139 |                 dense
+LINE  793 | LINE 140 |                 class="q-mr-sm"
+LINE  794 | LINE 141 |                 @click="$emit('gestionar-variantes', props.row)"
+LINE  795 | LINE 142 |                 flat
+LINE  796 | LINE 143 |                 title="Gestionar variantes"
+LINE  797 | LINE 144 |                 id="variantesproducto"
+LINE  798 | LINE 145 |               />
+LINE  799 | LINE 146 |               <q-btn
+LINE  800 | LINE 147 |                 icon="delete"
+LINE  801 | LINE 148 |                 color="negative"
+LINE  802 | LINE 149 |                 dense
+LINE  803 | LINE 150 |                 @click="$emit('delete-item', props.row)"
+LINE  804 | LINE 151 |                 flat
+LINE  805 | LINE 152 |                 id="eliminarproducto"
+LINE  806 | LINE 153 |               />
+LINE  807 | LINE 154 |             </q-td>
+LINE  808 | LINE 155 |           </template>
+LINE  809 | LINE 156 |           <template v-slot:body-cell-seleccionar="props">
+LINE  810 | LINE 157 |             <q-td :props="props" auto-width>
+LINE  811 | LINE 158 |               <q-checkbox
+LINE  812 | LINE 159 |                 :model-value="selectedIds.has(props.row.id)"
+LINE  813 | LINE 160 |                 @update:model-value="(val) => toggleSeleccion(props.row.id, val)"
+LINE  814 | LINE 161 |                 dense
+LINE  815 | LINE 162 |               />
+LINE  816 | LINE 163 |             </q-td>
+LINE  817 | LINE 164 |           </template>
+LINE  818 | LINE 165 |         </BaseFilterableTable>
+LINE  819 | LINE 166 |       </q-card-section>
+LINE  820 | LINE 167 |     </q-card>
+LINE  821 | LINE 168 | 
+LINE  822 | LINE 169 |     <q-dialog v-model="mostrarImagen">
+LINE  823 | LINE 170 |       <q-card class="responsive-dialog">
+LINE  824 | LINE 171 |         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
+LINE  825 | LINE 172 |           <div>Vista Previa de Imagen</div>
+LINE  826 | LINE 173 |           <q-btn icon="close" flat dense round @click="mostrarImagen = false" />
+LINE  827 | LINE 174 |         </q-card-section>
+LINE  828 | LINE 175 |         <q-card-section>
+LINE  829 | LINE 176 |           <q-img
+LINE  830 | LINE 177 |             :src="imagen + imagenSeleccionada"
+LINE  831 | LINE 178 |             style="max-width: 100%; max-height: 100%"
+LINE  832 | LINE 179 |             spinner-color="primary"
+LINE  833 | LINE 180 |           />
+LINE  834 | LINE 181 |         </q-card-section>
+LINE  835 | LINE 182 |       </q-card>
+LINE  836 | LINE 183 |     </q-dialog>
+LINE  837 | LINE 184 |   </div>
+LINE  838 | LINE 185 | </template>
+LINE  839 | LINE 186 | 
+LINE  840 | LINE 187 | <script setup>
+LINE  841 | LINE 188 | import { ref, computed, watch } from 'vue'
+LINE  842 | LINE 189 | import { imagen } from 'src/boot/url'
+LINE  843 | LINE 190 | import { getTipoFactura } from 'src/composables/FuncionesG'
+LINE  844 | LINE 191 | import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+LINE  845 | LINE 192 | import {
+LINE  846 | LINE 193 |   exportarPlantillaProductos,
+LINE  847 | LINE 194 |   importarProductosDesdeExcel,
+LINE  848 | LINE 195 |   exportToXLSX_CatalogoProductos,
+LINE  849 | LINE 196 | } from 'src/utils/XCLReportImport'
+LINE  850 | LINE 197 | import { useQuasar } from 'quasar'
+LINE  851 | LINE 198 | import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+LINE  852 | LINE 199 | 
+LINE  853 | LINE 200 | const selectedIds = ref(new Set())
+LINE  854 | LINE 201 | const $q = useQuasar()
+LINE  855 | LINE 202 | const fileInput = ref(null)
+LINE  856 | LINE 203 | 
+LINE  857 | LINE 204 | const tipoFactura = getTipoFactura(true)
+LINE  858 | LINE 205 | 
+LINE  859 | LINE 206 | const mostrarImagen = ref(false)
+LINE  860 | LINE 207 | const imagenSeleccionada = ref(null)
+LINE  861 | LINE 208 | 
+LINE  862 | LINE 209 | const abrirModal = (img) => {
+LINE  863 | LINE 210 |   imagenSeleccionada.value = img
+LINE  864 | LINE 211 |   mostrarImagen.value = true
+LINE  865 | LINE 212 | }
+LINE  866 | LINE 213 | const props = defineProps({
+LINE  867 | LINE 214 |   rows: {
+LINE  868 | LINE 215 |     type: Array,
+LINE  869 | LINE 216 |     required: true,
+LINE  870 | LINE 217 |     default: () => [],
+LINE  871 | LINE 218 |   },
+LINE  872 | LINE 219 |   loading: {
+LINE  873 | LINE 220 |     type: Boolean,
+LINE  874 | LINE 221 |     default: false,
+LINE  875 | LINE 222 |   },
+LINE  876 | LINE 223 |   importing: { type: Boolean, default: false },
+LINE  877 | LINE 224 | })
+LINE  878 | LINE 225 | 
+LINE  879 | LINE 226 | let columns = []
+LINE  880 | LINE 227 | if (tipoFactura) {
+LINE  881 | LINE 228 |   columns = [
+LINE  882 | LINE 229 |     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+LINE  883 | LINE 230 |     {
+LINE  884 | LINE 231 |       name: 'fecha',
+LINE  885 | LINE 232 |       label: 'Fecha',
+LINE  886 | LINE 233 |       field: 'fecha',
+LINE  887 | LINE 234 |       align: 'left',
+LINE  888 | LINE 235 |       format: (val) => cambiarFormatoFecha(val),
+LINE  889 | LINE 236 |       dataType: 'date',
+LINE  890 | LINE 237 |     },
+LINE  891 | LINE 238 |     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
+LINE  892 | LINE 239 |     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+LINE  893 | LINE 240 |     {
+LINE  894 | LINE 241 |       name: 'descripcion',
+LINE  895 | LINE 242 |       label: 'Descripción',
+LINE  896 | LINE 243 |       field: 'descripcion',
+LINE  897 | LINE 244 |       align: 'left',
+LINE  898 | LINE 245 |       dataType: 'text',
+LINE  899 | LINE 246 |     },
+LINE  900 | LINE 247 |     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+LINE  901 | LINE 248 |     {
+LINE  902 | LINE 249 |       name: 'subcategoria',
+LINE  903 | LINE 250 |       label: 'Sub Categorías',
+LINE  904 | LINE 251 |       field: 'subcategoria',
+LINE  905 | LINE 252 |       align: 'left',
+LINE  906 | LINE 253 |       dataType: 'text',
+LINE  907 | LINE 254 |     },
+LINE  908 | LINE 255 |     {
+LINE  909 | LINE 256 |       name: 'codigobarras',
+LINE  910 | LINE 257 |       label: 'Cod.Barra',
+LINE  911 | LINE 258 |       field: 'codigobarras',
+LINE  912 | LINE 259 |       align: 'right',
+LINE  913 | LINE 260 |       dataType: 'text',
+LINE  914 | LINE 261 |     },
+LINE  915 | LINE 262 |     {
+LINE  916 | LINE 263 |       name: 'medida',
+LINE  917 | LINE 264 |       label: 'Caract.',
+LINE  918 | LINE 265 |       field: 'medida',
+LINE  919 | LINE 266 |       align: 'left',
+LINE  920 | LINE 267 |       dataType: 'text',
+LINE  921 | LINE 268 |       defaultVisible: false,
+LINE  922 | LINE 269 |     },
+LINE  923 | LINE 270 |     {
+LINE  924 | LINE 271 |       name: 'estadoproducto',
+LINE  925 | LINE 272 |       label: 'Estado',
+LINE  926 | LINE 273 |       field: 'estadoproducto',
+LINE  927 | LINE 274 |       align: 'left',
+LINE  928 | LINE 275 |       dataType: 'text',
+LINE  929 | LINE 276 |       defaultVisible: false,
+LINE  930 | LINE 277 |     },
+LINE  931 | LINE 278 |     {
+LINE  932 | LINE 279 |       name: 'unidad',
+LINE  933 | LINE 280 |       label: 'Unidad',
+LINE  934 | LINE 281 |       field: 'unidad',
+LINE  935 | LINE 282 |       align: 'left',
+LINE  936 | LINE 283 |       dataType: 'text',
+LINE  937 | LINE 284 |       defaultVisible: false,
+LINE  938 | LINE 285 |     },
+LINE  939 | LINE 286 |     {
+LINE  940 | LINE 287 |       name: 'caracteristica',
+LINE  941 | LINE 288 |       label: 'Otras caract.',
+LINE  942 | LINE 289 |       field: 'caracteristica',
+LINE  943 | LINE 290 |       align: 'left',
+LINE  944 | LINE 291 |       dataType: 'text',
+LINE  945 | LINE 292 |       defaultVisible: false,
+LINE  946 | LINE 293 |     },
+LINE  947 | LINE 294 |     {
+LINE  948 | LINE 295 |       name: 'productosin',
+LINE  949 | LINE 296 |       label: 'Producto SIN',
+LINE  950 | LINE 297 |       field: 'productosin',
+LINE  951 | LINE 298 |       align: 'left',
+LINE  952 | LINE 299 |       dataType: 'text',
+LINE  953 | LINE 300 |       defaultVisible: false,
+LINE  954 | LINE 301 |     },
+LINE  955 | LINE 302 |     {
+LINE  956 | LINE 303 |       name: 'codigonandina',
+LINE  957 | LINE 304 |       label: 'CodigoNandina',
+LINE  958 | LINE 305 |       field: 'codigonandina',
+LINE  959 | LINE 306 |       align: 'left',
+LINE  960 | LINE 307 |       dataType: 'text',
+LINE  961 | LINE 308 |       defaultVisible: false,
+LINE  962 | LINE 309 |     },
+LINE  963 | LINE 310 | 
+LINE  964 | LINE 311 |     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+LINE  965 | LINE 312 |     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+LINE  966 | LINE 313 |     {
+LINE  967 | LINE 314 |       name: 'seleccionar',
+LINE  968 | LINE 315 |       label: '',
+LINE  969 | LINE 316 |       field: 'seleccionar',
+LINE  970 | LINE 317 |       align: 'center',
+LINE  971 | LINE 318 |       sortable: false,
+LINE  972 | LINE 319 |       headerStyle: 'width: 50px',
+LINE  973 | LINE 320 |     },
+LINE  974 | LINE 321 |   ]
+LINE  975 | LINE 322 | } else {
+LINE  976 | LINE 323 |   columns = [
+LINE  977 | LINE 324 |     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+LINE  978 | LINE 325 |     {
+LINE  979 | LINE 326 |       name: 'fecha',
+LINE  980 | LINE 327 |       label: 'Fecha',
+LINE  981 | LINE 328 |       field: 'fecha',
+LINE  982 | LINE 329 |       align: 'left',
+LINE  983 | LINE 330 |       format: (val) => cambiarFormatoFecha(val),
+LINE  984 | LINE 331 |       dataType: 'date',
+LINE  985 | LINE 332 |     },
+LINE  986 | LINE 333 |     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
+LINE  987 | LINE 334 |     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+LINE  988 | LINE 335 |     {
+LINE  989 | LINE 336 |       name: 'descripcion',
+LINE  990 | LINE 337 |       label: 'Descripción',
+LINE  991 | LINE 338 |       field: 'descripcion',
+LINE  992 | LINE 339 |       align: 'left',
+LINE  993 | LINE 340 |       dataType: 'text',
+LINE  994 | LINE 341 |     },
+LINE  995 | LINE 342 |     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+LINE  996 | LINE 343 |     {
+LINE  997 | LINE 344 |       name: 'subcategoria',
+LINE  998 | LINE 345 |       label: 'Sub Categorías',
+LINE  999 | LINE 346 |       field: 'subcategoria',
+LINE 1000 | LINE 347 |       align: 'left',
+LINE 1001 | LINE 348 |       dataType: 'text',
+LINE 1002 | LINE 349 |     },
+LINE 1003 | LINE 350 |     {
+LINE 1004 | LINE 351 |       name: 'codigobarras',
+LINE 1005 | LINE 352 |       label: 'Cod.Barra',
+LINE 1006 | LINE 353 |       field: 'codigobarras',
+LINE 1007 | LINE 354 |       align: 'right',
+LINE 1008 | LINE 355 |       dataType: 'text',
+LINE 1009 | LINE 356 |     },
+LINE 1010 | LINE 357 |     {
+LINE 1011 | LINE 358 |       name: 'medida',
+LINE 1012 | LINE 359 |       label: 'Caract.',
+LINE 1013 | LINE 360 |       field: 'medida',
+LINE 1014 | LINE 361 |       align: 'left',
+LINE 1015 | LINE 362 |       dataType: 'text',
+LINE 1016 | LINE 363 |       defaultVisible: false,
+LINE 1017 | LINE 364 |     },
+LINE 1018 | LINE 365 |     {
+LINE 1019 | LINE 366 |       name: 'estadoproducto',
+LINE 1020 | LINE 367 |       label: 'Estado',
+LINE 1021 | LINE 368 |       field: 'estadoproducto',
+LINE 1022 | LINE 369 |       align: 'left',
+LINE 1023 | LINE 370 |       dataType: 'text',
+LINE 1024 | LINE 371 |       defaultVisible: false,
+LINE 1025 | LINE 372 |     },
+LINE 1026 | LINE 373 |     {
+LINE 1027 | LINE 374 |       name: 'unidad',
+LINE 1028 | LINE 375 |       label: 'Unidad',
+LINE 1029 | LINE 376 |       field: 'unidad',
+LINE 1030 | LINE 377 |       align: 'left',
+LINE 1031 | LINE 378 |       dataType: 'text',
+LINE 1032 | LINE 379 |       defaultVisible: false,
+LINE 1033 | LINE 380 |     },
+LINE 1034 | LINE 381 |     {
+LINE 1035 | LINE 382 |       name: 'caracteristica',
+LINE 1036 | LINE 383 |       label: 'Otras caract.',
+LINE 1037 | LINE 384 |       field: 'caracteristica',
+LINE 1038 | LINE 385 |       align: 'left',
+LINE 1039 | LINE 386 |       dataType: 'text',
+LINE 1040 | LINE 387 |       defaultVisible: false,
+LINE 1041 | LINE 388 |     },
+LINE 1042 | LINE 389 | 
+LINE 1043 | LINE 390 |     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+LINE 1044 | LINE 391 |     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+LINE 1045 | LINE 392 |     {
+LINE 1046 | LINE 393 |       name: 'seleccionar',
+LINE 1047 | LINE 394 |       label: '',
+LINE 1048 | LINE 395 |       field: 'seleccionar',
+LINE 1049 | LINE 396 |       align: 'center',
+LINE 1050 | LINE 397 |       sortable: false,
+LINE 1051 | LINE 398 |       headerStyle: 'width: 50px',
+LINE 1052 | LINE 399 |     },
+LINE 1053 | LINE 400 |   ]
+LINE 1054 | LINE 401 | }
+LINE 1055 | LINE 402 | 
+LINE 1056 | LINE 403 | const arrayHeaders = [
+LINE 1057 | LINE 404 |   'numero',
+LINE 1058 | LINE 405 |   'fecha',
+LINE 1059 | LINE 406 |   'codigo',
+LINE 1060 | LINE 407 |   'nombre',
+LINE 1061 | LINE 408 |   'descripcion',
+LINE 1062 | LINE 409 |   'categoria',
+LINE 1063 | LINE 410 |   'subcategoria',
+LINE 1064 | LINE 411 |   'codigobarras',
+LINE 1065 | LINE 412 |   'medida',
+LINE 1066 | LINE 413 |   'estadoproducto',
+LINE 1067 | LINE 414 |   'unidad',
+LINE 1068 | LINE 415 |   'caracteristica',
+LINE 1069 | LINE 416 |   'productosin',
+LINE 1070 | LINE 417 |   'codigonandina',
+LINE 1071 | LINE 418 | ]
+LINE 1072 | LINE 419 | 
+LINE 1073 | LINE 420 | const search = ref('')
+LINE 1074 | LINE 421 | 
+LINE 1075 | LINE 422 | const filteredRows = computed(() => {
+LINE 1076 | LINE 423 |   if (!search.value) return props.rows
+LINE 1077 | LINE 424 |   const term = search.value.toLowerCase()
+LINE 1078 | LINE 425 |   return props.rows.filter((row) => {
+LINE 1079 | LINE 426 |     // Buscar el término en cualquier propiedad de la fila (sin importar qué columna sea)
+LINE 1080 | LINE 427 |     return Object.values(row).some((val) => val && String(val).toLowerCase().includes(term))
+LINE 1081 | LINE 428 |   })
+LINE 1082 | LINE 429 | })
+LINE 1083 | LINE 430 | 
+LINE 1084 | LINE 431 | const exportarFormato = () => {
+LINE 1085 | LINE 432 |   exportarPlantillaProductos()
+LINE 1086 | LINE 433 | }
+LINE 1087 | LINE 434 | 
+LINE 1088 | LINE 435 | const exportarDatos = () => {
+LINE 1089 | LINE 436 |   if (props.rows.length === 0) {
+LINE 1090 | LINE 437 |     $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
+LINE 1091 | LINE 438 |     return
+LINE 1092 | LINE 439 |   }
+LINE 1093 | LINE 440 |   exportToXLSX_CatalogoProductos(props.rows)
+LINE 1094 | LINE 441 | }
+LINE 1095 | LINE 442 | 
+LINE 1096 | LINE 443 | const emit = defineEmits([
+LINE 1097 | LINE 444 |   'add',
+LINE 1098 | LINE 445 |   'edit-item',
+LINE 1099 | LINE 446 |   'delete-item',
+LINE 1100 | LINE 447 |   'toggle-status',
+LINE 1101 | LINE 448 |   'mostrarReporte',
+LINE 1102 | LINE 449 |   'importar',
+LINE 1103 | LINE 450 |   'delete-selected',
+LINE 1104 | LINE 451 |   'gestionar-variantes',
+LINE 1105 | LINE 452 | ])
+LINE 1106 | LINE 453 | 
+LINE 1107 | LINE 454 | const toggleSeleccion = (id, checked) => {
+LINE 1108 | LINE 455 |   if (checked) {
+LINE 1109 | LINE 456 |     selectedIds.value.add(id)
+LINE 1110 | LINE 457 |   } else {
+LINE 1111 | LINE 458 |     selectedIds.value.delete(id)
+LINE 1112 | LINE 459 |   }
+LINE 1113 | LINE 460 |   // Forzar reactividad de Set (en Vue 3 no siempre es necesario, pero mejor)
+LINE 1114 | LINE 461 |   selectedIds.value = new Set(selectedIds.value)
+LINE 1115 | LINE 462 | }
+LINE 1116 | LINE 463 | 
+LINE 1117 | LINE 464 | const eliminarSeleccionados = () => {
+LINE 1118 | LINE 465 |   if (selectedIds.value.size === 0) return
+LINE 1119 | LINE 466 |   const ids = [...selectedIds.value]
+LINE 1120 | LINE 467 |   emit('delete-selected', ids)
+LINE 1121 | LINE 468 |   selectedIds.value = new Set() // limpiar selección
+LINE 1122 | LINE 469 | }
+LINE 1123 | LINE 470 | 
+LINE 1124 | LINE 471 | const selectAll = computed({
+LINE 1125 | LINE 472 |   get() {
+LINE 1126 | LINE 473 |     return (
+LINE 1127 | LINE 474 |       filteredRows.value.length > 0 &&
+LINE 1128 | LINE 475 |       filteredRows.value.every((row) => selectedIds.value.has(row.id))
+LINE 1129 | LINE 476 |     )
+LINE 1130 | LINE 477 |   },
+LINE 1131 | LINE 478 |   set(val) {
+LINE 1132 | LINE 479 |     if (val) {
+LINE 1133 | LINE 480 |       // Agregar todos los IDs visibles
+LINE 1134 | LINE 481 |       const ids = filteredRows.value.map((row) => row.id)
+LINE 1135 | LINE 482 |       selectedIds.value = new Set(ids)
+LINE 1136 | LINE 483 |     } else {
+LINE 1137 | LINE 484 |       selectedIds.value = new Set()
+LINE 1138 | LINE 485 |     }
+LINE 1139 | LINE 486 |   },
+LINE 1140 | LINE 487 | })
+LINE 1141 | LINE 488 | const onFileSelected = async (event) => {
+LINE 1142 | LINE 489 |   const file = event.target.files[0]
+LINE 1143 | LINE 490 |   if (!file) return
+LINE 1144 | LINE 491 | 
+LINE 1145 | LINE 492 |   try {
+LINE 1146 | LINE 493 |     $q.loading.show({ message: 'Leyendo archivo Excel...' })
+LINE 1147 | LINE 494 |     const data = await importarProductosDesdeExcel(file)
+LINE 1148 | LINE 495 |     event.target.value = ''
+LINE 1149 | LINE 496 | 
+LINE 1150 | LINE 497 |     if (data && data.length > 0) {
+LINE 1151 | LINE 498 |       // Actualizar mensaje con la cantidad de productos
+LINE 1152 | LINE 499 |       const total = data.length
+LINE 1153 | LINE 500 |       $q.loading.show({
+LINE 1154 | LINE 501 |         message: `Importando ${total} producto${total !== 1 ? 's' : ''}...`,
+LINE 1155 | LINE 502 |       })
+LINE 1156 | LINE 503 |       // Emitir los datos; el padre debe poner importing=true (si no lo está) y luego false al finalizar
+LINE 1157 | LINE 504 |       emit('importar', data)
+LINE 1158 | LINE 505 |     } else {
+LINE 1159 | LINE 506 |       // Si no hay datos, ocultar loading y notificar
+LINE 1160 | LINE 507 |       $q.loading.hide()
+LINE 1161 | LINE 508 |       $q.notify({ type: 'warning', message: 'El archivo no contiene productos válidos' })
+LINE 1162 | LINE 509 |     }
+LINE 1163 | LINE 510 |   } catch (error) {
+LINE 1164 | LINE 511 |     console.error('Error al importar:', error)
+LINE 1165 | LINE 512 |     $q.loading.hide()
+LINE 1166 | LINE 513 |     $q.notify({ type: 'negative', message: 'Error al procesar el archivo Excel' })
+LINE 1167 | LINE 514 |   }
+LINE 1168 | LINE 515 | }
+LINE 1169 | LINE 516 | watch(
+LINE 1170 | LINE 517 |   () => props.rows,
+LINE 1171 | LINE 518 |   () => {
+LINE 1172 | LINE 519 |     selectedIds.value = new Set()
+LINE 1173 | LINE 520 |   },
+LINE 1174 | LINE 521 | )
+LINE 1175 | LINE 522 | watch(
+LINE 1176 | LINE 523 |   () => props.importing,
+LINE 1177 | LINE 524 |   (nuevo) => {
+LINE 1178 | LINE 525 |     if (!nuevo) {
+LINE 1179 | LINE 526 |       $q.loading.hide()
+LINE 1180 | LINE 527 |     }
+LINE 1181 | LINE 528 |   },
+LINE 1182 | LINE 529 | )
+LINE 1183 | LINE 530 | </script>
+LINE 1184 | LINE 531 | <style>
+LINE 1185 | LINE 532 | .text-truncate {
+LINE 1186 | LINE 533 |   max-width: 200px; /* ajusta según tu tabla */
+LINE 1187 | LINE 534 |   white-space: nowrap;
+LINE 1188 | LINE 535 |   overflow: hidden;
+LINE 1189 | LINE 536 |   text-overflow: ellipsis;
+LINE 1190 | LINE 537 | }
+LINE 1191 | LINE 538 | </style>
+LINE 1192 | 
+LINE 1193 | ==============================================================
+LINE 1194 | FILE: src/composables/useReporteInventarioExterior.js
+LINE 1195 | ==============================================================
+LINE 1196 | LINE   1 | import { ref } from 'vue'
+LINE 1197 | LINE   2 | import { date } from 'quasar'
+LINE 1198 | LINE   3 | import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+LINE 1199 | LINE   4 | import { api } from 'src/boot/axios'
+LINE 1200 | LINE   5 | import axios from 'axios'
+LINE 1201 | LINE   6 | import 'jspdf-autotable'
+LINE 1202 | LINE   7 | 
+LINE 1203 | LINE   8 | export function useReporteInventarioExterior() {
+LINE 1204 | LINE   9 |   // --- Estado ---
+LINE 1205 | LINE  10 |   const fechaInicio = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
+LINE 1206 | LINE  11 |   const fechaFin = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
+LINE 1207 | LINE  12 |   const datosReporte = ref([])
+LINE 1208 | LINE  13 |   const cargando = ref(false)
+LINE 1209 | LINE  14 | 
+LINE 1210 | LINE  15 |   const idusuario = idusuario_md5()
+LINE 1211 | LINE  16 |   // const idusuario = '03afdbd66e7929b125f8597834fa83a4'
+LINE 1212 | LINE  17 | 
+LINE 1213 | LINE  18 |   const idempresa = idempresa_md5()
+LINE 1214 | LINE  19 |   console.log('ID Empresa MD5:', idempresa)
+LINE 1215 | LINE  20 | 
+LINE 1216 | LINE  21 |   const generarReporte = async () => {
+LINE 1217 | LINE  22 |     cargando.value = true
+LINE 1218 | LINE  23 |     try {
+LINE 1219 | LINE  24 |       const endpoint = `reporteinvexterno/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+LINE 1220 | LINE  25 |       console.log('Generando reporte con endpoint:', endpoint)
+LINE 1221 | LINE  26 |       const response = await api.get(endpoint)
+LINE 1222 | LINE  27 |       // Map data to add index and composite location
+LINE 1223 | LINE  28 |       const promises = response.data.map(async (item, index) => {
+LINE 1224 | LINE  29 |         const direccion = await obtenerDireccionComoString(item.latitud, item.longitud)
+LINE 1225 | LINE  30 |         return {
+LINE 1226 | LINE  31 |           ...item,
+LINE 1227 | LINE  32 |           id: item.id_inv_externo,
+LINE 1228 | LINE  33 |           indice: index + 1,
+LINE 1229 | LINE  34 |           ubicacion: direccion,
+LINE 1230 | LINE  35 |         }
+LINE 1231 | LINE  36 |       })
+LINE 1232 | LINE  37 |       datosReporte.value = await Promise.all(promises)
+LINE 1233 | LINE  38 |       console.log('Datos del reporte recibidos (procesados):', datosReporte.value)
+LINE 1234 | LINE  39 |     } catch (error) {
+LINE 1235 | LINE  40 |       console.error('Error al generar reporte:', error)
+LINE 1236 | LINE  41 |       datosReporte.value = []
+LINE 1237 | LINE  42 |     } finally {
+LINE 1238 | LINE  43 |       cargando.value = false
+LINE 1239 | LINE  44 |     }
+LINE 1240 | LINE  45 |   }
+LINE 1241 | LINE  46 | 
+LINE 1242 | LINE  47 |   async function obtenerDireccionComoString(lat, lng) {
+LINE 1243 | LINE  48 |     try {
+LINE 1244 | LINE  49 |       const url = 'https://nominatim.openstreetmap.org/reverse'
+LINE 1245 | LINE  50 | 
+LINE 1246 | LINE  51 |       const response = await axios.get(url, {
+LINE 1247 | LINE  52 |         params: {
+LINE 1248 | LINE  53 |           format: 'json',
+LINE 1249 | LINE  54 |           lat: lat,
+LINE 1250 | LINE  55 |           lon: lng,
+LINE 1251 | LINE  56 |           zoom: 18,
+LINE 1252 | LINE  57 |           addressdetails: 1,
+LINE 1253 | LINE  58 |         },
+LINE 1254 | LINE  59 |         headers: {
+LINE 1255 | LINE  60 |           Accept: 'application/json',
+LINE 1256 | LINE  61 |         },
+LINE 1257 | LINE  62 |       })
+LINE 1258 | LINE  63 | 
+LINE 1259 | LINE  64 |       // Retorna toda la dirección en una sola cadena no una promesa
+LINE 1260 | LINE  65 |       return response.data.display_name || 'Dirección no disponible'
+LINE 1261 | LINE  66 |     } catch (error) {
+LINE 1262 | LINE  67 |       console.error('Error obteniendo la dirección:', error)
+LINE 1263 | LINE  68 |       return 'Dirección no disponible'
+LINE 1264 | LINE  69 |     }
+LINE 1265 | LINE  70 |   }
+LINE 1266 | LINE  71 | 
+LINE 1267 | LINE  72 |   //función para generar reporte detallado
+LINE 1268 | LINE  73 |   const generarReporteDetalladoIExternor = async (idInventario) => {
+LINE 1269 | LINE  74 |     try {
+LINE 1270 | LINE  75 |       const endpoint = `detalleInventarioExterior/${idInventario}/${idempresa}`
+LINE 1271 | LINE  76 |       console.log('Generando reporte detallado con endpoint:', endpoint)
+LINE 1272 | LINE  77 |       const response = await api.get(endpoint)
+LINE 1273 | LINE  78 |       console.log('Datos del reporte detallado recibidos:', response.data)
+LINE 1274 | LINE  79 | 
+LINE 1275 | LINE  80 |       // Limpiar descripción de productos
+LINE 1276 | LINE  81 |       if (response.data && response.data.length > 0 && response.data[0].detalle) {
+LINE 1277 | LINE  82 |         response.data[0].detalle = response.data[0].detalle.map((item) => ({
+LINE 1278 | LINE  83 |           ...item,
+LINE 1279 | LINE  84 |           descripcion_producto: item.descripcion_producto
+LINE 1280 | LINE  85 |             ? item.descripcion_producto.replace(/\s+/g, ' ').trim()
+LINE 1281 | LINE  86 |             : item.descripcion_producto,
+LINE 1282 | LINE  87 |         }))
+LINE 1283 | LINE  88 |       }
+LINE 1284 | LINE  89 | 
+LINE 1285 | LINE  90 |       return response.data // Retorna los datos detallados del inventario
+LINE 1286 | LINE  91 |     } catch (error) {
+LINE 1287 | LINE  92 |       console.error('Error al generar reporte detallado:', error)
+LINE 1288 | LINE  93 |     }
+LINE 1289 | LINE  94 |   }
+LINE 1290 | LINE  95 | 
+LINE 1291 | LINE  96 |   return {
+LINE 1292 | LINE  97 |     fechaInicio,
+LINE 1293 | LINE  98 |     fechaFin,
+LINE 1294 | LINE  99 |     datosReporte,
+LINE 1295 | LINE 100 |     cargando,
+LINE 1296 | LINE 101 |     generarReporte,
+LINE 1297 | LINE 102 | 
+LINE 1298 | LINE 103 |     columns: [
+LINE 1299 | LINE 104 |       // Columnas reales para la tabla UI
+LINE 1300 | LINE 105 |       { name: 'indice', label: 'Nº', field: 'indice', sortable: true, align: 'left' },
+LINE 1301 | LINE 106 |       {
+LINE 1302 | LINE 107 |         name: 'fecha',
+LINE 1303 | LINE 108 |         label: 'Fecha',
+LINE 1304 | LINE 109 |         field: 'fecha_control',
+LINE 1305 | LINE 110 |         sortable: true,
+LINE 1306 | LINE 111 |         dataType: 'date',
+LINE 1307 | LINE 112 |         align: 'left',
+LINE 1308 | LINE 113 |       },
+LINE 1309 | LINE 114 |       { name: 'almacen', label: 'Almacén', field: 'almacen', sortable: true, align: 'left' },
+LINE 1310 | LINE 115 |       { name: 'cliente', label: 'Cliente', field: 'cliente', sortable: true, align: 'left' },
+LINE 1311 | LINE 116 |       { name: 'sucursal', label: 'Sucursal', field: 'sucursal', sortable: true, align: 'left' },
+LINE 1312 | LINE 117 |       { name: 'observaciones', label: 'Obs.', field: 'observaciones', align: 'left' },
+LINE 1313 | LINE 118 |       { name: 'ubicacion', label: 'Ubicacion', field: 'ubicacion' },
+LINE 1314 | LINE 119 |       { name: 'reporte', label: 'Reporte', field: 'reporte' }, // Added name and label.reporte matching table
+LINE 1315 | LINE 120 |     ],
+LINE 1316 | LINE 121 |     arrayHeaders: ['fecha', 'almacen', 'cliente', 'sucursal'], // Filtros de columna activados
+LINE 1317 | LINE 122 |     generarReporteDetalladoIExternor,
+LINE 1318 | LINE 123 |   }
+LINE 1319 | LINE 124 | }
+LINE 1320 | 
+LINE 1321 | ==============================================================
+LINE 1322 | FILE: src/pages/producto/CproductoPage.vue
+LINE 1323 | ==============================================================
+LINE 1324 | LINE   1 | <template>
+LINE 1325 | LINE   2 |   <q-page v-if="mostrarmoduloConjunto">
+LINE 1326 | LINE   3 |     <div class="row justify-end q-mb-md">
+LINE 1327 | LINE   4 |       <q-btn
+LINE 1328 | LINE   5 |         color="primary"
+LINE 1329 | LINE   6 |         label="Volver a Productos"
+LINE 1330 | LINE   7 |         icon="arrow_back"
+LINE 1331 | LINE   8 |         @click="mostrarmoduloConjunto = false"
+LINE 1332 | LINE   9 |         outline
+LINE 1333 | LINE  10 |       />
+LINE 1334 | LINE  11 |     </div>
+LINE 1335 | LINE  12 |     <seriePage />
+LINE 1336 | LINE  13 |   </q-page>
+LINE 1337 | LINE  14 |   <q-page padding v-else>
+LINE 1338 | LINE  15 |     <q-dialog v-model="showForm">
+LINE 1339 | LINE  16 |       <q-card class="responsive-dialog">
+LINE 1340 | LINE  17 |         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
+LINE 1341 | LINE  18 |           <div>Registrar Producto o Servicio</div>
+LINE 1342 | LINE  19 |           <q-btn icon="close" @click="toggleForm" dense flat round />
+LINE 1343 | LINE  20 |         </q-card-section>
+LINE 1344 | LINE  21 |         <q-card-section class="q-pa-none">
+LINE 1345 | LINE  22 |           <producto-form
+LINE 1346 | LINE  23 |             :isEditing="isEditing"
+LINE 1347 | LINE  24 |             :model-value="formData"
+LINE 1348 | LINE  25 |             :categorias="categorias"
+LINE 1349 | LINE  26 |             :estados="estados"
+LINE 1350 | LINE  27 |             :subcategorias="subcategorias"
+LINE 1351 | LINE  28 |             :unidades="unidades"
+LINE 1352 | LINE  29 |             :medidas="medidas"
+LINE 1353 | LINE  30 |             :productoSIN="ProductoSin"
+LINE 1354 | LINE  31 |             :unidadSIN="UnidadSin"
+LINE 1355 | LINE  32 |             @submit="handleSubmit"
+LINE 1356 | LINE  33 |             @cancel="toggleForm"
+LINE 1357 | LINE  34 |             @categoria-changed="loadsubcategorias"
+LINE 1358 | LINE  35 |           />
+LINE 1359 | LINE  36 |         </q-card-section>
+LINE 1360 | LINE  37 |       </q-card>
+LINE 1361 | LINE  38 |     </q-dialog>
+LINE 1362 | LINE  39 | 
+LINE 1363 | LINE  40 |     <producto-tabla
+LINE 1364 | LINE  41 |       :rows="productos"
+LINE 1365 | LINE  42 |       :loading="cargando"
+LINE 1366 | LINE  43 |       :importing="importing"
+LINE 1367 | LINE  44 |       @add="toggleForm"
+LINE 1368 | LINE  45 |       @irconjunto="mostrarmoduloConjunto = true"
+LINE 1369 | LINE  46 |       @mostrarReporte="mostrarReporte"
+LINE 1370 | LINE  47 |       @edit-item="editUnit"
+LINE 1371 | LINE  48 |       @delete-item="confirmDelete"
+LINE 1372 | LINE  49 |       @toggleStatus="toggleStatus"
+LINE 1373 | LINE  50 |       @importar="handleImport"
+LINE 1374 | LINE  51 |       @delete-selected="eliminarProductosSeleccionados"
+LINE 1375 | LINE  52 |       @gestionar-variantes="abrirVariantes"
+LINE 1376 | LINE  53 |     />
+LINE 1377 | LINE  54 | 
+LINE 1378 | LINE  55 |     <ProductoVarianteDialog
+LINE 1379 | LINE  56 |       v-model="showVariantesDialog"
+LINE 1380 | LINE  57 |       :producto="productoVariantes"
+LINE 1381 | LINE  58 |       :empresa="idempresa"
+LINE 1382 | LINE  59 |     />
+LINE 1383 | LINE  60 |   </q-page>
+LINE 1384 | LINE  61 | </template>
+LINE 1385 | LINE  62 | 
+LINE 1386 | LINE  63 | <script setup>
+LINE 1387 | LINE  64 | import { ref, onMounted } from 'vue'
+LINE 1388 | LINE  65 | import { api } from 'boot/axios' // Asegúrate de tener esto configurado
+LINE 1389 | LINE  66 | import { idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
+LINE 1390 | LINE  67 | import { useQuasar } from 'quasar'
+LINE 1391 | LINE  68 | import { objectToFormData } from 'src/composables/FuncionesGenerales'
+LINE 1392 | LINE  69 | import ProductoForm from 'src/components/producto/creacion/productoForm.vue'
+LINE 1393 | LINE  70 | import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
+LINE 1394 | LINE  71 | import { imagen } from 'src/boot/url'
+LINE 1395 | LINE  72 | import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+LINE 1396 | LINE  73 | import seriePage from 'src/modules/serie/page/seriePage.vue'
+LINE 1397 | LINE  74 | import ProductoVarianteDialog from 'src/components/producto/variantes/productoVarianteDialog.vue'
+LINE 1398 | LINE  75 | const tipoFactura = getTipoFactura(true)
+LINE 1399 | LINE  76 | const mostrarmoduloConjunto = ref(false)
+LINE 1400 | LINE  77 | const showVariantesDialog = ref(false)
+LINE 1401 | LINE  78 | const productoVariantes = ref(null)
+LINE 1402 | LINE  79 | console.log('Tipo Factura:', tipoFactura)
+LINE 1403 | LINE  80 | const idempresa = idempresa_md5()
+LINE 1404 | LINE  81 | const contenidousuario = validarUsuario()
+LINE 1405 | LINE  82 | console.log(contenidousuario)
+LINE 1406 | LINE  83 | const token = getToken()
+LINE 1407 | LINE  84 | console.log('Token:', token)
+LINE 1408 | LINE  85 | const productos = ref([])
+LINE 1409 | LINE  86 | 
+LINE 1410 | LINE  87 | const categorias = ref([])
+LINE 1411 | LINE  88 | 
+LINE 1412 | LINE  89 | const estados = ref([])
+LINE 1413 | LINE  90 | const subcategorias = ref([])
+LINE 1414 | LINE  91 | const unidades = ref([])
+LINE 1415 | LINE  92 | const medidas = ref([])
+LINE 1416 | LINE  93 | const $q = useQuasar()
+LINE 1417 | LINE  94 | const isEditing = ref(false)
+LINE 1418 | LINE  95 | const showForm = ref(false)
+LINE 1419 | LINE  96 | const cargando = ref(false)
+LINE 1420 | LINE  97 | const importing = ref(false)
+LINE 1421 | LINE  98 | 
+LINE 1422 | LINE  99 | const formData = ref({
+LINE 1423 | LINE 100 |   ver: 'registrarProducto',
+LINE 1424 | LINE 101 |   idempresa: idempresa,
+LINE 1425 | LINE 102 | })
+LINE 1426 | LINE 103 | const ProductoSin = ref([])
+LINE 1427 | LINE 104 | const UnidadSin = ref([])
+LINE 1428 | LINE 105 | async function loadRows() {
+LINE 1429 | LINE 106 |   try {
+LINE 1430 | LINE 107 |     cargando.value = true
+LINE 1431 | LINE 108 |     const tipo = getTipoFactura()
+LINE 1432 | LINE 109 |     let point = ``
+LINE 1433 | LINE 110 |     if (token && tipo && getTipoFactura(true) && getToken(true)) {
+LINE 1434 | LINE 111 |       point = `listaProducto/${idempresa}/${token}/${tipo}`
+LINE 1435 | LINE 112 |     } else {
+LINE 1436 | LINE 113 |       point = `listaProducto/${idempresa}/`
+LINE 1437 | LINE 114 |     }
+LINE 1438 | LINE 115 |     console.log('Endpoint:', point)
+LINE 1439 | LINE 116 |     const response = await api.get(point)
+LINE 1440 | LINE 117 |     console.log('estos son los datos', response.data)
+LINE 1441 | LINE 118 |     productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
+LINE 1442 | LINE 119 |   } catch (error) {
+LINE 1443 | LINE 120 |     console.error('Error al cargar datos:', error)
+LINE 1444 | LINE 121 |     $q.notify({
+LINE 1445 | LINE 122 |       type: 'negative',
+LINE 1446 | LINE 123 |       message: 'No se pudieron cargar los datos del catálogo',
+LINE 1447 | LINE 124 |     })
+LINE 1448 | LINE 125 |   } finally {
+LINE 1449 | LINE 126 |     cargando.value = false
+LINE 1450 | LINE 127 |   }
+LINE 1451 | LINE 128 | }
+LINE 1452 | LINE 129 | 
+LINE 1453 | LINE 130 | async function loadcategorias() {
+LINE 1454 | LINE 131 |   try {
+LINE 1455 | LINE 132 |     const response = await api.get(`listaCategoriaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1456 | LINE 133 |     console.log(response)
+LINE 1457 | LINE 134 |     const filtrados = response.data.filter((u) => u.estado == 1 && (!u.idp || u.idp == 0))
+LINE 1458 | LINE 135 |     const formateado = filtrados.map((item) => ({
+LINE 1459 | LINE 136 |       label: item.nombre,
+LINE 1460 | LINE 137 |       value: item.id,
+LINE 1461 | LINE 138 |     }))
+LINE 1462 | LINE 139 |     categorias.value = formateado // Asume que la API devuelve un array
+LINE 1463 | LINE 140 |   } catch (error) {
+LINE 1464 | LINE 141 |     console.error('Error al cargar datos:', error)
+LINE 1465 | LINE 142 |     $q.notify({
+LINE 1466 | LINE 143 |       type: 'negative',
+LINE 1467 | LINE 144 |       message: 'No se pudieron cargar los datos',
+LINE 1468 | LINE 145 |     })
+LINE 1469 | LINE 146 |   }
+LINE 1470 | LINE 147 | }
+LINE 1471 | LINE 148 | async function loadestados() {
+LINE 1472 | LINE 149 |   try {
+LINE 1473 | LINE 150 |     const response = await api.get(`listaEstadoProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1474 | LINE 151 |     console.log(response)
+LINE 1475 | LINE 152 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1476 | LINE 153 |     const formateado = filtrados.map((item) => ({
+LINE 1477 | LINE 154 |       label: item.nombre,
+LINE 1478 | LINE 155 |       value: item.id,
+LINE 1479 | LINE 156 |     }))
+LINE 1480 | LINE 157 |     estados.value = formateado // Asume que la API devuelve un array
+LINE 1481 | LINE 158 |   } catch (error) {
+LINE 1482 | LINE 159 |     console.error('Error al cargar datos:', error)
+LINE 1483 | LINE 160 |     $q.notify({
+LINE 1484 | LINE 161 |       type: 'negative',
+LINE 1485 | LINE 162 |       message: 'No se pudieron cargar los Estados de Producto',
+LINE 1486 | LINE 163 |     })
+LINE 1487 | LINE 164 |   }
+LINE 1488 | LINE 165 | }
+LINE 1489 | LINE 166 | async function loadsubcategorias(idcategoria) {
+LINE 1490 | LINE 167 |   console.log('idcategoria:', idcategoria)
+LINE 1491 | LINE 168 | 
+LINE 1492 | LINE 169 |   if (!idcategoria) {
+LINE 1493 | LINE 170 |     subcategorias.value = []
+LINE 1494 | LINE 171 |     return
+LINE 1495 | LINE 172 |   }
+LINE 1496 | LINE 173 |   try {
+LINE 1497 | LINE 174 |     const response = await api.get(`listaCategoriaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1498 | LINE 175 |     console.log(formData.value)
+LINE 1499 | LINE 176 |     const filtrados = response.data.filter((u) => u.estado == 1 && u.idp == idcategoria)
+LINE 1500 | LINE 177 |     const formateado = filtrados.map((item) => ({
+LINE 1501 | LINE 178 |       label: item.nombre,
+LINE 1502 | LINE 179 |       value: item.id,
+LINE 1503 | LINE 180 |     }))
+LINE 1504 | LINE 181 |     subcategorias.value = formateado // Asume que la API devuelve un array
+LINE 1505 | LINE 182 |   } catch (error) {
+LINE 1506 | LINE 183 |     console.error('Error al cargar datos:', error)
+LINE 1507 | LINE 184 |     $q.notify({
+LINE 1508 | LINE 185 |       type: 'negative',
+LINE 1509 | LINE 186 |       message: 'No se pudieron cargar los datos',
+LINE 1510 | LINE 187 |     })
+LINE 1511 | LINE 188 |   }
+LINE 1512 | LINE 189 | }
+LINE 1513 | LINE 190 | async function loadunidades() {
+LINE 1514 | LINE 191 |   try {
+LINE 1515 | LINE 192 |     const response = await api.get(`listaUnidadProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1516 | LINE 193 |     console.log(response)
+LINE 1517 | LINE 194 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1518 | LINE 195 |     const formateado = filtrados.map((item) => ({
+LINE 1519 | LINE 196 |       label: item.nombre + ' : ' + item.descripcion,
+LINE 1520 | LINE 197 |       value: item.id,
+LINE 1521 | LINE 198 |     }))
+LINE 1522 | LINE 199 |     unidades.value = formateado // Asume que la API devuelve un array
+LINE 1523 | LINE 200 |   } catch (error) {
+LINE 1524 | LINE 201 |     console.error('Error al cargar datos:', error)
+LINE 1525 | LINE 202 |     $q.notify({
+LINE 1526 | LINE 203 |       type: 'negative',
+LINE 1527 | LINE 204 |       message: 'No se pudieron cargar los datos',
+LINE 1528 | LINE 205 |     })
+LINE 1529 | LINE 206 |   }
+LINE 1530 | LINE 207 | }
+LINE 1531 | LINE 208 | async function ListaProductoSin() {
+LINE 1532 | LINE 209 |   if (!tipoFactura) {
+LINE 1533 | LINE 210 |     return
+LINE 1534 | LINE 211 |   }
+LINE 1535 | LINE 212 |   const contenidousuario = validarUsuario()
+LINE 1536 | LINE 213 |   const token = contenidousuario[0]?.factura?.access_token
+LINE 1537 | LINE 214 |   const tipo = contenidousuario[0]?.factura?.tipo
+LINE 1538 | LINE 215 |   const endpoint = `listaproductoSIN/productossin/${token}/${tipo}`
+LINE 1539 | LINE 216 |   try {
+LINE 1540 | LINE 217 |     const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1541 | LINE 218 |     console.log(response)
+LINE 1542 | LINE 219 |     const res = response.data
+LINE 1543 | LINE 220 |     if (res.status == 'success') {
+LINE 1544 | LINE 221 |       const formateado = res.data.map((item) => ({
+LINE 1545 | LINE 222 |         label: item.descripcion,
+LINE 1546 | LINE 223 |         value: item.codigo,
+LINE 1547 | LINE 224 |       }))
+LINE 1548 | LINE 225 |       ProductoSin.value = formateado
+LINE 1549 | LINE 226 |     }
+LINE 1550 | LINE 227 |   } catch (error) {
+LINE 1551 | LINE 228 |     console.error('Error al cargar datos:', error)
+LINE 1552 | LINE 229 |     $q.notify({
+LINE 1553 | LINE 230 |       type: 'negative',
+LINE 1554 | LINE 231 |       message: 'No se pudieron cargar los datos',
+LINE 1555 | LINE 232 |     })
+LINE 1556 | LINE 233 |   }
+LINE 1557 | LINE 234 | }
+LINE 1558 | LINE 235 | async function ListaUnidadSin() {
+LINE 1559 | LINE 236 |   if (!tipoFactura) {
+LINE 1560 | LINE 237 |     return
+LINE 1561 | LINE 238 |   }
+LINE 1562 | LINE 239 |   const contenidousuario = validarUsuario()
+LINE 1563 | LINE 240 |   const token = contenidousuario[0]?.factura?.access_token
+LINE 1564 | LINE 241 |   const tipo = contenidousuario[0]?.factura?.tipo
+LINE 1565 | LINE 242 |   const endpoint = `listaproductoSIN/unidadsin/${token}/${tipo}`
+LINE 1566 | LINE 243 |   try {
+LINE 1567 | LINE 244 |     const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1568 | LINE 245 |     console.log(response)
+LINE 1569 | LINE 246 |     const res = response.data
+LINE 1570 | LINE 247 |     if (res.status == 'success') {
+LINE 1571 | LINE 248 |       const formateado = res.data.map((item) => ({
+LINE 1572 | LINE 249 |         label: item.descripcion,
+LINE 1573 | LINE 250 |         value: item.codigo,
+LINE 1574 | LINE 251 |       }))
+LINE 1575 | LINE 252 |       UnidadSin.value = formateado
+LINE 1576 | LINE 253 |     }
+LINE 1577 | LINE 254 |   } catch (error) {
+LINE 1578 | LINE 255 |     console.error('Error al cargar datos:', error)
+LINE 1579 | LINE 256 |     $q.notify({
+LINE 1580 | LINE 257 |       type: 'negative',
+LINE 1581 | LINE 258 |       message: 'No se pudieron cargar los datos',
+LINE 1582 | LINE 259 |     })
+LINE 1583 | LINE 260 |   }
+LINE 1584 | LINE 261 | }
+LINE 1585 | LINE 262 | async function loadmedidas() {
+LINE 1586 | LINE 263 |   try {
+LINE 1587 | LINE 264 |     const response = await api.get(`listaCaracteristicaProducto/${idempresa}`) // Cambia a tu ruta real
+LINE 1588 | LINE 265 |     console.log(response)
+LINE 1589 | LINE 266 |     const filtrados = response.data.filter((u) => u.estado == 1)
+LINE 1590 | LINE 267 | 
+LINE 1591 | LINE 268 |     const formateado = filtrados.map((item) => ({
+LINE 1592 | LINE 269 |       label: item.nombre,
+LINE 1593 | LINE 270 |       value: item.id,
+LINE 1594 | LINE 271 |     }))
+LINE 1595 | LINE 272 |     medidas.value = formateado // Asume que la API devuelve un array
+LINE 1596 | LINE 273 |   } catch (error) {
+LINE 1597 | LINE 274 |     console.error('Error al cargar datos:', error)
+LINE 1598 | LINE 275 |     $q.notify({
+LINE 1599 | LINE 276 |       type: 'negative',
+LINE 1600 | LINE 277 |       message: 'No se pudieron cargar los datos',
+LINE 1601 | LINE 278 |     })
+LINE 1602 | LINE 279 |   }
+LINE 1603 | LINE 280 | }
+LINE 1604 | LINE 281 | 
+LINE 1605 | LINE 282 | const handleSubmit = async (data) => {
+LINE 1606 | LINE 283 |   const formData = objectToFormData(data)
+LINE 1607 | LINE 284 | 
+LINE 1608 | LINE 285 |   console.log('=== FormData entries ===')
+LINE 1609 | LINE 286 |   // for (let [k, v] of formData.entries()) {
+LINE 1610 | LINE 287 |   //   console.log(`${k}: ${v}`)
+LINE 1611 | LINE 288 |   // }
+LINE 1612 | LINE 289 | 
+LINE 1613 | LINE 290 |   try {
+LINE 1614 | LINE 291 |     if (isEditing.value) {
+LINE 1615 | LINE 292 |       const response = await api.post(``, formData)
+LINE 1616 | LINE 293 |       console.log('Edit response:', response.data)
+LINE 1617 | LINE 294 |     } else {
+LINE 1618 | LINE 295 |       const response = await api.post(``, formData)
+LINE 1619 | LINE 296 |       console.log('Create response:', response.data)
+LINE 1620 | LINE 297 |     }
+LINE 1621 | LINE 298 |     $q.notify({
+LINE 1622 | LINE 299 |       type: 'positive',
+LINE 1623 | LINE 300 |       message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+LINE 1624 | LINE 301 |     })
+LINE 1625 | LINE 302 |     loadRows()
+LINE 1626 | LINE 303 |   } catch (error) {
+LINE 1627 | LINE 304 |     console.error('Error al guardar:', error)
+LINE 1628 | LINE 305 |     $q.notify({
+LINE 1629 | LINE 306 |       type: 'negative',
+LINE 1630 | LINE 307 |       message: 'Ocurrió un error al guardar' + error,
+LINE 1631 | LINE 308 |     })
+LINE 1632 | LINE 309 |   }
+LINE 1633 | LINE 310 |   toggleForm()
+LINE 1634 | LINE 311 | }
+LINE 1635 | LINE 312 | const toggleForm = () => {
+LINE 1636 | LINE 313 |   showForm.value = !showForm.value
+LINE 1637 | LINE 314 |   if (!showForm.value) {
+LINE 1638 | LINE 315 |     isEditing.value = false
+LINE 1639 | LINE 316 |     resetForm()
+LINE 1640 | LINE 317 |     subcategorias.value = [] // limpia subcategorías
+LINE 1641 | LINE 318 |   }
+LINE 1642 | LINE 319 | }
+LINE 1643 | LINE 320 | function resetForm() {
+LINE 1644 | LINE 321 |   isEditing.value = false
+LINE 1645 | LINE 322 |   formData.value = {
+LINE 1646 | LINE 323 |     ver: 'registrarProducto',
+LINE 1647 | LINE 324 |     idempresa: idempresa,
+LINE 1648 | LINE 325 |   }
+LINE 1649 | LINE 326 | }
+LINE 1650 | LINE 327 | const editUnit = async (row) => {
+LINE 1651 | LINE 328 |   console.log(row)
+LINE 1652 | LINE 329 |   const tipo = getTipoFactura()
+LINE 1653 | LINE 330 |   let endpoint = ``
+LINE 1654 | LINE 331 |   if (token && tipo && getTipoFactura(true) && getToken(true)) {
+LINE 1655 | LINE 332 |     endpoint = `verificarExistenciaProducto/${row.id}/${token}/${tipo}`
+LINE 1656 | LINE 333 |   } else {
+LINE 1657 | LINE 334 |     endpoint = `verificarExistenciaProducto/${row.id}/`
+LINE 1658 | LINE 335 |   }
+LINE 1659 | LINE 336 |   console.log(endpoint)
+LINE 1660 | LINE 337 |   const response = await api.get(endpoint) // Cambia a tu ruta real
+LINE 1661 | LINE 338 |   console.log('API Response:', response.data)
+LINE 1662 | LINE 339 |   const item = response.data.datos
+LINE 1663 | LINE 340 |   console.log('Item data:', item)
+LINE 1664 | LINE 341 | 
+LINE 1665 | LINE 342 |   // Handle subcategoria - it might be missing, null, 0, or empty string
+LINE 1666 | LINE 343 |   const rawSubcategoria = item?.idsubcategoria ?? null
+LINE 1667 | LINE 344 |   const subcategoriaValue =
+LINE 1668 | LINE 345 |     rawSubcategoria !== null && rawSubcategoria !== '0' && rawSubcategoria !== 0
+LINE 1669 | LINE 346 |       ? rawSubcategoria
+LINE 1670 | LINE 347 |       : null
+LINE 1671 | LINE 348 | 
+LINE 1672 | LINE 349 |   formData.value = {
+LINE 1673 | LINE 350 |     ver: 'editarProducto',
+LINE 1674 | LINE 351 |     id: item.id,
+LINE 1675 | LINE 352 |     idempresa: idempresa,
+LINE 1676 | LINE 353 |     codigo: item.codigo,
+LINE 1677 | LINE 354 |     nombre: item.nombre,
+LINE 1678 | LINE 355 |     descripcion: item.descripcion,
+LINE 1679 | LINE 356 |     codigobarras: item.codbarras,
+LINE 1680 | LINE 357 |     categoria: item?.idcategoria ?? null,
+LINE 1681 | LINE 358 |     subcategoria: subcategoriaValue,
+LINE 1682 | LINE 359 |     estadoproductos: item.idestadoproducto,
+LINE 1683 | LINE 360 |     unidad: item.idunidad,
+LINE 1684 | LINE 361 |     medida: item.idmedida,
+LINE 1685 | LINE 362 |     caracteristica: item.caracteristica && item.caracteristica !== '0' ? item.caracteristica : '',
+LINE 1686 | LINE 363 |     vista: imagen + item.imagen,
+LINE 1687 | LINE 364 |     imagen: item.imagen,
+LINE 1688 | LINE 365 |     codigosin:
+LINE 1689 | LINE 366 |       tipoFactura && item.productosin && item.productosin[0] ? item.productosin[0].codigo : '',
+LINE 1690 | LINE 367 |     unidadsin: tipoFactura && item.unidadsin && item.unidadsin[0] ? item.unidadsin[0].codigo : '',
+LINE 1691 | LINE 368 |     codigoNandina:
+LINE 1692 | LINE 369 |       tipoFactura && item.codigonandina && item.codigonandina !== '0' ? item.codigonandina : '',
+LINE 1693 | LINE 370 |   }
+LINE 1694 | LINE 371 | 
+LINE 1695 | LINE 372 |   console.log('FormData to load:', formData.value)
+LINE 1696 | LINE 373 |   loadsubcategorias(item?.idcategoria ?? null)
+LINE 1697 | LINE 374 |   isEditing.value = true
+LINE 1698 | LINE 375 |   showForm.value = true
+LINE 1699 | LINE 376 | }
+LINE 1700 | LINE 377 | 
+LINE 1701 | LINE 378 | const confirmDelete = (row) => {
+LINE 1702 | LINE 379 |   console.log(row)
+LINE 1703 | LINE 380 | 
+LINE 1704 | LINE 381 |   $q.dialog({
+LINE 1705 | LINE 382 |     title: 'Confirmar',
+LINE 1706 | LINE 383 |     message: `¿Eliminar Producto "${row.nombre}"?`,
+LINE 1707 | LINE 384 |     cancel: true,
+LINE 1708 | LINE 385 |     persistent: true,
+LINE 1709 | LINE 386 |   }).onOk(async () => {
+LINE 1710 | LINE 387 |     try {
+LINE 1711 | LINE 388 |       const response = await api.get(`eliminarProducto/${row.id}`) // Cambia a tu ruta real
+LINE 1712 | LINE 389 |       console.log(response)
+LINE 1713 | LINE 390 |       if (response.data.estado === 'exito') {
+LINE 1714 | LINE 391 |         loadRows()
+LINE 1715 | LINE 392 |         $q.notify({
+LINE 1716 | LINE 393 |           type: 'positive',
+LINE 1717 | LINE 394 |           message: response.data.mensaje,
+LINE 1718 | LINE 395 |         })
+LINE 1719 | LINE 396 |       } else {
+LINE 1720 | LINE 397 |         $q.notify({
+LINE 1721 | LINE 398 |           type: 'negative',
+LINE 1722 | LINE 399 |           message: response.data.mensaje,
+LINE 1723 | LINE 400 |         })
+LINE 1724 | LINE 401 |       }
+LINE 1725 | LINE 402 |     } catch (error) {
+LINE 1726 | LINE 403 |       console.error('Error al cargar datos:', error)
+LINE 1727 | LINE 404 |       $q.notify({
+LINE 1728 | LINE 405 |         type: 'negative',
+LINE 1729 | LINE 406 |         message: 'No se pudieron cargar los datos',
+LINE 1730 | LINE 407 |       })
+LINE 1731 | LINE 408 |     }
+LINE 1732 | LINE 409 |   })
+LINE 1733 | LINE 410 | }
+LINE 1734 | LINE 411 | const eliminarProductosSeleccionados = (ids) => {
+LINE 1735 | LINE 412 |   console.log(ids)
+LINE 1736 | LINE 413 | 
+LINE 1737 | LINE 414 |   $q.dialog({
+LINE 1738 | LINE 415 |     title: 'Confirmar',
+LINE 1739 | LINE 416 |     message: `¿Eliminar Productos seleccionados?`,
+LINE 1740 | LINE 417 |     cancel: true,
+LINE 1741 | LINE 418 |     persistent: true,
+LINE 1742 | LINE 419 |   }).onOk(async () => {
+LINE 1743 | LINE 420 |     try {
+LINE 1744 | LINE 421 |       const data = {
+LINE 1745 | LINE 422 |         ver: 'eliminarProductosMasivo',
+LINE 1746 | LINE 423 |         ids: ids,
+LINE 1747 | LINE 424 |       }
+LINE 1748 | LINE 425 |       const response = await api.post(``, data) // Cambia a tu ruta real
+LINE 1749 | LINE 426 |       console.log(response)
+LINE 1750 | LINE 427 |       if (response.data.estado === 'exito') {
+LINE 1751 | LINE 428 |         loadRows()
+LINE 1752 | LINE 429 |         $q.notify({
+LINE 1753 | LINE 430 |           type: 'positive',
+LINE 1754 | LINE 431 |           message: response.data.mensaje,
+LINE 1755 | LINE 432 |         })
+LINE 1756 | LINE 433 |       } else {
+LINE 1757 | LINE 434 |         $q.notify({
+LINE 1758 | LINE 435 |           type: 'negative',
+LINE 1759 | LINE 436 |           message: response.data.mensaje,
+LINE 1760 | LINE 437 |         })
+LINE 1761 | LINE 438 |       }
+LINE 1762 | LINE 439 |     } catch (error) {
+LINE 1763 | LINE 440 |       console.error('Error al cargar datos:', error)
+LINE 1764 | LINE 441 |       $q.notify({
+LINE 1765 | LINE 442 |         type: 'negative',
+LINE 1766 | LINE 443 |         message: 'No se pudieron cargar los datos',
+LINE 1767 | LINE 444 |       })
+LINE 1768 | LINE 445 |     }
+LINE 1769 | LINE 446 |   })
+LINE 1770 | LINE 447 | }
+LINE 1771 | LINE 448 | 
+LINE 1772 | LINE 449 | const handleImport = async (data) => {
+LINE 1773 | LINE 450 |   let successCount = 0
+LINE 1774 | LINE 451 |   let errorCount = 0
+LINE 1775 | LINE 452 |   importing.value = true
+LINE 1776 | LINE 453 | 
+LINE 1777 | LINE 454 |   $q.loading.show({
+LINE 1778 | LINE 455 |     message: 'Importando productos...',
+LINE 1779 | LINE 456 |   })
+LINE 1780 | LINE 457 | 
+LINE 1781 | LINE 458 |   for (const item of data) {
+LINE 1782 | LINE 459 |     try {
+LINE 1783 | LINE 460 |       // Mapear nombres a IDs
+LINE 1784 | LINE 461 |       const cat = categorias.value.find(
+LINE 1785 | LINE 462 |         (c) => c.label.toLowerCase() === item.categoria_nombre?.toLowerCase(),
+LINE 1786 | LINE 463 |       )
+LINE 1787 | LINE 464 |       const unit = unidades.value.find((u) =>
+LINE 1788 | LINE 465 |         u.label.toLowerCase().includes(item.unidad_nombre?.toLowerCase()),
+LINE 1789 | LINE 466 |       )
+LINE 1790 | LINE 467 |       const state = estados.value.find(
+LINE 1791 | LINE 468 |         (e) => e.label.toLowerCase() === item.estado_nombre?.toLowerCase(),
+LINE 1792 | LINE 469 |       )
+LINE 1793 | LINE 470 |       const measure = medidas.value.find(
+LINE 1794 | LINE 471 |         (m) => m.label.toLowerCase() === item.medida_nombre?.toLowerCase(),
+LINE 1795 | LINE 472 |       )
+LINE 1796 | LINE 473 | 
+LINE 1797 | LINE 474 |       const payload = {
+LINE 1798 | LINE 475 |         ver: 'registrarProducto',
+LINE 1799 | LINE 476 |         idempresa: idempresa,
+LINE 1800 | LINE 477 |         codigo: item.codigo || '',
+LINE 1801 | LINE 478 |         nombre: item.nombre || '',
+LINE 1802 | LINE 479 |         descripcion: item.descripcion || '',
+LINE 1803 | LINE 480 |         codigobarras: item.codigobarras || '',
+LINE 1804 | LINE 481 |         categoria: cat ? cat.value : null,
+LINE 1805 | LINE 482 |         subcategoria: null, // No tenemos mapeo de subcat directo sin contexto de cat en Excel por ahora
+LINE 1806 | LINE 483 |         estadoproductos: state ? state.value : estados.value[0]?.value || null,
+LINE 1807 | LINE 484 |         unidad: unit ? unit.value : unidades.value[0]?.value || null,
+LINE 1808 | LINE 485 |         medida: measure ? measure.value : medidas.value[0]?.value || null,
+LINE 1809 | LINE 486 |         caracteristica: item.caracteristica || '',
+LINE 1810 | LINE 487 |         codigonandina: item.codigonandina || '',
+LINE 1811 | LINE 488 |       }
+LINE 1812 | LINE 489 | 
+LINE 1813 | LINE 490 |       console.log('Bulk Import saving:', payload)
+LINE 1814 | LINE 491 |       const fData = objectToFormData(payload)
+LINE 1815 | LINE 492 |       const response = await api.post(``, fData)
+LINE 1816 | LINE 493 |       console.log(response.data)
+LINE 1817 | LINE 494 |       if (response.data.estado === 'exito') {
+LINE 1818 | LINE 495 |         successCount++
+LINE 1819 | LINE 496 |       } else {
+LINE 1820 | LINE 497 |         errorCount++
+LINE 1821 | LINE 498 |       }
+LINE 1822 | LINE 499 |     } catch (err) {
+LINE 1823 | LINE 500 |       console.error('Error importing product:', err)
+LINE 1824 | LINE 501 |       errorCount++
+LINE 1825 | LINE 502 |     }
+LINE 1826 | LINE 503 |   }
+LINE 1827 | LINE 504 | 
+LINE 1828 | LINE 505 |   importing.value = false
+LINE 1829 | LINE 506 | 
+LINE 1830 | LINE 507 |   $q.notify({
+LINE 1831 | LINE 508 |     type: successCount > 0 ? 'positive' : 'negative',
+LINE 1832 | LINE 509 |     message: `Importación finalizada. Éxito: ${successCount}, Errores: ${errorCount}`,
+LINE 1833 | LINE 510 |     position: 'center',
+LINE 1834 | LINE 511 |     timeout: 5000,
+LINE 1835 | LINE 512 |   })
+LINE 1836 | LINE 513 | 
+LINE 1837 | LINE 514 |   loadRows()
+LINE 1838 | LINE 515 | }
+LINE 1839 | LINE 516 | const abrirVariantes = (row) => {
+LINE 1840 | LINE 517 |   productoVariantes.value = row
+LINE 1841 | LINE 518 |   showVariantesDialog.value = true
+LINE 1842 | LINE 519 | }
+LINE 1843 | LINE 520 | onMounted(() => {
+LINE 1844 | LINE 521 |   loadcategorias()
+LINE 1845 | LINE 522 |   loadestados()
+LINE 1846 | LINE 523 |   loadmedidas()
+LINE 1847 | LINE 524 |   loadsubcategorias()
+LINE 1848 | LINE 525 |   loadunidades()
+LINE 1849 | LINE 526 |   loadRows()
+LINE 1850 | LINE 527 |   if (getTipoFactura(true)) {
+LINE 1851 | LINE 528 |     ListaProductoSin()
+LINE 1852 | LINE 529 |     ListaUnidadSin()
+LINE 1853 | LINE 530 |   }
+LINE 1854 | LINE 531 | })
+LINE 1855 | LINE 532 | </script>
+```
+
+==============================================================
 FILE: output/deepseek_prompt.md
 ==============================================================
 ```md
-LINE  1 | # PROMPT PROFESIONAL PARA DEEPSEEK WEB CHAT
-LINE  2 | 
-LINE  3 | > **Instrucción para el usuario:** Copia este texto y pégalo directamente en el chat de DeepSeek junto con los archivos adjuntos (`deepseek_project_context.md` o `deepseek_project_context.txt`).
-LINE  4 | 
-LINE  5 | ==============================================================
-LINE  6 | MODO Y PERFIL DE ANÁLISIS SELECCIONADO
-LINE  7 | ==============================================================
-LINE  8 | • MODO: 🔧 Modo Problema (Problem Mode)
-LINE  9 | • PERFIL: 🐞 Detect errors
-LINE 10 | • OBJETIVO: Identificar errores de sintaxis, bugs lógicos, excepciones no controladas, condiciones de carrera y fallos de tipo en el código.
-LINE 11 | • ENFOQUE: Detección exhaustiva de bugs, casos límite (edge cases), seguridad de nulos/undefined, control de flujo y manejo robusto de excepciones.
-LINE 12 | • PRIORIDADES: 1. Crashes y errores que detienen la ejecución. 2. Fallos silenciosos y corrupción de estado. 3. Manejo deficiente de excepciones. 4. Regresiones potenciales.
-LINE 13 | • RESULTADO ESPERADO: Localización exacta de cada error (archivo y línea), causa raíz técnica, código corregido listo para copiar/pegar y caso de prueba de verificación.
-LINE 14 | 
-LINE 15 | ⚠️ REGLA DE CONCRECIÓN TÉCNICA Y ACCIÓN:
-LINE 16 | El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
-LINE 17 | 
-LINE 18 | ==============================================================
-LINE 19 | REPORTED PROBLEM / PROBLEMA REPORTADO
-LINE 20 | ==============================================================
-LINE 21 | el buscador es muy lento por que ?
-LINE 22 | 
-LINE 23 | ==============================================================
-LINE 24 | PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO
-LINE 25 | ==============================================================
-LINE 26 | Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional bajo el modo "Modo Problema (Problem Mode)".
-LINE 27 | 
-LINE 28 | ---
-LINE 29 | 
-LINE 30 | ### 📋 INSTRUCCIONES DE ANÁLISIS (PROBLEM MODE RULES)
-LINE 31 | 
-LINE 32 | ### 🎯 ENFOQUE DE MODO PROBLEMA (PROBLEM MODE)
-LINE 33 | 1. **Foco exclusivo en el problema especificado**: Diagnostica y resuelve directamente la incidencia descrita en "REPORTED PROBLEM".
-LINE 34 | 2. **Prioriza la Causa Raíz**: Identifica el origen exacto del fallo técnico antes de proponer cambios de código.
-LINE 35 | 3. **Solución quirúrgica y escalable**: Genera el código corregido listo para sustituir sin alterar funcionalidades no relacionadas.
-LINE 36 | 4. **Impacto y Efectos Secundarios**: Evalúa regresiones potenciales de la modificación realizada.
-LINE 37 | 
-LINE 38 | ---
-LINE 39 | 
-LINE 40 | ### 📐 FORMATO DE RESPUESTA OBLIGATORIO PARA: MODO PROBLEMA (PROBLEM MODE)
-LINE 41 | 
-LINE 42 | Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown adaptada al modo seleccionado. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
-LINE 43 | 
-LINE 44 | ---
-LINE 45 | 
-LINE 46 | # DIAGNOSIS
-LINE 47 | ## Detected Bugs
-LINE 48 | [Lista técnica de los bugs encontrados con su causa raíz exacta]
-LINE 49 | 
-LINE 50 | # FILES TO MODIFY
-LINE 51 | ## 1. [ruta/relativa/archivo.ext]
-LINE 52 | Approximate line: [número]
-LINE 53 | ### Bug Description
-LINE 54 | [Explicación concisa del error]
-LINE 55 | ### Current Code
-LINE 56 | ```
-LINE 57 | [código con error]
-LINE 58 | ```
-LINE 59 | ### Bugfix Code
-LINE 60 | ```
-LINE 61 | [código corregido listo para sustituir]
-LINE 62 | ```
-LINE 63 | 
-LINE 64 | # VERIFICATION & EDGE CASES
-LINE 65 | [Prueba o caso límite para verificar que el bug fue resuelto]
-LINE 66 | 
-LINE 67 | ---
-LINE 68 | 
-LINE 69 | ==============================================================
-LINE 70 | ATTACHMENTS / ARCHIVOS ADJUNTOS
-LINE 71 | ==============================================================
-LINE 72 | Por favor revisa el archivo de contexto adjunto (`deepseek_project_context.md` / `deepseek_project_context.txt`) que contiene:
-LINE 73 | - **Project Summary**: desglose de archivos seleccionados por extensión y total de líneas.
-LINE 74 | - **Dependencies and References**: importaciones y dependencias detectadas automáticamente por archivo.
-LINE 75 | - **Estructura del Proyecto**: diagrama en árbol jerárquico de carpetas y archivos.
-LINE 76 | - **Código Fuente**: contenido de los archivos seleccionados con sus **rutas relativas** y **números de línea originales** (`LINE X | ...`).
-LINE 77 | 
-LINE 78 | Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba.
+LINE   1 | # PROMPT PROFESIONAL PARA DEEPSEEK WEB CHAT
+LINE   2 | 
+LINE   3 | > **Instrucción para el usuario:** Copia este texto y pégalo directamente en el chat de DeepSeek junto con los archivos adjuntos (`deepseek_project_context.md` o `deepseek_project_context.txt`).
+LINE   4 | 
+LINE   5 | ==============================================================
+LINE   6 | MODO Y PERFIL DE ANÁLISIS SELECCIONADO
+LINE   7 | ==============================================================
+LINE   8 | • MODO: 🔧 Modo Problema (Problem Mode)
+LINE   9 | • PERFIL: 🐞 Detect errors
+LINE  10 | • OBJETIVO: Identificar errores de sintaxis, bugs lógicos, excepciones no controladas, condiciones de carrera y fallos de tipo en el código.
+LINE  11 | • ENFOQUE: Detección exhaustiva de bugs, casos límite (edge cases), seguridad de nulos/undefined, control de flujo y manejo robusto de excepciones.
+LINE  12 | • PRIORIDADES: 1. Crashes y errores que detienen la ejecución. 2. Fallos silenciosos y corrupción de estado. 3. Manejo deficiente de excepciones. 4. Regresiones potenciales.
+LINE  13 | • RESULTADO ESPERADO: Localización exacta de cada error (archivo y línea), causa raíz técnica, código corregido listo para copiar/pegar y caso de prueba de verificación.
+LINE  14 | 
+LINE  15 | ⚠️ REGLA DE CONCRECIÓN TÉCNICA Y ACCIÓN:
+LINE  16 | El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate exclusivamente en fallos reproducibles y errores verificables. Omite comentarios estilísticos o divagaciones teóricas que no resuelvan un error.
+LINE  17 | 
+LINE  18 | ==============================================================
+LINE  19 | REPORTED PROBLEM / PROBLEMA REPORTADO
+LINE  20 | ==============================================================
+LINE  21 | generar el codigo en python para hacer el cambio el codigo se creara en la raiz del archivo 
+LINE  22 | agregar las columnas a la tabla de producto medida, estadoProducto, unidad, caracteristica 
+LINE  23 | la api listaProducto devuelve estos datos 
+LINE  24 | [
+LINE  25 |     {
+LINE  26 |         "id": "4004",
+LINE  27 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE  28 |         "codigo": "IND-BOT-T-M-P",
+LINE  29 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE  30 |         "codigobarras": "",
+LINE  31 |         "fecha": "2026-09-03",
+LINE  32 |         "imagen": "",
+LINE  33 |         "idcategoria": "0",
+LINE  34 |         "categoria": null,
+LINE  35 |         "subcategoria": "",
+LINE  36 |         "idmedida": "234",
+LINE  37 |         "medida": "general",
+LINE  38 |         "idestadoproducto": "275",
+LINE  39 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE  40 |         "idunidad": "250",
+LINE  41 |         "unidad": "Rollo",
+LINE  42 |         "caracteristica": ""{
+LINE  43 |         "id": "4004",
+LINE  44 |         "nombre": "BOTIN TREKIN MOTOQUERO PIL",
+LINE  45 |         "codigo": "IND-BOT-T-M-P",
+LINE  46 |         "descripcion": "BOTIN TREKIN MOTOQUERO PIL",
+LINE  47 |         "codigobarras": "",
+LINE  48 |         "imagen": "",
+LINE  49 |         "idcategoria": "0",
+LINE  50 |         "categoria": null,
+LINE  51 |         "subcategoria": "",
+LINE  52 |         "idmedida": "234",
+LINE  53 |         "medida": "general",
+LINE  54 |         "idestadoproducto": "275",
+LINE  55 |         "estadoproducto": "Ejecuci\u00f3n",
+LINE  56 |         "idunidad": "250",
+LINE  57 |         "unidad": "Rollo",
+LINE  58 |         "caracteristica": ""
+LINE  59 |     },...
+LINE  60 | ]
+LINE  61 | 
+LINE  62 | ==============================================================
+LINE  63 | PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO
+LINE  64 | ==============================================================
+LINE  65 | Hola DeepSeek. Te adjunto el contexto completo de mi proyecto de software para su análisis técnico profesional bajo el modo "Modo Problema (Problem Mode)".
+LINE  66 | 
+LINE  67 | ---
+LINE  68 | 
+LINE  69 | ### 📋 INSTRUCCIONES DE ANÁLISIS (PROBLEM MODE RULES)
+LINE  70 | 
+LINE  71 | ### 🎯 ENFOQUE DE MODO PROBLEMA (PROBLEM MODE)
+LINE  72 | 1. **Foco exclusivo en el problema especificado**: Diagnostica y resuelve directamente la incidencia descrita en "REPORTED PROBLEM".
+LINE  73 | 2. **Prioriza la Causa Raíz**: Identifica el origen exacto del fallo técnico antes de proponer cambios de código.
+LINE  74 | 3. **Solución quirúrgica y escalable**: Genera el código corregido listo para sustituir sin alterar funcionalidades no relacionadas.
+LINE  75 | 4. **Impacto y Efectos Secundarios**: Evalúa regresiones potenciales de la modificación realizada.
+LINE  76 | 
+LINE  77 | ---
+LINE  78 | 
+LINE  79 | ### 📐 FORMATO DE RESPUESTA OBLIGATORIO PARA: MODO PROBLEMA (PROBLEM MODE)
+LINE  80 | 
+LINE  81 | Tu respuesta DEBE seguir **exactamente** la siguiente estructura Markdown adaptada al modo seleccionado. No respondas con JSON. Esta respuesta la leerá un desarrollador directamente desde el chat web.
+LINE  82 | 
+LINE  83 | ---
+LINE  84 | 
+LINE  85 | # DIAGNOSIS
+LINE  86 | ## Detected Bugs
+LINE  87 | [Lista técnica de los bugs encontrados con su causa raíz exacta]
+LINE  88 | 
+LINE  89 | # FILES TO MODIFY
+LINE  90 | ## 1. [ruta/relativa/archivo.ext]
+LINE  91 | Approximate line: [número]
+LINE  92 | ### Bug Description
+LINE  93 | [Explicación concisa del error]
+LINE  94 | ### Current Code
+LINE  95 | ```
+LINE  96 | [código con error]
+LINE  97 | ```
+LINE  98 | ### Bugfix Code
+LINE  99 | ```
+LINE 100 | [código corregido listo para sustituir]
+LINE 101 | ```
+LINE 102 | 
+LINE 103 | # VERIFICATION & EDGE CASES
+LINE 104 | [Prueba o caso límite para verificar que el bug fue resuelto]
+LINE 105 | 
+LINE 106 | ---
+LINE 107 | 
+LINE 108 | ==============================================================
+LINE 109 | ATTACHMENTS / ARCHIVOS ADJUNTOS
+LINE 110 | ==============================================================
+LINE 111 | Por favor revisa el archivo de contexto adjunto (`deepseek_project_context.md` / `deepseek_project_context.txt`) que contiene:
+LINE 112 | - **Project Summary**: desglose de archivos seleccionados por extensión y total de líneas.
+LINE 113 | - **Dependencies and References**: importaciones y dependencias detectadas automáticamente por archivo.
+LINE 114 | - **Estructura del Proyecto**: diagrama en árbol jerárquico de carpetas y archivos.
+LINE 115 | - **Código Fuente**: contenido de los archivos seleccionados con sus **rutas relativas** y **números de línea originales** (`LINE X | ...`).
+LINE 116 | 
+LINE 117 | Confirma la recepción del contexto y responde siguiendo **exactamente** el formato estructurado indicado arriba.
 ```
 
 ==============================================================

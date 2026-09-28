@@ -102,6 +102,6 @@ def scan_directory(
                     del _SCAN_CACHE[first_key]
                 except (StopIteration, KeyError):
                     pass
-            _SCAN_CACHE[cache_key] = (signature, valid_files)
+            _SCAN_CACHE[cache_key] = (folder_mtime, valid_files)
 
     return valid_files

@@ -102,11 +102,6 @@ class FileSearchDialog(tk.Toplevel):
 
         ttk.Button(row, text="Buscar", command=self._force_refresh_results).pack(side=tk.LEFT)
         ttk.Button(row, text="Limpiar", command=self._clear_search).pack(side=tk.LEFT, padx=(6, 0))
-        ttk.Button(
-            row,
-            text="↻ Refrescar",
-            command=lambda: self._load_files(force_refresh=True),
-        ).pack(side=tk.LEFT, padx=(6, 0))
 
     def _build_results(self):
         container = tk.Frame(

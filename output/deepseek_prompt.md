@@ -18,7 +18,9 @@ El análisis debe ser CONCRETO, TÉCNICO y ORIENTADO A LA ACCIÓN. Concéntrate 
 ==============================================================
 REPORTED PROBLEM / PROBLEMA REPORTADO
 ==============================================================
-el buscador es muy lento por que ?
+generar el codigo en python para hacer el cambio el codigo se creara en la raiz del archivo 
+el problema es este ejemplo seleccione un proyecto en quasar 
+entre al modulodo de buscador seleccione un archivo raiz y vi todas sus dependencia pero al aplicar seleccion no me selecciona todas las dependencias
 
 ==============================================================
 PROJECT CONTEXT / CONTEXTO E INSTRUCCIONES DEL PROYECTO

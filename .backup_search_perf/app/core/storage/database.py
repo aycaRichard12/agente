@@ -258,33 +258,6 @@ class Database:
         )
         return [dict(r) for r in cur.fetchall()]
 
-    def load_file_paths(self, project_path: str):
-        """Devuelve lista plana de rutas de archivo (is_dir=0) ordenadas.
-
-        Pensado para alimentar el buscador sin pagar el coste de os.walk.
-        Devuelve:
-            (files: List[str], last_scanned: Optional[str], exists: bool)
-        donde `files` es [] si el proyecto existe pero no tiene nodos.
-        """
-        cur = self._conn.cursor()
-        cur.execute(
-            "SELECT id, last_scanned FROM projects WHERE path = ?",
-            (project_path,),
-        )
-        row = cur.fetchone()
-        if not row:
-            return [], None, False
-        project_id = int(row["id"])
-        last_scanned = row["last_scanned"]
-        cur.execute(
-            "SELECT rel_path FROM nodes "
-            "WHERE project_id = ? AND is_dir = 0 "
-            "ORDER BY rel_path",
-            (project_id,),
-        )
-        files = [r["rel_path"] for r in cur.fetchall()]
-        return files, last_scanned, True
-
     # === PHASE 2: DELTA SCAN ===
     def load_nodes_map(self, project_path: str):
         cur = self._conn.cursor()
